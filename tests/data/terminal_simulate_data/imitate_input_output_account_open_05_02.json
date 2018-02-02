@@ -1,0 +1,20 @@
+{
+    "case1": [
+        {
+            "time": 0,
+            "confirm_time":0,
+            "input": {
+                "question": "我想开一个工商银行的企业账户",
+                "concepts": {
+                    "intent": "account.open",
+                    "bank":"工商银行",
+                    "account_type":"企业账号"
+                }
+            },
+            "output": {
+                "answer": "数据库查询",
+                "event_id": "xxxx"
+            }
+        }
+    ]
+}

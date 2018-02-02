@@ -1,0 +1,85 @@
+{
+    "case1": [
+        {
+            "time": 0,
+            "confirm_time":0,
+            "input": {
+                "question": "我想开户",
+                "concepts": {
+                    "intent": "account.open"
+                }
+            },
+            "output": {
+                "answer": "请问您想在哪个银行开什么类型的账户",
+                "event_id": "xxxx"
+            }
+        },
+        {
+            "time": 0,
+            "confirm_time":0,
+            "input": {
+                "question": "abc 随便说的一句话",
+                "concepts": {
+                }
+            },
+            "output": {
+                "answer": "无",
+                "event_id": "xxxx"
+            }
+        },
+        {
+            "time": 0,
+            "confirm_time":0,
+            "input": {
+                "question": "中国银行",
+                "concepts": {
+                    "bank":"中国银行"
+                }
+            },
+            "output": {
+                "answer": "请问账户类型是什么",
+                "event_id": "xxxx"
+            }
+        },
+        {
+            "time": 0,
+            "confirm_time": 0,
+            "input": {
+                "question": "abc 随便说的一句话",
+                "concepts": {
+                }
+            },
+            "output": {
+                "answer": "无",
+                "event_id": "xxxx"
+            }
+        },
+        {
+            "time": 0,
+            "confirm_time": 0,
+            "input": {
+                "question": "企业账号",
+                "concepts": {
+                    "account_type":"企业账号"
+                }
+            },
+            "output": {
+                "answer": "麻烦填一下这个表格",
+                "event_id": "xxxx"
+            }
+        },
+        {
+            "time": 0,
+            "confirm_time": 0,
+            "input": {
+                "question": "北京呢",
+                "concepts": {
+                }
+            },
+            "output": {
+                "answer": "无",
+                "event_id": "xxxx"
+            }
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "cases": {
+        "12.1": {
+            "input": {
+                "request_time": 0,
+                "confirm_time":0,
+                "question": "请问耐克在哪里?",
+                "concepts": {
+                    "intent": "location.query",
+                    "location": "nike"
+                }
+            },
+            "output": {
+                "tag": "我是可爱的小莫机器人",
+                "event_id": "xxxx"
+
+            }
+        },
+        "12.2": {
+            "input": {
+                "request_time": 0,
+                "confirm_time":0,
+                "question": "请问海底捞怎么走",
+                "concepts": {
+                    "intent": "location.query",
+                    "location": "haidilao"
+                }
+            },
+            "output": {
+                "tag": "请问城市和日期分别是什么",
+                "event_id": "xxxx"
+
+            }
+        }
+    }
+}

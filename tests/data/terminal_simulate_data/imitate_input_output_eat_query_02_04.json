@@ -1,0 +1,46 @@
+{
+    "case1": [
+        {
+            "time": 0,
+            "confirm_time":0,
+            "input": {
+                "question": "我想吃汉堡",
+                "concepts": {
+                    "intent": "eat.query"
+                }
+            },
+            "output": {
+                "answer": "请问你是想吃麦当劳还是肯德基?",
+                "event_id": "xxxx"
+            }
+        },
+        {
+            "time": 0,
+            "confirm_time":0,
+            "input": {
+                "question": "麦肯基",
+                "concepts": {
+                    "location": "麦肯基"
+                }
+            },
+            "output": {
+                "answer": "无",
+                "event_id": "xxxx"
+            }
+        },
+        {
+            "time": 20,
+            "confirm_time":0,
+            "input": {
+                "question": "麦当劳",
+                "concepts": {
+                    "location": "麦当劳"
+                }
+            },
+            "output": {
+                "answer": "麦当劳请往左边走",
+                "event_id": "xxxx"
+            }
+        }
+    ]
+}

@@ -1,0 +1,61 @@
+{
+    "case1": [
+        {
+            "time": 0,
+            "confirm_time":0,
+            "input": {
+                "question": "明天天气如何？",
+                "concepts": {
+                    "intent": "weather.query",
+                    "date":"明天"
+                }
+            },
+            "output": {
+                "answer": "请问您在哪个城市",
+                "event_id": "xxxx"
+            }
+        },
+        {
+            "time": 10,
+            "confirm_time":0,
+            "input": {
+                "question": "你叫什么名字",
+                "concepts": {
+                    "intent": "name.query"
+                }
+            },
+            "output": {
+                "answer": "我是可爱的小莫机器人",
+                "event_id": "xxxx"
+            }
+        },
+        {
+            "time": 20,
+            "confirm_time":0,
+            "input": {
+                "question": "深圳",
+                "concepts": {
+                    "city": "深圳"
+                }
+            },
+            "output": {
+                "answer": "深圳明天的天气blablabla",
+                "event_id": "xxxx"
+            }
+        },
+        {
+            "time": 40,
+            "confirm_time":0,
+            "input": {
+                "question": "深圳",
+                "concepts": {
+                    "city": "深圳"
+                }
+            },
+            "output": {
+                "answer": "无",
+                "event_id": "xxxx"
+            }
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "agents": [
+        {
+            "name": "我是可爱的小莫机器人",
+            "event_id": "事件ID",
+            "subject": "主题",
+            "visible_domain": "可见域",
+            "trigger_conditions": {
+                "intent": "name.query"
+            },
+            "target_concepts": [],
+            "time_out": "15"
+        },
+        {
+            "name": "what is your height?",
+            "event_id": "事件ID",
+            "subject": "主题",
+            "visible_domain": "可见域",
+            "trigger_conditions": {
+                "intent": "height.query"
+            },
+            "target_concepts": [],
+            "time_out": "15"
+        }
+    ]
+
+}

@@ -1,0 +1,72 @@
+{
+    "agencys": [
+        {
+            "agents": [
+                {
+                    "name": "请问您想在哪个银行开什么类型的账户",
+                    "event_id": "事件ID",
+                    "subject": "主题",
+                    "visible_domain": "可见域",
+                    "trigger_conditions": {
+                        "intent": "account.open"
+                    },
+                    "target_concepts": ["bank", "account_type"],
+                    "time_out": "超时, 如5s"
+                },
+                {
+                    "name": "数据库查询",
+                    "event_id": "事件ID",
+                    "subject": "主题",
+                    "visible_domain": "可见域",
+                    "trigger_conditions": {
+                        "bank":"*",
+                        "account_type":"*"
+                    },
+                    "target_concepts": [
+
+                    ],
+                    "time_out": "超时, 如5s"
+                },
+                {
+                    "name": "请问账户类型是什么",
+                    "event_id": "事件ID",
+                    "subject": "主题",
+                    "visible_domain": "可见域",
+                    "trigger_conditions": {
+                        "bank":"中国银行"
+                    },
+                    "target_concepts": [
+
+                    ],
+                    "time_out": "超时, 如5s"
+                },
+                {
+                    "name": "请问您想开什么银行的账户",
+                    "event_id": "事件ID",
+                    "subject": "主题",
+                    "visible_domain": "可见域",
+                    "trigger_conditions": {
+                        "account_type":"企业账号"
+                    },
+                    "target_concepts": [
+
+                    ],
+                    "time_out": "超时, 如5s"
+                },
+                {
+                    "name": "麻烦填一下表格",
+                    "event_id": "事件ID",
+                    "subject": "主题",
+                    "visible_domain": "可见域",
+                    "trigger_conditions": {
+                        "bank":"中国银行",
+                        "account_type":"企业账号"
+                    },
+                    "target_concepts": [
+                    ],
+                    "time_out": "超时, 如5s"
+                }
+            ]
+        }
+    ]
+}

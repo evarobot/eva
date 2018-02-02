@@ -1,0 +1,33 @@
+{
+    "case1": [
+        {
+            "time": 0,
+            "confirm_time":0,
+            "input": {
+                "question": "请问今天天气如何",
+                "concepts": {
+                    "intent": "weather.query",
+                    "date":"今天"
+                }
+            },
+            "output": {
+                "answer": "请问您问的是哪个城市",
+                "event_id": "xxxx"
+            }
+        },
+        {
+            "time": 0,
+            "confirm_time":0,
+            "input": {
+                "question": "深圳",
+                "concepts": {
+                    "city":"深圳"
+                }
+            },
+            "output": {
+                "answer": "深圳今天的天气blablabla",
+                "event_id": "xxxx"
+            }
+        }
+    ]
+}
