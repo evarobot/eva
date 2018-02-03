@@ -6,24 +6,15 @@ import treelib
 from copy import deepcopy
 
 from vikicommon.util import escape_unicode
-from vikidm.util import object_to_dict
+from vikidm.context import Concept
 
 
-class Concept(object):
-    """
-    """
-    def __init__(self, key, value=None):
-        self.key = key
-        self.value = value
-        self.life_type = None
-
-    def __str__(self):
-        return json.dumps(self, default=lambda o: o.__dict__)
 
 
 class BizUnit(treelib.Node):
     def __init__(self, tag, data):
         super(BizUnit, self).__init__(tag, tag, data=data)
+        self.is_complete = False
 
 
 class Agency(BizUnit):
@@ -33,6 +24,10 @@ class Agency(BizUnit):
     def __str__(self):
         return self.tag.encode('utf8')
 
+    @property
+    def trigger_concepts(self):
+        pass
+
 
 class Agent(BizUnit):
     def __init__(self, tag, data):
@@ -40,10 +35,12 @@ class Agent(BizUnit):
             'subject': data['subject'],
             'scope': data['scope'],
             'event_id': data['event_id'],
-            'timeout': float(data['timeout']),
-            'trigger_concepts': list(self._deserialize_trigger_concepts(data)),
-            'target_concepts': list(self._deserialize_target_concepts(data))
+            'timeout': data['timeout'],
+            'trigger_concepts': data['trigger_concepts'],  # 用于tree.to_json(), 方便调试。
+            'target_concepts': data['target_concepts']
         }
+        self._trigger_concepts = list(self._deserialize_trigger_concepts(data))
+        self._target_concepts = list(self._deserialize_target_concepts(data))
         super(Agent, self).__init__(tag, data)
 
     @property
@@ -80,19 +77,11 @@ class Agent(BizUnit):
 
     @property
     def trigger_concepts(self):
-        return self.data['trigger_concepts']
-
-    @trigger_concepts.setter
-    def trigger_concepts(self,  value):
-        self.data['trigger_concepts'] = value
+        return self._trigger_concepts
 
     @property
     def target_concepts(self):
-        return self.data['target_concepts']
-
-    @target_concepts.setter
-    def target_concepts(self,  value):
-        self.data['target_concepts'] = value
+        return self._target_concepts
 
     def _deserialize_trigger_concepts(self, data):
         for kv in data['trigger_concepts']:
@@ -104,10 +93,7 @@ class Agent(BizUnit):
             yield Concept(key)
 
     def __str__(self):
-        data = deepcopy(self.data)
-        data['trigger_concepts'] = ["%s=%s" % (c.key, c.value) for c in self.trigger_concepts]
-        data['target_concepts'] = [c.key for c in self.data['target_concepts']]
-        return json.dumps(escape_unicode(data))
+        return json.dumps(escape_unicode(self.data))
 
 
 class BizTree(treelib.Tree):

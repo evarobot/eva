@@ -8,16 +8,17 @@
         {
            "data":{
                 "tag": "nike",
+                "entrance": true,
                 "event_id": "intent=where.query:location=耐克",
-                "subject": "主题",
-                "scope": "可见域",
+                "subject": "",
+                "scope": "",
                 "trigger_concepts": [
                     "intent=where.query",
-                    "location=耐克"
+                    "location=nike"
                 ],
                 "target_concepts": [
                 ],
-                "timeout": "5"
+                "timeout": 5
             },
             "children": []
 
@@ -25,9 +26,10 @@
         {
             "data":{
                 "tag": "haidilao",
+                "entrance": true,
                 "event_id": "intent=where.query:location=海底捞",
-                "subject": "主题",
-                "scope": "可见域",
+                "subject": "",
+                "scope": "",
                 "trigger_concepts": [
                     "intent=where.query",
                     "location=海底捞"
