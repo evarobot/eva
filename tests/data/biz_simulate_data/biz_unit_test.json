@@ -24,6 +24,25 @@
 
         },
         {
+           "data":{
+                "tag": "adidas",
+                "agency_entrance": true,
+                "event_id": "intent=where.query:location=阿迪达斯",
+                "subject": "",
+                "scope": "",
+                "trigger_concepts": [
+                    "intent=where.query",
+                    "location=adidas"
+                ],
+                "target_concepts": [
+                    "location"
+                ],
+                "timeout": 5
+            },
+            "children": []
+
+        },
+        {
             "data":{
                 "tag": "haidilao",
                 "agency_entrance": true,

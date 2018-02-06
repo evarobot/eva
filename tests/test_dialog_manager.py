@@ -6,18 +6,129 @@ import json
 import pprint
 
 from vikicommon.timer import TimerThread
-from vikidm.util import PROJECT_DIR
-from vikidm.dm import DialogEngine
-from vikidm.context import Concept
 from vikicommon.util.uniout import use_uniout
 from vikicommon.log import (
     gen_log as log,
     add_stdout_handler,
     add_tornado_log_handler
 )
+
+from vikidm.util import PROJECT_DIR
+from vikidm.dm import DialogEngine, Stack
+from vikidm.context import Concept
+from vikidm.biztree import Agent
 from test_biztree import check_biz_tree
 
 data_path = os.path.join(PROJECT_DIR, "tests", "data")
+
+
+def test_stack():
+    log.info("Test: Stack------------------------")
+    stack = Stack()
+    stack.push(1)
+    stack.push(2)
+    stack.push(3)
+    assert(stack.top() == 3)
+    assert(stack.pop() == 3)
+    assert(stack.top() == 2)
+
+
+def test_init_biz_from_json_file():
+    """
+    Test load json file;
+    Test `Context` and `Stack` initialization.
+    """
+    log.info("Test: DialogEngine.init_biz_from_json_file()------------------------")
+    dm = DialogEngine()
+    fpath = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
+    dm.init_from_json_files([fpath])
+    # log.info("\n%s" % pprint.pformat(dm._biz_tree.to_dict(with_data=True)))
+    # make sure _biz_tree, context, stack state.
+    check_biz_tree(dm._biz_tree)
+    concepts = dm._context._all_concepts.values()
+    assert(str(concepts[0]) == "Concept(intent=None)")
+    assert(str(concepts[1]) == "Concept(location=None)")
+    assert(len(dm._stack) == 1)
+    assert(dm._stack.top().tag == 'root')
+    # make sure deep copy
+    for bizunit in dm._biz_tree.all_nodes_itr():
+        if isinstance(bizunit, Agent):
+            for concept in bizunit.trigger_concepts:
+                assert(concept.value is not None)
+    for concept in dm._context._all_concepts.values():
+        assert(concept.value is None)
+    log.info("Tree:")
+    dm._biz_tree.show()
+    log.info("\n%s" % dm._context)
+    log.info("\n%s" % dm._stack)
+
+
+def test_get_triggered_bizunits():
+    """
+    Test trigger a simple Agent;
+    Test trigger entrance_agent of Agency;
+    TODO: Test trigger None entrance_agent of Agency;
+    """
+    log.info("Test: DialogEngine.test_get_triggered_bizunits()------------------------")
+    dm = DialogEngine()
+    fpath = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
+    fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
+    dm.init_from_json_files([fpath, fpath2])
+    concepts = [
+        Concept("intent", "where.query"),
+        Concept("location", "nike")
+    ]
+    dm._update_concepts(concepts)
+    for bizunit in dm._get_triggered_bizunits():
+        assert(bizunit.tag == 'biz12')
+
+    concepts = [
+        Concept("intent", "name.query"),
+    ]
+    dm._update_concepts(concepts)
+    for bizunit in dm._get_triggered_bizunits():
+        assert(bizunit.tag == 'biz01')
+
+
+def test_mark_completed_bizunits():
+    """
+     TODO
+    """
+    pass
+
+
+def test_process_concepts():
+    """
+    name.query
+    """
+    fpath1 = os.path.join(data_path, 'biz_simulate_data/biz_12.json')
+    fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
+    dm = DialogEngine()
+    dm.init_from_json_files([fpath1, fpath2])
+    dm._biz_tree.show()
+    log.info('\n%s' % pprint.pformat(dm._biz_tree.to_dict(with_data=True)))
+    log.info('\n%s' % str(dm._stack))
+    # test name.query
+    concepts = [
+        Concept('intent', 'name.query')
+    ]
+    dm.process_concepts("sid001", concepts)
+    assert(len(dm._stack) == 2)
+    assert(dm._stack.top().tag == 'biz01')
+    log.info('\n%s' % str(dm._stack))
+
+    confirm_data = {
+        'sid': 'sid001',
+        'error_code': 0,
+        'error_msg': ''
+    }
+    dm.process_confirm(confirm_data)
+
+    concepts = [
+        Concept("intent", "where.query"),
+        Concept("location", "nike")
+    ]
+
 
 
 class TestEngine(object):
@@ -26,41 +137,12 @@ class TestEngine(object):
         self._task = None
         self._timeunit = 0
         self._test_cases = self._load_test_case()
-
-    def test_init_biz_from_json_file(self):
-        dm = DialogEngine()
-        fpath = os.path.join(data_path, 'biz_simulate_data/biz_12.json')
-        dm.init_from_json_files([fpath])
-        log.info("\n%s" % pprint.pformat(dm._biz_tree.to_dict(with_data=True)))
-        log.info("\n%s" % dm._context)
-        check_biz_tree(dm._biz_tree)
-        concepts = dm._context._all_concepts.values()
-        assert(str(concepts[0]) == "Concept(intent=None)")
-        assert(str(concepts[1]) == "Concept(location=None)")
-
-    def test_update_concept(self):
-        dm = DialogEngine()
-        fpath = os.path.join(data_path, 'biz_simulate_data/biz_12.json')
-        dm.init_from_json_files([fpath])
-        log.info("\n%s" % pprint.pformat(dm._biz_tree.to_dict(with_data=True)))
-        log.info("\n%s" % dm._context)
-        concepts = [
-            Concept("intent", "where.query"),
-            Concept("location", "nike")
-        ]
-        dm._update_concepts(concepts)
-        log.info("*" * 30)
-        for bizunit in dm._get_focus_bizunit():
-            assert(bizunit.tag == 'nike')
-            log.info(bizunit.event_id)
-            log.info(bizunit.tag)
-
+        self._dm = DialogEngine()
 
     def test_engine(self):
-        dm = DialogEngine()
         fpath1 = os.path.join(data_path, 'biz_simulate_data/biz_12.json')
         fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
-        dm.init_from_json_files([fpath1, fpath2])
+        self._dm.init_from_json_files([fpath1, fpath2])
         for caseid, case in self._test_cases.iteritems():
             time_list = []
             for session in case:
@@ -96,13 +178,15 @@ class TestEngine(object):
         """
         """
         log.info("make request: \n%s" % pprint.pformat(request))
-        request['concepts']
+        concepts = []
+        for key, value in request['concepts'].iteritems():
+            concepts.append(Concept(key, value))
+        #self._dm.process_request()
 
     def _process_confirm(self, request):
         """
         """
         log.info("make cofirm: \n%s" % pprint.pformat(request))
-
 
     def _load_test_case(self):
         """
@@ -125,7 +209,10 @@ if __name__ == '__main__':
     add_stdout_handler("INFO")
     use_uniout(True)
     add_tornado_log_handler("./", "INFO")
+    test_stack()
+    test_init_biz_from_json_file()
+    test_get_triggered_bizunits()
+    test_process_concepts()
+    #test_process_confirm()
     tengine = TestEngine()
     #tengine.test_engine()
-    tengine.test_update_concept()
-    #tengine.test_init_biz_from_json_file()
