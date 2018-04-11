@@ -1,36 +1,36 @@
 {
-    "case": [
-        {
-            "sub_case": "1.1",
+    "cases": {
+        "1.1": [{
             "input": {
-                "request_time": 0,
-                "confirm_time":0,
+                "time": 1,
                 "question": "你叫什么名字?",
                 "concepts": {
-                    "intent": "name.query"
+                    "intent": "name.query",
                 }
             },
+            "confirm": {
+                "time":2
+            },
             "output": {
-                "answer": "我是可爱的小莫机器人",
                 "event_id": "xxxx"
 
             }
-        },
-        {
-            "sub_case": "1.2",
+        }],
+        "1.2": [{
             "input": {
-                "request_time": 0,
-                "confirm_time":0,
-                "question": "今天什么天气",
+                "time": 1,
+                "question": "耐克在哪里?",
                 "concepts": {
-                    "intent": "weather.query"
+                    "intent": "where.query",
+                    "location": "耐克",
                 }
             },
+            "confirm": {
+                "time":2
+            },
             "output": {
-                "answer": "请问城市和日期分别是什么",
-                "event_id": "xxxx"
-
+                "event_id": "intent=where.query:location=耐克",
             }
-        }
-    ]
+        }]
+    }
 }

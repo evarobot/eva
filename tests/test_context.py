@@ -19,14 +19,14 @@ class TestContext(object):
         ctx.update_concept("intent", copy.deepcopy(c2))
         ctx.add_concept(copy.deepcopy(c3))
         ctx.add_concept(copy.deepcopy(c4))
-        assert(ctx.get_concept("intent").is_dirty == True)
-        assert(ctx.get_concept("location").is_dirty == False)
+        assert(ctx["intent"].dirty == True)
+        assert(ctx["location"].dirty == False)
         assert(ctx.satisfied(copy.deepcopy(c2)))
         assert(ctx.satisfied(copy.deepcopy(c1)) == False)
         assert(ctx.satisfied(copy.deepcopy(c3)) == False)
         ctx.reset_concept('intent')
-        assert(ctx.get_concept("intent").is_dirty == False)
-        assert(ctx.get_concept("intent").life_type == "forever")
+        assert(ctx["intent"].dirty == False)
+        assert(ctx["intent"].life_type == "forever")
         ctx.update_concept("intent", c2)
 
 

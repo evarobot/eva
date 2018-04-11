@@ -1,12 +1,12 @@
 { 
     "data":{
-        "tag": "name.query",
+        "tag": "casual_talk",
         "agency_entrance": false,
-        "event_id": "name.query",
+        "event_id": "casual_talk",
         "subject": "主题",
         "scope": "可见域",
         "trigger_concepts": [
-            "intent=name.query"
+            "intent=casual_talk"
         ],
         "target_concepts": [],
         "timeout": "5"

@@ -2,7 +2,7 @@
     "data":{
         "tag": "name.query",
         "agency_entrance": false,
-        "event_id": "name.query",
+        "event_id": "intent=name.query:None",
         "subject": "主题",
         "scope": "可见域",
         "trigger_concepts": [
@@ -13,4 +13,3 @@
     },
     "children": []
 }
-

@@ -1,16 +1,15 @@
 { 
     "data":{
-        "tag": "name.query",
+        "tag": "FAILED|name.query",
         "agency_entrance": false,
-        "event_id": "name.query",
+        "event_id": "FAILED|name.query",
         "subject": "主题",
         "scope": "可见域",
         "trigger_concepts": [
-            "intent=name.query"
+            "state@axm=FAILED|name.query"
         ],
         "target_concepts": [],
         "timeout": "5"
     },
     "children": []
 }
-

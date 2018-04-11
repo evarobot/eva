@@ -2,14 +2,18 @@
 # Copyright (C) 2017 AXMTEC.
 # https://axm.ai/
 
-from vikicommon.log import gen_log as log
+import logging
 from json import JSONEncoder
+
+log = logging.getLogger(__name__)
 
 
 class Concept(JSONEncoder):
     """
     """
-    def __init__(self, key, value=None, life_type=None):
+    LIFE_STACK = "LIFE_STACK"
+
+    def __init__(self, key, value=None, life_type="LIFE_STACK"):
         self.key = key
         self.value = value
         self.life_type = life_type
@@ -18,7 +22,7 @@ class Concept(JSONEncoder):
         return o.__dict__
 
     @property
-    def is_dirty(self):
+    def dirty(self):
         return self.value is not None
 
     def __unicode__(self):
@@ -65,7 +69,7 @@ class Context(object):
         if concept:
             concept.value = None
             return
-        log.warning("不存在概念{0}".format(key))
+        log.error("不存在概念{0}".format(key))
 
     def get_concept(self, key):
         return self._all_concepts[key]
@@ -76,18 +80,23 @@ class Context(object):
             return True
         return False
 
-    def is_dirty(self, concept):
+    def dirty(self, concept):
         target = self._all_concepts.get(concept.key, None)
-        if target and target.is_dirty:
+        if target and target.dirty:
             return True
         return False
+
+    def __getitem__(self, key):
+        return self._all_concepts[key]
 
     def __str__(self):
         clean_concepts = []
         dirty_concepts = []
         for concept in self._all_concepts.values():
-            if not concept.is_dirty:
+            if not concept.dirty:
                 clean_concepts.append(concept)
             else:
                 dirty_concepts.append(concept)
         return "\n".join(["Context:"] + [str(c) for c in dirty_concepts + clean_concepts])
+
+

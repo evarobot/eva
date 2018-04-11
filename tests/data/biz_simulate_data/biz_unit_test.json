@@ -1,15 +1,16 @@
 {
 
     "data": {
-        "id": "项目ID=1001;intent=where.query",
-        "tag": "biz12"
+        "event_id": "where.query",
+        "tag": "where.query",
+        "type": "TYPE_CLUSTER"
     },
     "children": [
         {
            "data":{
                 "tag": "nike",
                 "agency_entrance": true,
-                "event_id": "intent=where.query:location=耐克",
+                "event_id": "nike",
                 "subject": "",
                 "scope": "",
                 "trigger_concepts": [
@@ -25,9 +26,9 @@
         },
         {
            "data":{
-                "tag": "adidas",
+                "tag": "zhou_hei_ya",
                 "agency_entrance": true,
-                "event_id": "intent=where.query:location=阿迪达斯",
+                "event_id": "zhou_hei_ya",
                 "subject": "",
                 "scope": "",
                 "trigger_concepts": [
@@ -41,23 +42,6 @@
             },
             "children": []
 
-        },
-        {
-            "data":{
-                "tag": "haidilao",
-                "agency_entrance": true,
-                "event_id": "intent=where.query:location=海底捞",
-                "subject": "",
-                "scope": "",
-                "trigger_concepts": [
-                    "intent=where.query",
-                    "location=海底捞"
-                ],
-                "target_concepts": [
-                ],
-                "timeout": "5"
-            },
-            "children": []
         }
     ]
 }
