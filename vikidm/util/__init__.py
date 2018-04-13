@@ -1,5 +1,4 @@
 # coding=utf-8
-from .utils import (
-    PROJECT_DIR,
-    object_to_dict
-)
+import os
+PROJECT_DIR = os.path.realpath(os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), '../../'))

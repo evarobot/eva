@@ -70,6 +70,35 @@ def test_init_biz_from_json_file():
     # log.info("\n%s" % dm._stack)
 
 
+def test_init_biz_from_db():
+    """
+    Test load json file;
+    Test `Context` and `Stack` initialization.
+    """
+    log.info("test_init_biz_from_json_file")
+    dm = DialogEngine()
+    fpath = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
+    dm.init_from_json_files([fpath])
+    # log.info("\n%s" % pprint.pformat(dm._biz_tree.to_dict(with_data=True)))
+    check_biz_tree(dm._biz_tree)
+    concepts = dm._context._all_concepts.values()
+    assert(str(concepts[0]) == "Concept(intent=None)")
+    assert(str(concepts[1]) == "Concept(location=None)")
+    assert(len(dm._stack) == 1)
+    assert(dm._stack.top().tag == 'root')
+    # make sure deep copy
+    for bizunit in dm._biz_tree.all_nodes_itr():
+        if isinstance(bizunit, Agent):
+            for concept in bizunit.trigger_concepts:
+                assert(concept.value is not None)
+    for concept in dm._context._all_concepts.values():
+        assert(concept.value is None)
+    # log.info("Tree:")
+    # dm._biz_tree.show()
+    # log.info("\n%s" % dm._context)
+    # log.info("\n%s" % dm._stack)
+
+
 def test_get_triggered_bizunits():
     """
     Test trigger a simple Agent;

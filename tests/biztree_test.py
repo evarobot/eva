@@ -10,7 +10,7 @@ from vikidm.util import PROJECT_DIR
 
 from vikidm.config import ConfigLog
 from vikicommon.log import init_logger
-init_logger(level=ConfigLog.log_level, path=ConfigLog.log_path)
+init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
 data_path = os.path.join(PROJECT_DIR, "tests", "data")

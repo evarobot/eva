@@ -1,6 +1,7 @@
 {
 
     "data": {
+        "id": "where.query",
         "event_id": "where.query",
         "tag": "where.query",
         "type": "TYPE_CLUSTER"
@@ -8,6 +9,7 @@
     "children": [
         {
            "data":{
+                "id": "nike",
                 "tag": "nike",
                 "agency_entrance": true,
                 "event_id": "nike",
@@ -19,7 +21,8 @@
                 ],
                 "target_concepts": [
                 ],
-                "timeout": 5
+                "timeout": 5,
+                "type": "TYPE_CLUSTER_RESPONSE"
             },
             "children": []
 
@@ -38,7 +41,8 @@
                 "target_concepts": [
                     "location"
                 ],
-                "timeout": 5
+                "timeout": 5,
+                "type": "TYPE_CLUSTER_RESPONSE"
             },
             "children": []
 

@@ -7,11 +7,12 @@ import pprint
 from datetime import datetime
 from threading import Timer
 from treelib.tree import NodeIDAbsentError
+from evecms.services.service import EVECMSService
 from vikidm.context import Concept, Context
-
-
 from vikidm.biztree import BizTree, Agent, BizUnit, Agency, AbnormalHandler, DefaultFailedAgent
+
 log = logging.getLogger(__name__)
+service = EVECMSService()
 
 
 class Session(object):
@@ -49,7 +50,6 @@ class Stack(object):
             return self._items.pop()
         except IndexError:
             assert(False and "root node always in stack")
-            #return None
 
     def top(self):
         try:
@@ -73,18 +73,6 @@ class Stack(object):
         return "%s(%s)" % (name, ", ".join(kwargs))
 
 
-class DialogManager(object):
-    def __init__(self):
-        self._dlg_gate = None
-        self._dlg_engine = None
-        self._context = Context()
-
-
-class DialogInterface(object):
-    """ 对话管理和NLU，终端的接口。"""
-    def __init__(self):
-        pass
-
 
 class DialogEngine(object):
     """ 对话管理单元 """
@@ -98,8 +86,19 @@ class DialogEngine(object):
         self.debug_loop = 0
         self.debug_timeunit = 1  # 为了测试的时候加速时间计数
 
-    def init_from_db(self, domain, version):
-        pass
+    def init_from_db(self, domain_name):
+        #  TODO: MOCK get_json_data
+        json_tree = json.loads(service.get_json_data(domain_name))
+        self.init_from_json_tree(json_tree)
+
+    def init_from_json_tree(self, json_tree):
+        json_tree = json.load(json_tree)
+        for biz in json_tree['children']:
+            self._add_biz_from_json(biz)
+        self._init_context()
+        node = self._biz_tree.get_node('root')
+        node.state = BizUnit.STATUS_STACKWAIT
+        self._stack.push(node)
 
     def init_from_json_files(self, paths):
         for fpath in paths:
@@ -174,7 +173,7 @@ class DialogEngine(object):
                 parent = focus_unit.parent
             if parent and parent.is_root() == False and parent.state != BizUnit.STATUS_ABNORMAL:
                 parent.state = BizUnit.STATUS_TRIGGERED
-                #log.debug("set parent {0} triggered".format(parent.tag))
+                # log.debug("set parent {0} triggered".format(parent.tag))
         self._stack.pop()
         trigger_parent()
         if isinstance(focus_unit, Agent):

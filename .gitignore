@@ -59,3 +59,4 @@ docs/_build/
 target/
 .pytest_cache
 config.py
+.DS_Store

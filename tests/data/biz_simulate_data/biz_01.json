@@ -1,5 +1,6 @@
 { 
     "data":{
+        "id": "name.query",
         "tag": "name.query",
         "agency_entrance": false,
         "event_id": "name.query",
@@ -9,7 +10,8 @@
             "intent=name.query"
         ],
         "target_concepts": [],
-        "timeout": "5"
+        "timeout": "5",
+        "type": "TYPE_SIMPLE"
     },
     "children": []
 }
