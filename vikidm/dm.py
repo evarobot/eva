@@ -7,12 +7,11 @@ import pprint
 from datetime import datetime
 from threading import Timer
 from treelib.tree import NodeIDAbsentError
-from evecms.services.service import EVECMSService
 from vikidm.context import Concept, Context
 from vikidm.biztree import BizTree, Agent, BizUnit, Agency, AbnormalHandler, DefaultFailedAgent
+from vikidm.util import cms_rpc
 
 log = logging.getLogger(__name__)
-service = EVECMSService()
 
 
 class Session(object):
@@ -73,7 +72,6 @@ class Stack(object):
         return "%s(%s)" % (name, ", ".join(kwargs))
 
 
-
 class DialogEngine(object):
     """ 对话管理单元 """
     def __init__(self):
@@ -87,24 +85,8 @@ class DialogEngine(object):
         self.debug_timeunit = 1  # 为了测试的时候加速时间计数
 
     def init_from_db(self, domain_name):
-        #  TODO: MOCK get_json_data
-        json_tree = json.loads(service.get_json_data(domain_name))
-        self.init_from_json_tree(json_tree)
-
-    def init_from_json_tree(self, json_tree):
-        json_tree = json.load(json_tree)
-        for biz in json_tree['children']:
-            self._add_biz_from_json(biz)
-        self._init_context()
-        node = self._biz_tree.get_node('root')
-        node.state = BizUnit.STATUS_STACKWAIT
-        self._stack.push(node)
-
-    def init_from_json_files(self, paths):
-        for fpath in paths:
-            with open(fpath, "r") as file_obj:
-                json_data = json.load(file_obj)
-                self._add_biz_from_json(json_data)
+        json_tree = cms_rpc.get_json_biztree(domain_name)
+        self._biz_tree.init_from_json(json_tree)
         self._init_context()
         node = self._biz_tree.get_node('root')
         node.state = BizUnit.STATUS_STACKWAIT
@@ -112,7 +94,6 @@ class DialogEngine(object):
         # self.execute_focus_agent()
 
     def execute_focus_agent(self):
-
         event_id = None
         focus_unit = self._stack.top()
         while focus_unit.state in [BizUnit.STATUS_TRIGGERED, Agent.STATUS_TARGET_COMPLETED,
@@ -128,10 +109,12 @@ class DialogEngine(object):
                 if focus_unit.state == BizUnit.STATUS_AGENCY_COMPLETED:
                     self._focus_bizunit_out(focus_unit)
                 else:
+                    log.debug("EXECUTE Agency({0})".format(focus_unit.tag))
                     focus_unit.execute(self._stack)
 
             elif isinstance(focus_unit, Agent):
                 if focus_unit.state == BizUnit.STATUS_TRIGGERED:
+                    log.debug("EXECUTE Agent{0})".format(focus_unit.tag))
                     event_id = focus_unit.execute()
                     assert(focus_unit.state == BizUnit.STATUS_WAIT_ACTION_CONFIRM)
                     if focus_unit.timeout == 0:
@@ -145,15 +128,13 @@ class DialogEngine(object):
                     self._focus_bizunit_out(focus_unit)
 
             elif isinstance(focus_unit, AbnormalHandler):
+                log.debug("EXECUTE AbnormalHandler({0})".format(focus_unit.handler.tag))
                 focus_unit.execute(self._stack, self._biz_tree)
                 # log.debug("HANDLE ABNORMAL: state --  %s" % focus_unit.state)
                 if focus_unit.state == BizUnit.STATUS_ACTION_COMPLETED:
                     self._stack.pop()
 
             focus_unit = self._stack.top()
-
-        if focus_unit.state == BizUnit.STATUS_WAIT_ACTION_CONFIRM:
-            pass
         return event_id
 
     def _wait_timeout(self):
@@ -243,9 +224,6 @@ class DialogEngine(object):
     def _update_concepts(self, concepts):
         for concept in concepts:
             self._context.update_concept(concept.key, concept)
-
-    def _add_biz_from_json(self, json_data):
-        self._biz_tree.add_subtree_from_json(json_data)
 
     def _init_context(self):
         for bizunit in self._biz_tree.all_nodes_itr():

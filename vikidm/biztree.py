@@ -4,6 +4,7 @@
 import json
 import treelib
 import logging
+import pprint
 
 from vikicommon.util import escape_unicode
 from vikidm.context import Concept
@@ -37,9 +38,7 @@ class AbnormalHandler(BizUnit):
     ABNORMAL_FAILED = "ABNORMAL_FAILED"
 
     def __init__(self, handler_agent, type_):
-        self._handler = handler_agent
-        self._handler_finished = False
-        self._type = type_
+        self.handler = handler_agent
         self.tag = "AbnormalHandler"
         self.identifier = "AbnormalHandler"
         self.state = BizUnit.STATUS_TRIGGERED
@@ -49,20 +48,21 @@ class AbnormalHandler(BizUnit):
         }
         self.target_concepts = []
         self.trigger_concepts = []
+        self._handler_finished = False
+        self._type = type_
 
     def is_root(self):
         return False
 
     def execute(self, stack, tree):
-        log.debug("EXECUTE AbnormalHandler({0})".format(self._handler.tag))
         if self._handler_finished:
             self._mark_abnormal_unit(stack, tree, stack._items[-2])
             self.state = BizUnit.STATUS_ACTION_COMPLETED
             return self.state
 
         # push handler unit
-        self._handler.state = Agent.STATUS_TRIGGERED
-        stack.push(self._handler)
+        self.handler.state = Agent.STATUS_TRIGGERED
+        stack.push(self.handler)
         self.state = BizUnit.STATUS_STACKWAIT
         self._handler_finished = True
         return self.state
@@ -96,7 +96,6 @@ class Agency(BizUnit):
         return self.tag.encode('utf8')
 
     def execute(self, stack):
-        log.debug("EXECUTE Agency({0})".format(self.tag))
         if self.is_root():
             return self.STATUS_STACKWAIT
         elif self._type == Agency.TYPE_CLUSTER:
@@ -135,7 +134,6 @@ class Agent(BizUnit):
     def execute(self):
         """
         """
-        log.debug("EXECUTE Agent({0})".format(self.tag))
         if self.target_completed:
             self.state = BizUnit.STATUS_TARGET_COMPLETED
             return None
@@ -231,7 +229,6 @@ class DefaultFailedAgent(Agent):
         super(Agent, self).__init__(data["event_id"], data["event_id"], data)
 
     def execute(self):
-        log.info("EXECUTE Agent({0})".format(self.tag))
         self.state = BizUnit.STATUS_WAIT_ACTION_CONFIRM
         return self.event_id
 
@@ -248,25 +245,27 @@ class BizTree(treelib.Tree):
     """ 业务配置树 """
     def __init__(self):
         super(BizTree, self).__init__()
-        root = Agency('root', {'type': 'root', 'event_id': 'root'})
-        self.add_node(root, None)
 
-    def add_subtree_from_json(self, json_data, parent='root'):
-        def parse_json(dict_node, parent):
-            data = dict_node['data']
-            tag = dict_node['data']['tag']
-            if dict_node['children']:
-                tr_node = Agency(tag, data)
-                self.add_node(tr_node, parent)
-                for child in dict_node['children']:
-                    parse_json(child, tr_node)
-            else:
-                tr_node = Agent(tag, data)
-                self.add_node(tr_node, parent)
+    def add_subtree_from_json(self, json_subtree, parent):
+        d_tree = json.loads(json_subtree)
+        self._parse_node(d_tree, parent)
 
-        parse_json(json_data, parent)
+    def init_from_json(self, json_tree):
+        self.add_subtree_from_json(json_tree, parent=None)
 
-    def add_subtree_from_json_file(self, fpath):
-        with open(fpath, "r") as file_obj:
-            json_data = json.load(file_obj)
-            self.add_subtree_from_json(json_data)
+    def _parse_node(self, dict_node, parent):
+        data = dict_node['data']
+        tag = dict_node['data']['tag']
+        if dict_node['children']:
+            tr_node = Agency(tag, data)
+            self.add_node(tr_node, parent)
+            for child in dict_node['children']:
+                self._parse_node(child, tr_node)
+        else:
+            tr_node = Agent(tag, data)
+            self.add_node(tr_node, parent)
+
+    def __repr__(self):
+        self.show()
+        detail = pprint.pformat(json.loads(self.to_json(with_data=True)))
+        return "--------------------------\n{0}".format(detail)

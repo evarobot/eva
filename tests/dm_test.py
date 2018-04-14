@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 # encoding: utf-8
-import copy
 import os
 import json
 import logging
-import pprint
 import pytest
 import time
+import mock
 
-from vikicommon.timer import TimerThread
 from vikicommon.log import init_logger
 
-from vikidm.util import PROJECT_DIR
+from vikidm.util import PROJECT_DIR, cms_rpc
 from vikidm.dm import DialogEngine, Stack
 from vikidm.context import Concept
 from vikidm.biztree import Agent
@@ -41,33 +39,26 @@ def test_stack():
     assert(stack.top() == 2)
 
 
-def test_init_biz_from_json_file():
-    """
-    Test load json file;
-    Test `Context` and `Stack` initialization.
-    """
-    log.info("test_init_biz_from_json_file")
-    dm = DialogEngine()
-    fpath = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
-    dm.init_from_json_files([fpath])
-    # log.info("\n%s" % pprint.pformat(dm._biz_tree.to_dict(with_data=True)))
-    check_biz_tree(dm._biz_tree)
-    concepts = dm._context._all_concepts.values()
-    assert(str(concepts[0]) == "Concept(intent=None)")
-    assert(str(concepts[1]) == "Concept(location=None)")
-    assert(len(dm._stack) == 1)
-    assert(dm._stack.top().tag == 'root')
-    # make sure deep copy
-    for bizunit in dm._biz_tree.all_nodes_itr():
-        if isinstance(bizunit, Agent):
-            for concept in bizunit.trigger_concepts:
-                assert(concept.value is not None)
-    for concept in dm._context._all_concepts.values():
-        assert(concept.value is None)
-    # log.info("Tree:")
-    # dm._biz_tree.show()
-    # log.info("\n%s" % dm._context)
-    # log.info("\n%s" % dm._stack)
+def _mock_cms_rpc(paths):
+    d_subtrees = []
+    for fpath in paths:
+        with open(fpath, 'r') as file_obj:
+            d_subtrees.append(json.load(file_obj))
+    root = {
+        "data": {
+            "id": "root",
+            "tag": "root",
+            "agency_entrance": False,
+            "event_id": "root",
+            "subject": "主题",
+            "scope": "可见域",
+            "timeout": "5",
+            "type": "TYPE_MIX"
+        },
+        "children": []
+    }
+    root["children"] = d_subtrees
+    cms_rpc.get_json_biztree = mock.Mock(return_value=json.dumps(root))
 
 
 def test_init_biz_from_db():
@@ -77,8 +68,10 @@ def test_init_biz_from_db():
     """
     log.info("test_init_biz_from_json_file")
     dm = DialogEngine()
+
     fpath = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
-    dm.init_from_json_files([fpath])
+    _mock_cms_rpc([fpath])
+    dm.init_from_db("mock_domain_id")
     # log.info("\n%s" % pprint.pformat(dm._biz_tree.to_dict(with_data=True)))
     check_biz_tree(dm._biz_tree)
     concepts = dm._context._all_concepts.values()
@@ -109,7 +102,8 @@ def test_get_triggered_bizunits():
     fpath = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
     fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
     fpath3 = os.path.join(data_path, 'biz_simulate_data/biz_01_failed.json')
-    dm.init_from_json_files([fpath, fpath2, fpath3])
+    _mock_cms_rpc([fpath, fpath2, fpath3])
+    dm.init_from_db("mock_domain_id")
     concepts = [
         Concept("intent", "where.query"),
         Concept("location", "nike")
@@ -141,12 +135,8 @@ class TestConceptsConfirm(object):
         fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
         fpath3 = os.path.join(data_path, 'biz_simulate_data/biz_chat.json')
         dm = DialogEngine()
-        dm.init_from_json_files([fpath1, fpath2, fpath3])
-        #pprint.pprint(dm._biz_tree.to_dict(with_data=True))
-        #dm._biz_tree.show()
-        # log.info('\n%s' % pprint.pformat(dm._biz_tree.to_dict(with_data=True)))
-        # log.info('\n%s' % str(dm._stack))
-        # test name.query
+        _mock_cms_rpc([fpath1, fpath2, fpath3])
+        dm.init_from_db("mock_domain_id")
         return dm
 
     @pytest.mark.dependency()
@@ -193,7 +183,7 @@ class TestConceptsConfirm(object):
         }
         dm.process_confirm(confirm_data)
         assert(len(dm._stack) == 1)
-        assert(dm._context['intent'].value == None)
+        assert(dm._context['intent'].value is None)
 
     # agent
     def test_process_confirm_case_agent_timeout(self):

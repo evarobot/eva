@@ -44,6 +44,9 @@ class Concept(JSONEncoder):
         except AttributeError:
             return hash(self) == hash(r)
 
+    def __repr__(self):
+        return self.__unicode__()
+
 
 class Context(object):
     """"""
@@ -60,7 +63,7 @@ class Context(object):
     def update_concept(self, key, concept):
         assert(key == concept.key)
         if key not in self._all_concepts:
-            log.warning("不存在概念{0}".format(key))
+            log.error("不存在概念{0}".format(key))
             return
         self._all_concepts[key] = concept
 
@@ -98,5 +101,8 @@ class Context(object):
             else:
                 dirty_concepts.append(concept)
         return "\n".join(["Context:"] + [str(c) for c in dirty_concepts + clean_concepts])
+
+    def __repr__(self):
+        return self.__str__()
 
 
