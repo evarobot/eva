@@ -2,8 +2,8 @@
 
     "data": {
         "id": "where.query",
-        "event_id": "where.query",
         "tag": "where.query",
+        "agency_entrance": false,
         "type": "TYPE_CLUSTER"
     },
     "children": [

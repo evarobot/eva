@@ -39,7 +39,7 @@ def test_stack():
     assert(stack.top() == 2)
 
 
-def _mock_cms_rpc(paths):
+def mock_cms_rpc(paths):
     d_subtrees = []
     for fpath in paths:
         with open(fpath, 'r') as file_obj:
@@ -53,12 +53,23 @@ def _mock_cms_rpc(paths):
             "subject": "主题",
             "scope": "可见域",
             "timeout": "5",
-            "type": "TYPE_MIX"
+            "type": "TYPE_ROOT"
         },
         "children": []
     }
     root["children"] = d_subtrees
     cms_rpc.get_json_biztree = mock.Mock(return_value=json.dumps(root))
+
+
+def construct_dm():
+    fpath1 = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
+    fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
+    fpath3 = os.path.join(data_path, 'biz_simulate_data/biz_chat.json')
+    fpath4 = os.path.join(data_path, 'biz_simulate_data/biz_weather.json')
+    dm = DialogEngine()
+    mock_cms_rpc([fpath1, fpath2, fpath3, fpath4])
+    dm.init_from_db("mock_domain_id")
+    return dm
 
 
 def test_init_biz_from_db():
@@ -70,7 +81,7 @@ def test_init_biz_from_db():
     dm = DialogEngine()
 
     fpath = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
-    _mock_cms_rpc([fpath])
+    mock_cms_rpc([fpath])
     dm.init_from_db("mock_domain_id")
     # log.info("\n%s" % pprint.pformat(dm._biz_tree.to_dict(with_data=True)))
     check_biz_tree(dm._biz_tree)
@@ -102,7 +113,7 @@ def test_get_triggered_bizunits():
     fpath = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
     fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
     fpath3 = os.path.join(data_path, 'biz_simulate_data/biz_01_failed.json')
-    _mock_cms_rpc([fpath, fpath2, fpath3])
+    mock_cms_rpc([fpath, fpath2, fpath3])
     dm.init_from_db("mock_domain_id")
     concepts = [
         Concept("intent", "where.query"),
@@ -127,25 +138,10 @@ def test_mark_completed_bizunits():
     pass
 
 
-class TestConceptsConfirm(object):
-    """"""
+class TestAgentCase(object):
 
-    def _construct_dm(self):
-        fpath1 = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
-        fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
-        fpath3 = os.path.join(data_path, 'biz_simulate_data/biz_chat.json')
-        dm = DialogEngine()
-        _mock_cms_rpc([fpath1, fpath2, fpath3])
-        dm.init_from_db("mock_domain_id")
-        return dm
-
-    @pytest.mark.dependency()
-    def test_process_concepts_case_agent(self):
-        concepts = [
-            Concept('intent', 'name.query')
-        ]
-        dm = self._construct_dm()
-        dm.process_concepts("sid001", concepts)
+    def test_name_input(self):
+        dm = self.name_input()
         assert(len(dm._stack) == 2)
         assert(dm._stack.top().tag == 'name.query')
         assert(dm._context['intent'].value == 'name.query')
@@ -153,50 +149,17 @@ class TestConceptsConfirm(object):
         assert(dm.debug_loop == 1)
         return dm
 
-    @pytest.mark.dependency()
-    def test_process_concepts_case_cluster(self):
-        concepts = [
-            Concept("intent", "where.query"),
-            Concept("location", "nike")
-        ]
-        dm = self._construct_dm()
-        dm.process_concepts("sid002", concepts)
-        assert(len(dm._stack) == 3)
-        assert(dm._stack.top().tag == 'nike')
-        assert(dm._stack.item(1).tag == 'where.query')
-        assert(dm._context['intent'].value == 'where.query')
-        assert(dm._context['location'].value == 'nike')
-        assert(dm._session.valid_session("sid002"))
-        assert(dm.debug_loop == 2)
-        return dm
-
-    def test_wait_action_agent_switch_to_chat(self):
-        dm = self.test_process_concepts_case_agent()
-        concepts = [
-            Concept("intent", "casual_talk"),
-        ]
-        dm.process_concepts("sid002", concepts)
-        confirm_data = {
-            'sid': 'sid002',
-            'code': 0,
-            'message': ''
-        }
-        dm.process_confirm(confirm_data)
-        assert(len(dm._stack) == 1)
-        assert(dm._context['intent'].value is None)
-
-    # agent
-    def test_process_confirm_case_agent_timeout(self):
+    @classmethod
+    def name_input(self):
         concepts = [
             Concept('intent', 'name.query')
         ]
-        dm = self._construct_dm()
-        dm.debug_timeunit = 0.2
+        dm = construct_dm()
         dm.process_concepts("sid001", concepts)
-        time.sleep(6 * 0.2)
+        return dm
 
     def test_process_confirm_case_agent_sucess_confirm(self):
-        dm = self.test_process_concepts_case_agent()
+        dm = self.name_input()
         confirm_data = {
             'sid': 'sid001',
             'code': 0,
@@ -208,7 +171,7 @@ class TestConceptsConfirm(object):
         assert(dm._stack.top().tag == 'root')
 
     def test_process_confirm_case_agent_failed_confirm(self):
-        dm = self.test_process_concepts_case_agent()
+        dm = self.name_input()
         confirm_data = {
             'sid': 'sid001',
             'code': -1,
@@ -220,22 +183,33 @@ class TestConceptsConfirm(object):
         assert(dm._session._sid is None)
         assert(dm._context['intent'].value is None)
 
-    def test_process_confirm_case_agent_ignore_old_session(self):
-        dm = self.test_process_concepts_case_agent()
-        # ignore old session
-        confirm_data = {
-            'sid': 'sid000',
-            'code': 0,
-            'message': ''
-        }
-        dm.process_confirm(confirm_data)
-        assert(dm.debug_loop == 1)
-        assert(len(dm._stack) == 2)
-        assert(dm._stack.top().tag == 'name.query')
 
-    # cluster
+
+class TestClusterAgencyCase(object):
+
+    def test_location_input(self):
+        dm = self.location_input()
+        assert(len(dm._stack) == 3)
+        assert(dm._stack.top().tag == 'nike')
+        assert(dm._stack.item(1).tag == 'where.query')
+        assert(dm._context['intent'].value == 'where.query')
+        assert(dm._context['location'].value == 'nike')
+        assert(dm._session.valid_session("sid002"))
+        assert(dm.debug_loop == 2)
+
+    @classmethod
+    def location_input(self):
+        concepts = [
+            Concept("intent", "where.query"),
+            Concept("location", "nike")
+        ]
+        dm = construct_dm()
+        dm.process_concepts("sid002", concepts)
+        assert(dm.debug_loop == 2)
+        return dm
+
     def test_process_confirm_case_cluster_success_exit(self):
-        dm = self.test_process_concepts_case_cluster()
+        dm = self.location_input()
         confirm_data = {
             'sid': 'sid002',
             'code': 0,
@@ -249,7 +223,7 @@ class TestConceptsConfirm(object):
         assert(dm._context['location'].value is None)
 
     def test_process_confirm_case_agency_failed(self):
-        dm = self.test_process_concepts_case_cluster()
+        dm = self.location_input()
         confirm_data = {
             'sid': 'sid002',
             'code': -1,
@@ -260,10 +234,135 @@ class TestConceptsConfirm(object):
         assert(dm._session._sid is None)
         assert(dm._context['intent'].value is None)
         assert(dm._context['location'].value is None)
+        assert(dm.debug_loop == 6)
 
-    # sequence
-    # target
 
+class TestTargetAgencyCase(object):
+
+    def test_default_triggered(self):
+        dm = self.default_triggered()
+        assert(len(dm._stack) == 3)
+        assert(dm._stack.top().tag == 'default@weather.query')
+        assert(dm._context['intent'].value == 'weather.query')
+        assert(dm.debug_loop == 2)
+
+
+    @classmethod
+    def default_triggered(self):
+        concepts = [
+            Concept("intent", "weather.query")
+        ]
+        dm = construct_dm()
+        dm.debug_timeunit = 0.2
+        dm.process_concepts("sid001", concepts)
+        assert(dm.debug_loop == 2)
+        return dm
+
+
+class TestTiemoutCase(object):
+    def test_process_confirm_case_agent_timeout(self):
+        concepts = [
+            Concept('intent', 'name.query')
+        ]
+        dm = construct_dm()
+        dm.debug_timeunit = 0.2
+        dm.process_concepts("sid001", concepts)
+        time.sleep(6 * 0.2)
+        assert(dm.debug_loop == 5)
+
+    def test_target_default_triggered_timeout(self):
+        dm = TestTargetAgencyCase.default_triggered()
+        confirm_data = {
+            'sid': 'sid001',
+            'code': 0,
+            'message': ''
+        }
+        dm.process_confirm(confirm_data)
+        assert(len(dm._stack) == 2)
+        assert(dm._stack.top().tag == 'weather.query')
+        time.sleep(6 * dm.debug_timeunit)
+        assert(len(dm._stack) == 1)
+        assert(dm.debug_loop == 8)
+        assert(dm._context["intent"].value == None)
+
+
+class TestSessionCase(object):
+    def test_process_confirm_case_agent_ignore_old_session(self):
+        dm = TestAgentCase.name_input()
+        # ignore old session
+        confirm_data = {
+            'sid': 'sid000',
+            'code': 0,
+            'message': ''
+        }
+        dm.process_confirm(confirm_data)
+        assert(len(dm._stack) == 2)
+        assert(dm._stack.top().tag == 'name.query')
+        assert(dm.is_waiting == True)
+        time.sleep(6 * dm.debug_timeunit)
+        assert(dm.is_waiting == False)
+        assert(dm.debug_loop == 5)
+
+
+    def test_wait_action_agent_switch_to_chat(self):
+        dm = TestAgentCase.name_input()
+        concepts = [
+            Concept("intent", "casual_talk"),
+        ]
+        assert(dm.is_waiting == True)
+        ret = dm.process_concepts("sid002", concepts)
+        assert(ret == 'casual_talk')
+        confirm_data = {
+            'sid': 'sid002',
+            'code': 0,
+            'message': ''
+        }
+        ret = dm.process_confirm(confirm_data)
+        assert(ret["code"] == 0)
+        assert(len(dm._stack) == 1)
+        assert(dm._context['intent'].value is None)
+        assert(dm.is_waiting == False)
+        assert(dm.debug_loop == 4)
+
+    def test_target_agency_wait_switch_to_chat(self):
+        dm = TestTargetAgencyCase.default_triggered()
+        confirm_data = {
+            'sid': 'sid001',
+            'code': 0,
+            'message': ''
+        }
+        dm.process_confirm(confirm_data)
+        assert(len(dm._stack) == 2)
+        assert(dm._stack.top().tag == 'weather.query')
+        assert(dm._context['intent'].value == 'weather.query')
+        # state: Agency Waiting
+
+        # switch after 2 unit time passed
+        time.sleep(2 * dm.debug_timeunit)
+        concepts = [
+            Concept("intent", "casual_talk"),
+        ]
+        dm.process_concepts("sid002", concepts)
+        assert(len(dm._stack) == 3)
+        assert(dm._stack.top().tag == 'casual_talk')
+        confirm_data = {
+            'sid': 'sid002',
+            'code': 0,
+            'message': ''
+        }
+        dm.process_confirm(confirm_data)
+        # reset timer
+        assert(dm.debug_loop == 7)
+        time.sleep(4 * dm.debug_timeunit)
+        # before timeout
+        assert(len(dm._stack) == 2)
+        assert(dm._stack.top().tag == 'weather.query')
+        assert(dm._context['intent'].value == 'weather.query')
+        # after timeout
+        time.sleep(2 * dm.debug_timeunit)
+        assert(len(dm._stack) == 1)
+        assert(dm._context['intent'].value == None)
+        assert(dm.debug_loop == 11)
 
 
 

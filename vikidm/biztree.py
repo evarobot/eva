@@ -8,6 +8,7 @@ import pprint
 
 from vikicommon.util import escape_unicode
 from vikidm.context import Concept
+from vikidm.config import ConfigDM
 log = logging.getLogger(__name__)
 
 
@@ -27,21 +28,35 @@ class BizUnit(treelib.Node):
 
     def __init__(self, identifier, tag, data):
         super(BizUnit, self).__init__(tag, identifier, data=data)
-        self.state = self.STATUS_TREEWAIT
+        self.set_state(self.STATUS_TREEWAIT)
 
     def execute(self):
         raise NotImplementedError
 
+    def activate(self):
+        if not self.is_root() and self.state != BizUnit.STATUS_ABNORMAL:
+            self.set_state(BizUnit.STATUS_TRIGGERED)
+
+    def set_state(self, value):
+        self.state = value
+
+    def reset_concepts(self, tree, context):
+        pass
+
+    def executable(self):
+        return self.state in [BizUnit.STATUS_TRIGGERED, Agent.STATUS_TARGET_COMPLETED,
+                            BizUnit.STATUS_ACTION_COMPLETED, BizUnit.STATUS_ABNORMAL,
+                            BizUnit.STATUS_AGENCY_COMPLETED]
 
 class AbnormalHandler(BizUnit):
-    ABNORMAL_TIMEOUT = "ABNORMAL_TIMEOUT"
-    ABNORMAL_FAILED = "ABNORMAL_FAILED"
+    ABNORMAL_ACTION_TIMEOUT = "ABNORMAL_ACTION_TIMEOUT"
+    ABNORMAL_ACTION_FAILED = "ABNORMAL_ACTION_FAILED"
+    ABNORMAL_INPUT_TIMEOUT = "ABNORMAL_INPUT_TIMEOUT"
 
-    def __init__(self, handler_agent, type_):
-        self.handler = handler_agent
+    def __init__(self, bizunit, type_):
         self.tag = "AbnormalHandler"
         self.identifier = "AbnormalHandler"
-        self.state = BizUnit.STATUS_TRIGGERED
+        self.set_state(BizUnit.STATUS_TRIGGERED)
         self.parent = None
         self.data = {
             'trigger_concepts': []
@@ -49,7 +64,20 @@ class AbnormalHandler(BizUnit):
         self.target_concepts = []
         self.trigger_concepts = []
         self._handler_finished = False
-        self._type = type_
+
+        self.handler = self._get_handler(bizunit, type_)
+        self.handler.parent = self
+
+    def reset_concepts(self, tree, context):
+        pass
+
+    def _get_handler(self, bizunit, type_):
+        if type_ == self.ABNORMAL_ACTION_FAILED:
+            return ActionFailedAgent(bizunit)
+        elif type_ == self.ABNORMAL_ACTION_TIMEOUT:
+            return ActionTimeoutAgent(bizunit)
+        elif type_ == self.ABNORMAL_INPUT_TIMEOUT:
+            return InputTimeoutAgent(bizunit)
 
     def is_root(self):
         return False
@@ -61,7 +89,7 @@ class AbnormalHandler(BizUnit):
             return self.state
 
         # push handler unit
-        self.handler.state = Agent.STATUS_TRIGGERED
+        self.handler.set_state(Agent.STATUS_TRIGGERED)
         stack.push(self.handler)
         self.state = BizUnit.STATUS_STACKWAIT
         self._handler_finished = True
@@ -78,16 +106,17 @@ class AbnormalHandler(BizUnit):
 
         for unit in reversed(stack._items[:-1]):
             if is_abnormal(unit):
-                unit.state = BizUnit.STATUS_ABNORMAL
+                unit.set_state(BizUnit.STATUS_ABNORMAL)
 
 
 class Agency(BizUnit):
     TYPE_CLUSTER = "TYPE_CLUSTER"  # no delay exit
     TYPE_TARGET = "TYPE_TARGET"
     TYPE_SEQUENCE = "TYPE_SEQUENCE"
+    TYPE_ROOT = "TYPE_ROOT"
 
     def __init__(self, tag, data):
-        super(Agency, self).__init__(data["event_id"], tag, data)
+        super(Agency, self).__init__(data["id"], tag, data)
         self.trigger_child = None
         self._type = data['type']
         self._handler_finished = False
@@ -95,18 +124,113 @@ class Agency(BizUnit):
     def __str__(self):
         return self.tag.encode('utf8')
 
-    def execute(self, stack):
-        if self.is_root():
-            return self.STATUS_STACKWAIT
-        elif self._type == Agency.TYPE_CLUSTER:
-            if self._handler_finished:
-                self.state = BizUnit.STATUS_AGENCY_COMPLETED
-                return
-            self.trigger_child.state = Agent.STATUS_TRIGGERED
-            stack.push(self.trigger_child)
-            self.trigger_child = None
-            self.state = BizUnit.STATUS_STACKWAIT
-            self._handler_finished = True
+
+    @classmethod
+    def get_agency(self, tag, data):
+        if data['type'] == Agency.TYPE_ROOT:
+            return Agency(tag, data)
+        elif data['type'] == Agency.TYPE_CLUSTER:
+            return ClusterAgency(tag, data)
+        elif data['type'] == Agency.TYPE_TARGET:
+            return TargetAgency(tag, data)
+
+    def execute(self, stack, tree, context):
+        # root节点。
+        return self.STATUS_STACKWAIT
+
+    @property
+    def state(self):
+        return self.data['state']
+
+    def set_state(self, value):
+        self.data['state'] = value
+
+    def reset_concepts(self, tree, context):
+        for child in tree.children(self.identifier):
+            child.reset_concepts(tree, context)
+
+
+class ClusterAgency(Agency):
+    """"""
+    def __init__(self, tag, data):
+        super(ClusterAgency, self).__init__(tag, data)
+
+    def execute(self, stack, tree, context):
+        if self._handler_finished:
+            self.set_state(BizUnit.STATUS_AGENCY_COMPLETED)
+            return
+        self.trigger_child.set_state(Agent.STATUS_TRIGGERED)
+        stack.push(self.trigger_child)
+        self.trigger_child = None
+        self.set_state(BizUnit.STATUS_STACKWAIT)
+        self._handler_finished = True
+
+
+
+class TargetAgency(Agency):
+    """"""
+    def __init__(self, tag, data):
+        super(TargetAgency, self).__init__(tag, data)
+        self.event_id = data['event_id']
+        self._default_handler_finised = False
+        self._timer = None
+
+    def executable(self):
+        return self.state in [BizUnit.STATUS_TRIGGERED, Agent.STATUS_TARGET_COMPLETED,
+                            BizUnit.STATUS_ACTION_COMPLETED, BizUnit.STATUS_ABNORMAL,
+                            BizUnit.STATUS_AGENCY_COMPLETED, BizUnit.STATUS_WAIT_TARGET]
+
+    def activate(self):
+        if self.state not in [BizUnit.STATUS_ABNORMAL, BizUnit.STATUS_WAIT_TARGET]:
+            self.set_state(BizUnit.STATUS_TRIGGERED)
+        if self._is_default_node(self.active_child):
+            self.set_state(BizUnit.STATUS_WAIT_TARGET)
+        self.active_child = None
+
+    def _is_default_node(self, bizunit):
+        return len(bizunit.target_concepts) == 0 and len(bizunit.trigger_concepts) == 1
+
+    def restore_context(self, context):
+        context.update_concept(self._intent.key, self._intent)
+
+    def execute(self, stack, tree, context):
+        if self.state == BizUnit.STATUS_WAIT_TARGET:
+            return
+        self.active_child = None
+        candicate_children = []
+        self._intent = context["intent"]
+        for bizunit in tree.children(self.identifier):
+            if len(bizunit.trigger_concepts) > 1:
+                # result node
+                trigger_satisified = all([context.satisfied(c) for c in bizunit.trigger_concepts])
+                if trigger_satisified:
+                    self.active_child = bizunit
+                    break
+            else:
+                if len(bizunit.target_concepts) == 0 and self._default_handler_finised == False:
+                        # default node
+                        self.active_child = bizunit
+                        self._default_handler_finised = True
+                        self.active_child.set_state(Agent.STATUS_TRIGGERED)
+                        stack.push(self.active_child)
+                        self.set_state(BizUnit.STATUS_STACKWAIT)
+                        log.debug("WAIT_INPUT Agency({0})".format(self.tag))
+                        return
+                else:
+                    # target node
+                    targets_completed = all([context.dirty(c) for c in bizunit.target_concepts])
+                    if not targets_completed:
+                        candicate_children.append(bizunit)
+
+        if self.state != BizUnit.STATUS_WAIT_TARGET:
+            if self.active_child is None:
+                self.active_child = candicate_children[0]
+            self.active_child.state = Agent.STATUS_TRIGGERED
+            stack.push(self.active_child)
+            self.set_state(BizUnit.STATUS_STACKWAIT)
+
+
+        #if focus_unit.state in [BizUnit.STATUS_DELAY_EXIST, BizUnit.STATUS_WAIT_TARGET]:
 
 
 class Agent(BizUnit):
@@ -131,17 +255,28 @@ class Agent(BizUnit):
         self.target_completed = False
         super(Agent, self).__init__(data["event_id"], tag, data)
 
+
+    def activate(self):
+        if self.state not in [BizUnit.STATUS_ACTION_COMPLETED, BizUnit.STATUS_ABNORMAL]:
+            self.set_state(BizUnit.STATUS_TRIGGERED)
+
     def execute(self):
         """
         """
-        if self.target_completed:
-            self.state = BizUnit.STATUS_TARGET_COMPLETED
-            return None
-
         if self.state == BizUnit.STATUS_TRIGGERED:
             log.debug("WAIT_CONFIRM Agent(%s)" % self.tag)
-            self.state = BizUnit.STATUS_WAIT_ACTION_CONFIRM
+            self.set_state(BizUnit.STATUS_WAIT_ACTION_CONFIRM)
             return self.event_id
+        elif self.state == BizUnit.STATUS_WAIT_ACTION_CONFIRM:
+            self.set_state(BizUnit.STATUS_WAIT_TARGET)
+
+    def reset_concepts(self, tree, context):
+        parent = tree.parent(self.identifier)
+        if parent.is_root() or parent.state == BizUnit.STATUS_TREEWAIT:
+            for concept in self.trigger_concepts + self.target_concepts:
+                if concept.life_type == Concept.LIFE_STACK and context.dirty(concept):
+                    context.reset_concept(concept.key)
+                    log.debug("RESET_CONCEPT [{0}]".format(concept.key))
 
     @property
     def subject(self):
@@ -191,8 +326,7 @@ class Agent(BizUnit):
     def state(self):
         return self.data['state']
 
-    @state.setter
-    def state(self, value):
+    def set_state(self, value):
         self.data['state'] = value
 
     def _deserialize_trigger_concepts(self, data):
@@ -210,35 +344,54 @@ class Agent(BizUnit):
         return json.dumps(escape_unicode(self.data))
 
 
-class DefaultFailedAgent(Agent):
-
-    def __init__(self, agent):
-        data = {
+class DefaultHandlerAgent(Agent):
+    def __init__(self, bizunit, data):
+        data.update({
             'subject': '',
             'scope': '',
-            'event_id': 'FAILED|' + agent.event_id,
-            'tag': 'FAILED|' + agent.event_id,
             'timeout': 0,
             'agency_entrance': False,
             'trigger_concepts': {},
             'state': '',
             'target_concepts': [],
-        }
+        })
         self._trigger_concepts = []
         self._target_concepts = []
-        super(Agent, self).__init__(data["event_id"], data["event_id"], data)
+        super(DefaultHandlerAgent, self).__init__(data["event_id"], data)
 
     def execute(self):
-        self.state = BizUnit.STATUS_WAIT_ACTION_CONFIRM
+        self.set_state(BizUnit.STATUS_WAIT_ACTION_CONFIRM)
         return self.event_id
 
-    @property
-    def trigger_concepts(self):
-        return self._trigger_concepts
+    def reset_concepts(self, tree, context):
+        pass
 
-    @property
-    def target_concepts(self):
-        return self._target_concepts
+
+class ActionFailedAgent(DefaultHandlerAgent):
+    def __init__(self, bizunit):
+        data = {
+            'event_id': 'FAILED|' + bizunit.event_id,
+            'tag': 'FAILED|' + bizunit.event_id,
+        }
+        super(ActionFailedAgent, self).__init__(data["event_id"], data)
+
+
+class InputTimeoutAgent(DefaultHandlerAgent):
+    def __init__(self, bizunit):
+        data = {
+            'event_id': 'INPUT_TIMEOUT|' + bizunit.event_id,
+            'tag': 'INPUT_TIMEOUT|' + bizunit.event_id,
+        }
+        super(InputTimeoutAgent, self).__init__(data["event_id"], data)
+
+
+class ActionTimeoutAgent(DefaultHandlerAgent):
+    def __init__(self, bizunit):
+        data = {
+            'event_id': 'ACTION_TIMEOUT|' + bizunit.event_id,
+            'tag': 'ACTION_TIMEOUT|' + bizunit.event_id,
+        }
+        super(ActionTimeoutAgent, self).__init__(data["event_id"], data)
 
 
 class BizTree(treelib.Tree):
@@ -257,7 +410,7 @@ class BizTree(treelib.Tree):
         data = dict_node['data']
         tag = dict_node['data']['tag']
         if dict_node['children']:
-            tr_node = Agency(tag, data)
+            tr_node = Agency.get_agency(tag, data)
             self.add_node(tr_node, parent)
             for child in dict_node['children']:
                 self._parse_node(child, tr_node)
