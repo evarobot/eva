@@ -39,7 +39,6 @@
                     "location=adidas"
                 ],
                 "target_concepts": [
-                    "location"
                 ],
                 "timeout": 5,
                 "type": "TYPE_CLUSTER_RESPONSE"

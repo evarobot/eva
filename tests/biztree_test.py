@@ -18,12 +18,11 @@ data_path = os.path.join(PROJECT_DIR, "tests", "data")
 
 def check_biz_tree(tree):
     assert(len(tree.children('where.query')) == 2)
-    assert(tree.get_node('zhou_hei_ya').target_concepts[0] == "Concept(location=None)")
     assert(tree.get_node('zhou_hei_ya').trigger_concepts[0] in ["Concept(intent=where.query)"])
 
 
 def test_create_tree_from_json():
-    tree = BizTree()
+    tree = BizTree(dm=None)
     path = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
     with open(path, "r") as file_obj:
         tree.init_from_json(file_obj.read())

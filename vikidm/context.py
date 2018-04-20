@@ -79,7 +79,7 @@ class Context(object):
 
     def satisfied(self, concept):
         target = self._all_concepts.get(concept.key, None)
-        if target and target == concept:
+        if target and target == concept or (concept.value == "*" and target.dirty):
             return True
         return False
 
@@ -100,7 +100,7 @@ class Context(object):
                 clean_concepts.append(concept)
             else:
                 dirty_concepts.append(concept)
-        return "\n".join(["Context:"] + [str(c) for c in dirty_concepts + clean_concepts])
+        return "\n        ".join(["\n        Context:"] + [str(c) for c in dirty_concepts + clean_concepts])
 
     def __repr__(self):
         return self.__str__()

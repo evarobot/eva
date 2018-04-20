@@ -24,7 +24,6 @@ log = logging.getLogger(__name__)
 def check_biz_tree(tree):
     assert(len(tree.children('root')) == 1)
     assert(len(tree.children('where.query')) == 2)
-    assert(tree.get_node('zhou_hei_ya').target_concepts[0] == "Concept(location=None)")
     assert(tree.get_node('zhou_hei_ya').trigger_concepts[0] in ["Concept(intent=where.query)"])
 
 
@@ -83,24 +82,24 @@ def test_init_biz_from_db():
     fpath = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
     mock_cms_rpc([fpath])
     dm.init_from_db("mock_domain_id")
-    # log.info("\n%s" % pprint.pformat(dm._biz_tree.to_dict(with_data=True)))
-    check_biz_tree(dm._biz_tree)
-    concepts = dm._context._all_concepts.values()
+    # log.info("\n%s" % pprint.pformat(dm.biz_tree.to_dict(with_data=True)))
+    check_biz_tree(dm.biz_tree)
+    concepts = dm.context._all_concepts.values()
     assert(str(concepts[0]) == "Concept(intent=None)")
     assert(str(concepts[1]) == "Concept(location=None)")
-    assert(len(dm._stack) == 1)
-    assert(dm._stack.top().tag == 'root')
+    assert(len(dm.stack) == 1)
+    assert(dm.stack.top().tag == 'root')
     # make sure deep copy
-    for bizunit in dm._biz_tree.all_nodes_itr():
+    for bizunit in dm.biz_tree.all_nodes_itr():
         if isinstance(bizunit, Agent):
             for concept in bizunit.trigger_concepts:
                 assert(concept.value is not None)
-    for concept in dm._context._all_concepts.values():
+    for concept in dm.context._all_concepts.values():
         assert(concept.value is None)
     # log.info("Tree:")
-    # dm._biz_tree.show()
-    # log.info("\n%s" % dm._context)
-    # log.info("\n%s" % dm._stack)
+    # dm.biz_tree.show()
+    # log.info("\n%s" % dm.context)
+    # log.info("\n%s" % dm.stack)
 
 
 def test_get_triggered_bizunits():
@@ -142,9 +141,9 @@ class TestAgentCase(object):
 
     def test_name_input(self):
         dm = self.name_input()
-        assert(len(dm._stack) == 2)
-        assert(dm._stack.top().tag == 'name.query')
-        assert(dm._context['intent'].value == 'name.query')
+        assert(len(dm.stack) == 2)
+        assert(dm.stack.top().tag == 'name.query')
+        assert(dm.context['intent'].value == 'name.query')
         assert(dm._session.valid_session("sid001"))
         assert(dm.debug_loop == 1)
         return dm
@@ -167,8 +166,8 @@ class TestAgentCase(object):
         }
         dm.process_confirm(confirm_data)
         assert(dm.debug_loop == 2)
-        assert(len(dm._stack) == 1)
-        assert(dm._stack.top().tag == 'root')
+        assert(len(dm.stack) == 1)
+        assert(dm.stack.top().tag == 'root')
 
     def test_process_confirm_case_agent_failed_confirm(self):
         dm = self.name_input()
@@ -178,10 +177,10 @@ class TestAgentCase(object):
             'message': 'action failed'
         }
         dm.process_confirm(confirm_data)
-        assert(dm.debug_loop == 5)
-        assert(len(dm._stack) == 1)
+        assert(dm.debug_loop == 6)
+        assert(len(dm.stack) == 1)
         assert(dm._session._sid is None)
-        assert(dm._context['intent'].value is None)
+        assert(dm.context['intent'].value is None)
 
 
 
@@ -189,11 +188,11 @@ class TestClusterAgencyCase(object):
 
     def test_location_input(self):
         dm = self.location_input()
-        assert(len(dm._stack) == 3)
-        assert(dm._stack.top().tag == 'nike')
-        assert(dm._stack.item(1).tag == 'where.query')
-        assert(dm._context['intent'].value == 'where.query')
-        assert(dm._context['location'].value == 'nike')
+        assert(len(dm.stack) == 3)
+        assert(dm.stack.top().tag == 'nike')
+        assert(dm.stack.item(1).tag == 'where.query')
+        assert(dm.context['intent'].value == 'where.query')
+        assert(dm.context['location'].value == 'nike')
         assert(dm._session.valid_session("sid002"))
         assert(dm.debug_loop == 2)
 
@@ -217,10 +216,10 @@ class TestClusterAgencyCase(object):
         }
         dm.process_confirm(confirm_data)
         assert(dm.debug_loop == 5)
-        assert(len(dm._stack) == 1)
+        assert(len(dm.stack) == 1)
         assert(dm._session._sid is None)
-        assert(dm._context['intent'].value is None)
-        assert(dm._context['location'].value is None)
+        assert(dm.context['intent'].value is None)
+        assert(dm.context['location'].value is None)
 
     def test_process_confirm_case_agency_failed(self):
         dm = self.location_input()
@@ -230,20 +229,20 @@ class TestClusterAgencyCase(object):
             'message': 'action failed'
         }
         dm.process_confirm(confirm_data)
-        assert(len(dm._stack) == 1)
+        assert(len(dm.stack) == 1)
         assert(dm._session._sid is None)
-        assert(dm._context['intent'].value is None)
-        assert(dm._context['location'].value is None)
-        assert(dm.debug_loop == 6)
+        assert(dm.context['intent'].value is None)
+        assert(dm.context['location'].value is None)
+        assert(dm.debug_loop == 8)
 
 
 class TestTargetAgencyCase(object):
 
     def test_default_triggered(self):
         dm = self.default_triggered()
-        assert(len(dm._stack) == 3)
-        assert(dm._stack.top().tag == 'default@weather.query')
-        assert(dm._context['intent'].value == 'weather.query')
+        assert(len(dm.stack) == 3)
+        assert(dm.stack.top().tag == 'default@weather.query')
+        assert(dm.context['intent'].value == 'weather.query')
         assert(dm.debug_loop == 2)
 
 
@@ -258,6 +257,37 @@ class TestTargetAgencyCase(object):
         assert(dm.debug_loop == 2)
         return dm
 
+    def test_default_result(self):
+        dm = self.default_triggered()
+        concepts = [
+            Concept('intent', 'weather.query'),
+            Concept('city', '深圳'),
+            Concept('date', '今天')
+        ]
+        confirm_data = {
+            'sid': 'sid001',
+            'code': 0,
+            'message': ''
+        }
+        dm.process_confirm(confirm_data)
+        dm.process_concepts("sid002", concepts)
+        assert(str(dm.stack) == 'Stack[root, weather.query, result]')
+        assert(str(dm.context) == '''
+        Context:
+        Concept(date=今天)
+        Concept(city=深圳)
+        Concept(intent=weather.query)
+        Concept(location=None)''')
+        confirm_data = {
+            'sid': 'sid002',
+            'code': 0,
+            'message': ''
+        }
+        import pdb
+        pdb.set_trace()
+        dm.process_confirm(confirm_data)
+        assert(str(dm.stack) == 'Stack[root, weather.query]')
+
 
 class TestTiemoutCase(object):
     def test_process_confirm_case_agent_timeout(self):
@@ -267,8 +297,8 @@ class TestTiemoutCase(object):
         dm = construct_dm()
         dm.debug_timeunit = 0.2
         dm.process_concepts("sid001", concepts)
-        time.sleep(6 * 0.2)
-        assert(dm.debug_loop == 5)
+        time.sleep(6 * dm.debug_timeunit)
+        assert(dm.debug_loop == 6)
 
     def test_target_default_triggered_timeout(self):
         dm = TestTargetAgencyCase.default_triggered()
@@ -278,12 +308,12 @@ class TestTiemoutCase(object):
             'message': ''
         }
         dm.process_confirm(confirm_data)
-        assert(len(dm._stack) == 2)
-        assert(dm._stack.top().tag == 'weather.query')
+        assert(len(dm.stack) == 2)
+        assert(dm.stack.top().tag == 'weather.query')
         time.sleep(6 * dm.debug_timeunit)
-        assert(len(dm._stack) == 1)
-        assert(dm.debug_loop == 8)
-        assert(dm._context["intent"].value == None)
+        assert(len(dm.stack) == 1)
+        assert(dm.debug_loop == 9)
+        assert(dm.context["intent"].value == None)
 
 
 class TestSessionCase(object):
@@ -296,12 +326,12 @@ class TestSessionCase(object):
             'message': ''
         }
         dm.process_confirm(confirm_data)
-        assert(len(dm._stack) == 2)
-        assert(dm._stack.top().tag == 'name.query')
+        assert(len(dm.stack) == 2)
+        assert(dm.stack.top().tag == 'name.query')
         assert(dm.is_waiting == True)
         time.sleep(6 * dm.debug_timeunit)
         assert(dm.is_waiting == False)
-        assert(dm.debug_loop == 5)
+        assert(dm.debug_loop == 6)
 
 
     def test_wait_action_agent_switch_to_chat(self):
@@ -319,8 +349,8 @@ class TestSessionCase(object):
         }
         ret = dm.process_confirm(confirm_data)
         assert(ret["code"] == 0)
-        assert(len(dm._stack) == 1)
-        assert(dm._context['intent'].value is None)
+        assert(len(dm.stack) == 1)
+        assert(dm.context['intent'].value is None)
         assert(dm.is_waiting == False)
         assert(dm.debug_loop == 4)
 
@@ -332,9 +362,9 @@ class TestSessionCase(object):
             'message': ''
         }
         dm.process_confirm(confirm_data)
-        assert(len(dm._stack) == 2)
-        assert(dm._stack.top().tag == 'weather.query')
-        assert(dm._context['intent'].value == 'weather.query')
+        assert(len(dm.stack) == 2)
+        assert(dm.stack.top().tag == 'weather.query')
+        assert(dm.context['intent'].value == 'weather.query')
         # state: Agency Waiting
 
         # switch after 2 unit time passed
@@ -343,8 +373,8 @@ class TestSessionCase(object):
             Concept("intent", "casual_talk"),
         ]
         dm.process_concepts("sid002", concepts)
-        assert(len(dm._stack) == 3)
-        assert(dm._stack.top().tag == 'casual_talk')
+        assert(len(dm.stack) == 3)
+        assert(dm.stack.top().tag == 'casual_talk')
         confirm_data = {
             'sid': 'sid002',
             'code': 0,
@@ -352,17 +382,16 @@ class TestSessionCase(object):
         }
         dm.process_confirm(confirm_data)
         # reset timer
-        assert(dm.debug_loop == 7)
         time.sleep(4 * dm.debug_timeunit)
         # before timeout
-        assert(len(dm._stack) == 2)
-        assert(dm._stack.top().tag == 'weather.query')
-        assert(dm._context['intent'].value == 'weather.query')
+        assert(len(dm.stack) == 2)
+        assert(dm.stack.top().tag == 'weather.query')
+        assert(dm.context['intent'].value == 'weather.query')
         # after timeout
         time.sleep(2 * dm.debug_timeunit)
-        assert(len(dm._stack) == 1)
-        assert(dm._context['intent'].value == None)
-        assert(dm.debug_loop == 11)
+        assert(len(dm.stack) == 1)
+        assert(dm.context['intent'].value == None)
+        assert(dm.debug_loop == 12)
 
 
 
