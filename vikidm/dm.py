@@ -72,8 +72,7 @@ class Stack(object):
         return len(self._items)
 
     def __str__(self):
-        items = ", ".join([c.tag for c in self._items])
-        return "Stack[{0}]".format(items)
+        return "\n                ".join(["\n            Stack:"] + ["{0}({1})".format(c.tag, c.state) for c in self._items])
 
     def __repr__(self):
         name = self.__class__.__name__
@@ -95,7 +94,11 @@ class DialogEngine(object):
         self._session = Session()
         self.debug_loop = 0
         self.debug_timeunit = 1  # 为了测试的时候加速时间计数
-        self.is_waiting = False
+        self._timer_count = 0
+
+    @property
+    def is_waiting(self):
+        return self._timer_count > 0
 
     def init_from_db(self, domain_name):
         json_tree = cms_rpc.get_json_biztree(domain_name)
@@ -115,6 +118,7 @@ class DialogEngine(object):
         return event_id
 
     def _actionwait_timeout(self):
+        self._timer_count -= 1
         delta = (time.time() - self._start_time) / self.debug_timeunit
         focus_unit = self.stack.top()
         log.debug("ACTION_TIMEOUT {2}({0}) {1}".format(focus_unit.tag, delta,
@@ -122,16 +126,23 @@ class DialogEngine(object):
         self._handle_abnormal(AbnormalHandler.ABNORMAL_ACTION_TIMEOUT)
 
     def _inputwait_timeout(self):
+        self._timer_count -= 1
         delta = (time.time()- self._start_time) / self.debug_timeunit
         focus_unit = self.stack.top()
         log.debug("INPUT_TIMEOUT {2}({0}) {1}".format(focus_unit.tag, delta,
                                                       focus_unit.__class__.__name__))
         self._handle_abnormal(AbnormalHandler.ABNORMAL_INPUT_TIMEOUT)
 
+    def _delaywait_timeout(self):
+        self._timer_count -= 1
+        delta = (time.time()- self._start_time) / self.debug_timeunit
+        focus_unit = self.stack.top()
+        log.debug("DELAY_TIMEOUT {2}({0}) {1}".format(focus_unit.tag, delta,
+                                                      focus_unit.__class__.__name__))
+        focus_unit.set_state(BizUnit.STATUS_AGENCY_COMPLETED)
+        self.execute_focus_agent()
+
     def _handle_abnormal(self, abnormal_type):
-        self._cancel_timer()
-        log.debug("CANCEL_TIMER {0}({1})".format(self._timer.owner.__class__.__name__,
-                                                 self._timer.owner.tag))
         abnormal = AbnormalHandler(self, self.stack.top(), abnormal_type)
         self.stack.push(abnormal)
         self.execute_focus_agent()
@@ -139,32 +150,25 @@ class DialogEngine(object):
 
     def _focus_bizunit_out(self, _to_pop_unit):
         self.stack.pop()
-        log.debug("POP_STACK: {2}({0}) \n{1}".format(_to_pop_unit.tag,
-                                                     self.stack,
-                                                     _to_pop_unit.__class__.__name__))
+        log.debug("POP_STACK: {0}({1})".format(_to_pop_unit.__class__.__name__, _to_pop_unit.tag))
         _to_pop_unit.pop_from_stack()
-
         focus_unit = self.stack.top()
-        try:
-            parent = self.biz_tree.parent(_to_pop_unit.identifier)
-        except NodeIDAbsentError:
-            # abnormal node
-            parent = None
-        if parent and parent != focus_unit:
+        if _to_pop_unit.parent and _to_pop_unit.parent != focus_unit:
             log.debug("ROUND_RETURN BizUnit({0})".format(focus_unit.tag))
             focus_unit.round_back()
         else:
             focus_unit.activate()
+        log.debug("STATUS: \n{0}\n{1}".format(self.stack, self.context))
 
     def _cancel_timer(self):
-        self.is_waiting = False
+        self._timer_count -= 1
         self._timer.cancel()
 
     def _start_timer(self, bizunit, seconds, function, *args, **kwargs):
-        assert(self.is_waiting == False)
+        assert(self._timer_count == 0)
         self._timer = TimerReset(bizunit, seconds * self.debug_timeunit, function, *args, **kwargs)
         self._start_time = time.time()
-        self.is_waiting = True
+        self._timer_count += 1
         self._timer.start()
 
     def process_concepts(self, sid, concepts):
@@ -207,6 +211,9 @@ class DialogEngine(object):
             return ret
         if data['code'] != 0:
             self._handle_abnormal(AbnormalHandler.ABNORMAL_ACTION_FAILED)
+            self._cancel_timer()
+            log.debug("CANCEL_TIMER {0}({1})".format(self._timer.owner.__class__.__name__,
+                                                    self._timer.owner.tag))
         else:
             self._handle_success_confirm()
         return ret
@@ -236,9 +243,8 @@ class DialogEngine(object):
                     if targets_completed:
                         continue
                 if isinstance(bizunit, Agent) and bizunit.agency_entrance:
-                    agency = self.biz_tree.parent(bizunit.identifier)
-                    agency.trigger_child = bizunit
-                    return [agency]
+                    bizunit.parent.trigger_child = bizunit
+                    return [bizunit.parent]
                 else:
                     return [bizunit]
 

@@ -34,6 +34,7 @@ class BizTree(treelib.Tree):
         else:
             tr_node = Agent.get_agent(self._dm, tag, data)
             self.add_node(tr_node, parent)
+        tr_node.parent = parent
 
     def __repr__(self):
         self.show()

@@ -146,7 +146,7 @@ class TestAgentCase(object):
         assert(dm.context['intent'].value == 'name.query')
         assert(dm._session.valid_session("sid001"))
         assert(dm.debug_loop == 1)
-        return dm
+        dm._cancel_timer()
 
     @classmethod
     def name_input(self):
@@ -195,6 +195,8 @@ class TestClusterAgencyCase(object):
         assert(dm.context['location'].value == 'nike')
         assert(dm._session.valid_session("sid002"))
         assert(dm.debug_loop == 2)
+        assert(dm.is_waiting == True)
+        dm._cancel_timer()
 
     @classmethod
     def location_input(self):
@@ -220,6 +222,7 @@ class TestClusterAgencyCase(object):
         assert(dm._session._sid is None)
         assert(dm.context['intent'].value is None)
         assert(dm.context['location'].value is None)
+        assert(dm.is_waiting == False)
 
     def test_process_confirm_case_agency_failed(self):
         dm = self.location_input()
@@ -240,11 +243,15 @@ class TestTargetAgencyCase(object):
 
     def test_default_triggered(self):
         dm = self.default_triggered()
-        assert(len(dm.stack) == 3)
-        assert(dm.stack.top().tag == 'default@weather.query')
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_STACKWAIT)
+                default@weather.query(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(dm.context['intent'].value == 'weather.query')
         assert(dm.debug_loop == 2)
-
+        assert(dm.is_waiting == True)
+        dm._cancel_timer()
 
     @classmethod
     def default_triggered(self):
@@ -258,35 +265,153 @@ class TestTargetAgencyCase(object):
         return dm
 
     def test_default_result(self):
+        log.debug("-" * 30)
         dm = self.default_triggered()
-        concepts = [
-            Concept('intent', 'weather.query'),
-            Concept('city', '深圳'),
-            Concept('date', '今天')
-        ]
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_STACKWAIT)
+                default@weather.query(STATUS_WAIT_ACTION_CONFIRM)''')
         confirm_data = {
             'sid': 'sid001',
             'code': 0,
             'message': ''
         }
         dm.process_confirm(confirm_data)
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_WAIT_TARGET)''')
+
+        concepts = [
+            Concept('intent', 'weather.query'),
+            Concept('city', '深圳'),
+            Concept('date', '今天')
+        ]
         dm.process_concepts("sid002", concepts)
-        assert(str(dm.stack) == 'Stack[root, weather.query, result]')
         assert(str(dm.context) == '''
-        Context:
-        Concept(date=今天)
-        Concept(city=深圳)
-        Concept(intent=weather.query)
-        Concept(location=None)''')
+            Context:
+                Concept(city=深圳)
+                Concept(date=今天)
+                Concept(intent=weather.query)
+                Concept(location=None)'''
+        )
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_STACKWAIT)
+                result(STATUS_WAIT_ACTION_CONFIRM)''')
+
         confirm_data = {
             'sid': 'sid002',
             'code': 0,
             'message': ''
         }
-        import pdb
-        pdb.set_trace()
         dm.process_confirm(confirm_data)
-        assert(str(dm.stack) == 'Stack[root, weather.query]')
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_DELAY_EXIST)''')
+        assert(dm.is_waiting == True)
+
+        # 延迟退出
+        concepts = [
+            Concept('intent', 'weather.query'),
+            Concept('city', '北京'),
+        ]
+        dm.process_concepts("sid003", concepts)
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_STACKWAIT)
+                result(STATUS_WAIT_ACTION_CONFIRM)''')
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=北京)
+                Concept(date=今天)
+                Concept(intent=weather.query)
+                Concept(location=None)'''
+        )
+        confirm_data = {
+            'sid': 'sid003',
+            'code': 0,
+            'message': ''
+        }
+        dm.process_confirm(confirm_data)
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_DELAY_EXIST)''')
+        assert(dm.is_waiting == True)
+
+
+        #  TODO: 归类
+        # test delay timeout
+        time.sleep(6 * dm.debug_timeunit)
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)''')
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=None)
+                Concept(date=None)
+                Concept(intent=None)
+                Concept(location=None)'''
+        )
+        assert(dm.is_waiting == False)
+
+
+    def test_agent_by_agent(self):
+        concepts = [
+            Concept("intent", "weather.query"),
+            Concept("city", "深圳")
+        ]
+        dm = construct_dm()
+        dm.debug_timeunit = 0.2
+        dm.process_concepts("sid001", concepts)
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=深圳)
+                Concept(date=None)
+                Concept(intent=weather.query)
+                Concept(location=None)'''
+        )
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_STACKWAIT)
+                date(STATUS_WAIT_ACTION_CONFIRM)''')
+        assert(dm.is_waiting == True)
+        confirm_data = {
+            'sid': 'sid001',
+            'code': 0,
+            'message': ''
+        }
+        dm.process_confirm(confirm_data)
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_STACKWAIT)
+                date(STATUS_WAIT_TARGET)''')
+        assert(dm.is_waiting == True)
+        concepts = [
+            Concept("date", "今天")
+        ]
+        dm.process_concepts("sid002", concepts)
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=深圳)
+                Concept(date=今天)
+                Concept(intent=weather.query)
+                Concept(location=None)''')
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_STACKWAIT)
+                result(STATUS_WAIT_ACTION_CONFIRM)''')
+        assert(dm.is_waiting == True)
+        dm._cancel_timer()
+
 
 
 class TestTiemoutCase(object):
@@ -297,7 +422,9 @@ class TestTiemoutCase(object):
         dm = construct_dm()
         dm.debug_timeunit = 0.2
         dm.process_concepts("sid001", concepts)
+        assert(dm.is_waiting == True)
         time.sleep(6 * dm.debug_timeunit)
+        assert(dm.is_waiting == False)
         assert(dm.debug_loop == 6)
 
     def test_target_default_triggered_timeout(self):
@@ -309,8 +436,10 @@ class TestTiemoutCase(object):
         }
         dm.process_confirm(confirm_data)
         assert(len(dm.stack) == 2)
+        assert(dm.is_waiting == True)
         assert(dm.stack.top().tag == 'weather.query')
         time.sleep(6 * dm.debug_timeunit)
+        assert(dm.is_waiting == False)
         assert(len(dm.stack) == 1)
         assert(dm.debug_loop == 9)
         assert(dm.context["intent"].value == None)
@@ -362,36 +491,67 @@ class TestSessionCase(object):
             'message': ''
         }
         dm.process_confirm(confirm_data)
-        assert(len(dm.stack) == 2)
-        assert(dm.stack.top().tag == 'weather.query')
-        assert(dm.context['intent'].value == 'weather.query')
-        # state: Agency Waiting
-
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=None)
+                Concept(date=None)
+                Concept(intent=weather.query)
+                Concept(location=None)'''
+        )
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_WAIT_TARGET)'''
+        )
         # switch after 2 unit time passed
         time.sleep(2 * dm.debug_timeunit)
         concepts = [
             Concept("intent", "casual_talk"),
         ]
         dm.process_concepts("sid002", concepts)
-        assert(len(dm.stack) == 3)
-        assert(dm.stack.top().tag == 'casual_talk')
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_WAIT_TARGET)
+                casual_talk(STATUS_WAIT_ACTION_CONFIRM)'''
+        )
         confirm_data = {
             'sid': 'sid002',
             'code': 0,
             'message': ''
         }
         dm.process_confirm(confirm_data)
+        assert(dm.is_waiting == True)
         # reset timer
         time.sleep(4 * dm.debug_timeunit)
         # before timeout
-        assert(len(dm.stack) == 2)
-        assert(dm.stack.top().tag == 'weather.query')
-        assert(dm.context['intent'].value == 'weather.query')
-        # after timeout
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                weather.query(STATUS_WAIT_TARGET)'''
+        )
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=None)
+                Concept(date=None)
+                Concept(intent=weather.query)
+                Concept(location=None)'''
+        )
         time.sleep(2 * dm.debug_timeunit)
-        assert(len(dm.stack) == 1)
-        assert(dm.context['intent'].value == None)
+        # after timeout
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)'''
+        )
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=None)
+                Concept(date=None)
+                Concept(intent=None)
+                Concept(location=None)'''
+        )
         assert(dm.debug_loop == 12)
+        assert(dm.is_waiting == False)
 
 
 

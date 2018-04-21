@@ -36,12 +36,18 @@ class Agency(BizUnit):
     def state(self):
         return self.data['state']
 
+    @property
+    def children(self):
+        for child in self._dm.biz_tree.children(self.identifier):
+            yield child
+
     def set_state(self, value):
         self.data['state'] = value
 
     def reset_concepts(self):
-        for child in self._dm.biz_tree.children(self.identifier):
-            child.reset_concepts()
+        if self.parent.is_root() or self.parent.state == BizUnit.STATUS_TREEWAIT:
+            for child in self.children:
+                child.reset_concepts()
 
 
 class ClusterAgency(Agency):
@@ -66,9 +72,6 @@ class TargetAgency(Agency):
         super(TargetAgency, self).__init__(dm, tag, data)
         self.event_id = data['event_id']
         self._timer = None
-        self._condition = [BizUnit.STATUS_TRIGGERED, BizUnit.STATUS_TARGET_COMPLETED,
-                           BizUnit.STATUS_ACTION_COMPLETED, BizUnit.STATUS_ABNORMAL,
-                           BizUnit.STATUS_AGENCY_COMPLETED, BizUnit.STATUS_WAIT_TARGET]
         self._target_concepts = None
 
     @property
@@ -76,14 +79,14 @@ class TargetAgency(Agency):
         if self._target_concepts:
             return self._target_concepts
         concept_keys = set()
-        for child in self._dm.biz_tree.children(self.identifier):
+        for child in self.children:
             for c in child.target_concepts:
                 concept_keys.add(c.key)
         self._target_concepts = set([Concept(key, None) for key in concept_keys])
         return self._target_concepts
 
     def executable(self):
-        return self.state in self._condition
+        return self.state in self._execute_condition
 
     def activate(self):
         if self.state not in [BizUnit.STATUS_ABNORMAL, BizUnit.STATUS_WAIT_TARGET]:
@@ -91,28 +94,34 @@ class TargetAgency(Agency):
             self.set_state(BizUnit.STATUS_TRIGGERED)
 
         if self._is_default_node(self.active_child):
-            # activate by default node
             self.set_state(BizUnit.STATUS_WAIT_TARGET)
+            self._execute_condition.add(BizUnit.STATUS_WAIT_TARGET)
+
+        elif self._is_result_node(self.active_child):
+            self.set_state(BizUnit.STATUS_DELAY_EXIST)
+            self._execute_condition.add(BizUnit.STATUS_DELAY_EXIST)
+
         self.active_child = None
 
     def round_back(self):
         self.restore_context(self._dm.context)
         # recountdown
-        self._condition.append(BizUnit.STATUS_WAIT_TARGET)
-
-    def _is_default_node(self, bizunit):
-        return len(bizunit.target_concepts) == 0 and len(bizunit.trigger_concepts) == 1
+        self._execute_condition.add(BizUnit.STATUS_WAIT_TARGET)
 
     def restore_context(self, context):
         context.update_concept(self._intent.key, self._intent)
 
     def _execute(self):
         log.debug("EXECUTE TargetAgency({0})".format(self.tag))
-
-        if self.state in [BizUnit.STATUS_WAIT_TARGET]:
+        if self.state == BizUnit.STATUS_WAIT_TARGET:
+            self._execute_condition.remove(BizUnit.STATUS_WAIT_TARGET)
             self._dm._start_timer(self, ConfigDM.input_timeout, self._dm._inputwait_timeout)
-            self._condition.remove(BizUnit.STATUS_WAIT_TARGET)
-            log.debug("START_TIMER TargetAgency({0})".format(self.tag))
+            log.debug("START_INPUT_TIMER TargetAgency({0})".format(self.tag))
+            return
+        elif self.state == BizUnit.STATUS_DELAY_EXIST:
+            self._execute_condition.remove(BizUnit.STATUS_DELAY_EXIST)
+            self._dm._start_timer(self, ConfigDM.input_timeout, self._dm._delaywait_timeout)
+            log.debug("START_DELAY_TIMER TargetAgency({0})".format(self.tag))
             return
 
         self._intent = self._dm.context["intent"]  # for restore
@@ -123,18 +132,24 @@ class TargetAgency(Agency):
 
     def _plan(self):
         # log.debug(self._dm.context)
-        for child in self._dm.biz_tree.children(self.identifier):
-            if len(child.trigger_concepts) > 1:
-                # result node
+        targets_clean = all([not self._dm.context.dirty(c) for c in self.target_concepts])
+        for child in self.children:
+            if self._is_result_node(child):
                 trigger_satisified = all([self._dm.context.satisfied(c) for c in child.trigger_concepts])
                 if trigger_satisified:
                     return child
-            else:
-                targets_clean = all([not self._dm.context.dirty(c) for c in self.target_concepts])
-                if len(child.target_concepts) == 0 and targets_clean:
-                    # default node
-                    log.debug("WAIT_INPUT TargetAgency({0})".format(self.tag))
-                    return child
-                elif len(child.target_concepts) != 0 and not child.target_completed:
-                    # return first none complete target child
-                    return child
+            elif self._is_default_node(child) and targets_clean:
+                log.debug("WAIT_INPUT TargetAgency({0})".format(self.tag))
+                return child
+            elif self._is_target_node(child) and not child.target_completed:
+                # return first none complete target child
+                return child
+
+    def _is_default_node(self, bizunit):
+        return len(bizunit.target_concepts) == 0 and len(bizunit.trigger_concepts) == 1
+
+    def _is_result_node(self, bizunit):
+        return len(bizunit.trigger_concepts) > 1
+
+    def _is_target_node(self, bizunit):
+        return len(bizunit.target_concepts) != 0

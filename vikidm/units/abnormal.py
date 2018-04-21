@@ -13,18 +13,16 @@ class AbnormalHandler(BizUnit):
     ABNORMAL_INPUT_TIMEOUT = "ABNORMAL_INPUT_TIMEOUT"
 
     def __init__(self, dm, bizunit, type_):
-        self.tag = "AbnormalHandler"
-        self.identifier = "AbnormalHandler"
-        self.set_state(BizUnit.STATUS_TRIGGERED)
-        self.parent = None
-        self.data = {
+        data = {
             'trigger_concepts': []
         }
+        super(AbnormalHandler, self).__init__(dm, 'AbnormalHandler',
+                                              'AbnormalHandler', data)
+        self.set_state(BizUnit.STATUS_TRIGGERED)
+        self.parent = None
         self.target_concepts = []
         self.trigger_concepts = []
         self._handler_finished = False
-
-        self._dm = dm
         self.handler = self._get_handler(bizunit, type_)
         self.handler.parent = self
 
@@ -95,7 +93,6 @@ class DefaultHandlerAgent(Agent):
                 self.set_state(BizUnit.STATUS_WAIT_ACTION_CONFIRM)
                 self._dm._start_timer(self.tag, self.timeout, self._dm._actionwait_timeout)
                 log.debug("START_TIMER BizUnit({0})".format(self.tag))
-
         return self.event_id
 
     def reset_concepts(self):

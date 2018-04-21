@@ -5,6 +5,7 @@ import logging
 from vikicommon.util import escape_unicode
 from vikidm.units.bizunit import BizUnit
 from vikidm.context import Concept
+from vikidm.config import ConfigDM
 
 log = logging.getLogger(__name__)
 
@@ -50,11 +51,11 @@ class Agent(BizUnit):
         self.set_state(BizUnit.STATUS_ACTION_COMPLETED)
 
     def reset_concepts(self):
-        parent = self._dm.biz_tree.parent(self.identifier)
-        if parent.is_root() or parent.state == BizUnit.STATUS_TREEWAIT:
+        if self.parent.is_root() or self.parent.state == BizUnit.STATUS_TREEWAIT:
             for concept in self.trigger_concepts + self.target_concepts:
                 if concept.life_type == Concept.LIFE_STACK and self._dm.context.dirty(concept):
                     self._dm.context.reset_concept(concept.key)
+                    self.target_completed = False
                     log.debug("RESET_CONCEPT [{0}]".format(concept.key))
 
     @property
@@ -132,6 +133,7 @@ class TargetAgent(Agent):
         if self.state == BizUnit.STATUS_WAIT_ACTION_CONFIRM:
             self.set_state(BizUnit.STATUS_ACTION_COMPLETED)
         elif self.state == BizUnit.STATUS_WAIT_TARGET:
+            self._execute_condition.add(BizUnit.STATUS_WAIT_TARGET)
             raise NotImplementedError
 
     def mark_target_completed(self):
@@ -141,7 +143,7 @@ class TargetAgent(Agent):
     def _execute(self):
         log.debug("EXECUTE TargetAgent({0})".format(self.tag))
         if self.state == BizUnit.STATUS_TRIGGERED:
-            log.debug("WAIT_CONFIRM Agent(%s)" % self.tag)
+            log.debug("WAIT_CONFIRM TargetAgent(%s)" % self.tag)
             self.set_state(BizUnit.STATUS_WAIT_ACTION_CONFIRM)
 
             if self.timeout == 0:
@@ -149,10 +151,13 @@ class TargetAgent(Agent):
                 self.set_state(BizUnit.STATUS_ACTION_COMPLETED)
             else:
                 self._dm._start_timer(self, self.timeout, self._dm._actionwait_timeout)
-                log.debug("START_TIMER TargetAgent({0})".format(self.tag))
+                log.debug("START_ACTION_TIMER TargetAgent({0})".format(self.tag))
 
-        elif self.state == BizUnit.STATUS_WAIT_ACTION_CONFIRM:
-            self.set_state(BizUnit.STATUS_WAIT_TARGET)
+        elif self.state == BizUnit.STATUS_WAIT_TARGET:
+            # start timer
+            self._dm._start_timer(self, ConfigDM.input_timeout, self._dm._inputwait_timeout)
+            log.debug("START_INPUT_TIMER TargetAgent({0})".format(self.tag))
+            self._execute_condition.remove(BizUnit.STATUS_WAIT_TARGET)
 
         return self.event_id
 
@@ -160,10 +165,7 @@ class TargetAgent(Agent):
         assert(self.state == Agent.STATUS_WAIT_ACTION_CONFIRM)
         self.set_state(BizUnit.STATUS_WAIT_TARGET)
         log.debug("WAIT_INPUT Agent({0})".format(self.tag))
-
-    def pop_from_stack(self):
-        super(TargetAgent, self).pop_from_stack()
-        self.target_completed = False
+        self._execute_condition.add(BizUnit.STATUS_WAIT_TARGET)
 
 
 class TriggerAgent(Agent):
@@ -185,6 +187,6 @@ class TriggerAgent(Agent):
                 self.set_state(BizUnit.STATUS_ACTION_COMPLETED)
             else:
                 self._dm._start_timer(self, self.timeout, self._dm._actionwait_timeout)
-                log.debug("START_TIMER TriggerAgent({0})".format(self.tag))
+                log.debug("START_ACTION_TIMER TriggerAgent({0})".format(self.tag))
 
         return self.event_id

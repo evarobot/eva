@@ -93,16 +93,10 @@ class Context(object):
         return self._all_concepts[key]
 
     def __str__(self):
-        clean_concepts = []
-        dirty_concepts = []
-        for concept in self._all_concepts.values():
-            if not concept.dirty:
-                clean_concepts.append(concept)
-            else:
-                dirty_concepts.append(concept)
-        return "\n        ".join(["\n        Context:"] + [str(c) for c in dirty_concepts + clean_concepts])
+        concepts = []
+        for key in sorted(self._all_concepts.iterkeys()):
+            concepts.append(self._all_concepts[key])
+        return "\n                ".join(["\n            Context:"] + [str(c) for c in concepts])
 
     def __repr__(self):
         return self.__str__()
-
-

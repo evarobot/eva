@@ -25,6 +25,10 @@ class BizUnit(treelib.Node):
         super(BizUnit, self).__init__(tag, identifier, data=data)
         self._dm = dm
         self.set_state(self.STATUS_TREEWAIT)
+        self._execute_condition = set([BizUnit.STATUS_TRIGGERED, BizUnit.STATUS_TARGET_COMPLETED,
+                               BizUnit.STATUS_ACTION_COMPLETED, BizUnit.STATUS_ABNORMAL,
+                               BizUnit.STATUS_AGENCY_COMPLETED])
+        self.parent = None
 
     def execute(self):
         if self.state in [BizUnit.STATUS_ACTION_COMPLETED,
@@ -43,9 +47,7 @@ class BizUnit(treelib.Node):
         self.state = value
 
     def executable(self):
-        return self.state in [BizUnit.STATUS_TRIGGERED, BizUnit.STATUS_TARGET_COMPLETED,
-                              BizUnit.STATUS_ACTION_COMPLETED, BizUnit.STATUS_ABNORMAL,
-                              BizUnit.STATUS_AGENCY_COMPLETED]
+        return self.state in self._execute_condition
 
     def trigger(self):
         self.set_state(BizUnit.STATUS_TRIGGERED)

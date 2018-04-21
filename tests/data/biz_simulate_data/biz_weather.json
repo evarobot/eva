@@ -38,7 +38,7 @@
 					"intent=weather.query"
 				],
 				"target_concepts": [
-					"date"
+					"city"
 				],
 				"timeout": 5,
 				"type": "TYPE_TARGET_RESPONSE"
@@ -58,7 +58,7 @@
 					"intent=weather.query"
 				],
 				"target_concepts": [
-					"city"
+					"date"
 				],
 				"timeout": 5,
 				"type": "TYPE_TARGET_RESPONSE"
