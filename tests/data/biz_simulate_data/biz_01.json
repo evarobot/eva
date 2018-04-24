@@ -2,7 +2,7 @@
     "data":{
         "id": "name.query",
         "tag": "name.query",
-        "agency_entrance": false,
+        "entrance": false,
         "event_id": "name.query",
         "subject": "主题",
         "scope": "可见域",

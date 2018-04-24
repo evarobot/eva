@@ -4,14 +4,14 @@
 		"id": "weather.query",
 		"event_id": "weather.query",
 		"tag": "weather.query",
-		"agency_entrance": false,
+		"entrance": false,
 		"type": "TYPE_TARGET"
 	},
 	"children": [{
 			"data": {
 				"id": "default@weather.query",
 				"tag": "default@weather.query",
-				"agency_entrance": true,
+				"entrance": false,
 				"event_id": "default@weather.query",
 				"subject": "",
 				"scope": "",
@@ -30,7 +30,7 @@
 			"data": {
 				"id": "city",
 				"tag": "city",
-				"agency_entrance": true,
+				"entrance": false,
 				"event_id": "city",
 				"subject": "",
 				"scope": "",
@@ -50,7 +50,7 @@
 			"data": {
 				"id": "date",
 				"tag": "date",
-				"agency_entrance": true,
+				"entrance": false,
 				"event_id": "date",
 				"subject": "",
 				"scope": "",
@@ -70,7 +70,7 @@
 			"data": {
 				"id": "result",
 				"tag": "result",
-				"agency_entrance": true,
+				"entrance": false,
 				"event_id": "result",
 				"subject": "",
 				"scope": "",

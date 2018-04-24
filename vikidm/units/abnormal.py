@@ -75,7 +75,7 @@ class DefaultHandlerAgent(Agent):
             'subject': '',
             'scope': '',
             'timeout': 0,
-            'agency_entrance': False,
+            'entrance': False,
             'trigger_concepts': {},
             'state': '',
             'target_concepts': [],

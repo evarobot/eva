@@ -3,7 +3,7 @@
     "data": {
         "id": "where.query",
         "tag": "where.query",
-        "agency_entrance": false,
+        "entrance": false,
         "type": "TYPE_CLUSTER"
     },
     "children": [
@@ -11,7 +11,7 @@
            "data":{
                 "id": "nike",
                 "tag": "nike",
-                "agency_entrance": true,
+                "entrance": false,
                 "event_id": "nike",
                 "subject": "",
                 "scope": "",
@@ -30,7 +30,7 @@
         {
            "data":{
                 "tag": "zhou_hei_ya",
-                "agency_entrance": true,
+                "entrance": false,
                 "event_id": "zhou_hei_ya",
                 "subject": "",
                 "scope": "",

@@ -1,0 +1,68 @@
+
+{
+    "data": {
+        "id": "mix_home",
+        "event_id": "mix_home",
+        "tag": "mix_home",
+        "entrance": false,
+        "subject": "",
+        "scope": "",
+        "type": "TYPE_MIX"
+    },
+    "children": [
+        {
+            "data":{
+                "id": "home.service",
+                "event_id": "home.service",
+                "tag": "home.service",
+                "entrance": true,
+                "subject": "",
+                "scope": "",
+                "trigger_concepts": [
+                    "intent=home.service"
+                    ],
+                "target_concepts": [],
+                "timeout": 5,
+                "type": "TYPE_SIMPLE"
+            },
+            "children": []
+        },
+        {
+            "data":{
+                "id": "home_consume.query",
+                "event_id": "home_consume.query",
+                "tag": "home_consume.query",
+                "entrance": false,
+                "subject": "",
+                "scope": "",
+                "trigger_concepts": [
+                    "intent=consume.query"
+                    ],
+                "timeout": 5,
+                "target_concepts": [],
+                "type": "TYPE_SIMPLE"
+            },
+            "children": []
+        },
+        {
+            "data":{
+                "id": "home_left.query",
+                "event_id": "home_left.query",
+                "tag": "home_left.query",
+                "entrance": false,
+                "subject": "",
+                "scope": "",
+                "trigger_concepts": [
+                    "intent=left.query"
+                    ],
+                "timeout": 5,
+                "target_concepts": [],
+                "type": "TYPE_SIMPLE"
+            },
+            "children": []
+        }
+
+    ]
+
+}
+

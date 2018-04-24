@@ -188,6 +188,8 @@ class DialogEngine(object):
             if bizunits[0].state == BizUnit.STATUS_TREEWAIT:
                 self.stack.push(bizunits[0])
             bizunits[0].trigger()
+        log.info(self.stack)
+        log.info(self.context)
         return self.execute_focus_agent()
 
     def _handle_success_confirm(self):
@@ -216,6 +218,8 @@ class DialogEngine(object):
                                                     self._timer.owner.tag))
         else:
             self._handle_success_confirm()
+        log.info(self.stack)
+        log.info(self.context)
         return ret
 
     def _update_concepts(self, concepts):
@@ -238,11 +242,9 @@ class DialogEngine(object):
                     bizunit.trigger_concepts != []
                 if not trigger_satisified:
                     continue
-                if bizunit.type_ == Agent.TYPE_INPUT:
-                    targets_completed = all([self.context.dirty(c) for c in bizunit.target_concepts])
-                    if targets_completed:
+                if isinstance(bizunit, Agent) and not bizunit.parent.is_root():
+                    if bizunit.target_completed:
                         continue
-                if isinstance(bizunit, Agent) and bizunit.agency_entrance:
                     bizunit.parent.trigger_child = bizunit
                     return [bizunit.parent]
                 else:

@@ -12,6 +12,7 @@ class Agency(BizUnit):
     TYPE_CLUSTER = "TYPE_CLUSTER"  # no delay exit
     TYPE_TARGET = "TYPE_TARGET"
     TYPE_SEQUENCE = "TYPE_SEQUENCE"
+    TYPE_MIX = "TYPE_MIX"
     TYPE_ROOT = "TYPE_ROOT"
 
     def __init__(self, dm, tag, data):
@@ -31,6 +32,8 @@ class Agency(BizUnit):
             return ClusterAgency(dm, tag, data)
         elif data['type'] == Agency.TYPE_TARGET:
             return TargetAgency(dm, tag, data)
+        if data['type'] == Agency.TYPE_MIX:
+            return MixAgency(dm, tag, data)
 
     @property
     def state(self):
@@ -106,7 +109,8 @@ class TargetAgency(Agency):
     def round_back(self):
         self.restore_context(self._dm.context)
         # recountdown
-        self._execute_condition.add(BizUnit.STATUS_WAIT_TARGET)
+        assert(self.state in [BizUnit.STATUS_WAIT_TARGET, BizUnit.STATUS_DELAY_EXIST])
+        self._execute_condition.add(self.state)
 
     def restore_context(self, context):
         context.update_concept(self._intent.key, self._intent)
@@ -153,3 +157,12 @@ class TargetAgency(Agency):
 
     def _is_target_node(self, bizunit):
         return len(bizunit.target_concepts) != 0
+
+
+class MixAgency(Agency):
+    """"""
+    def __init__(self, dm, tag, data):
+        super(MixAgency, self).__init__(dm, tag, data)
+
+    def _execute(self):
+        pass

@@ -11,8 +11,6 @@ log = logging.getLogger(__name__)
 
 
 class Agent(BizUnit):
-    TYPE_INPUT = "TYPE_INPUT"
-    TYPE_INFORM = "TYPE_INFORM"
 
     def __init__(self, dm, tag, data):
         data = {   # 用于tree.to_json(), 方便调试。
@@ -20,7 +18,7 @@ class Agent(BizUnit):
             'scope': data['scope'],
             'event_id': data['event_id'],
             'timeout': float(data['timeout']),
-            'agency_entrance': data['agency_entrance'],
+            'entrance': data['entrance'],
             'trigger_concepts': data['trigger_concepts'],
             'state': BizUnit.STATUS_TREEWAIT,
             'target_concepts': data['target_concepts']
@@ -28,7 +26,6 @@ class Agent(BizUnit):
 
         self._trigger_concepts = list(self._deserialize_trigger_concepts(data))
         self._target_concepts = list(self._deserialize_target_concepts(data))
-        self.type_ = Agent.TYPE_INPUT if self._target_concepts else Agent.TYPE_INFORM
         self.target_completed = False
         super(Agent, self).__init__(dm, data["event_id"], tag, data)
 
@@ -91,8 +88,8 @@ class Agent(BizUnit):
         self.data['timeout'] = value
 
     @property
-    def agency_entrance(self):
-        return self.data['agency_entrance']
+    def entrance(self):
+        return self.data['entrance']
 
     @property
     def trigger_concepts(self):
@@ -134,7 +131,6 @@ class TargetAgent(Agent):
             self.set_state(BizUnit.STATUS_ACTION_COMPLETED)
         elif self.state == BizUnit.STATUS_WAIT_TARGET:
             self._execute_condition.add(BizUnit.STATUS_WAIT_TARGET)
-            raise NotImplementedError
 
     def mark_target_completed(self):
         self.target_completed = True

@@ -1,7 +1,7 @@
 { 
     "data":{
         "tag": "casual_talk",
-        "agency_entrance": false,
+        "entrance": false,
         "event_id": "casual_talk",
         "subject": "主题",
         "scope": "可见域",

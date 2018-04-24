@@ -1,0 +1,199 @@
+{
+    "data": {
+        "id": "mix_travel",
+        "event_id": "mix_travel",
+        "tag": "mix_travel",
+        "entrance": false,
+        "subject": "",
+        "scope": "",
+        "type": "TYPE_MIX"
+    },
+    "children": [{
+        "data": {
+            "id": "travel.service",
+            "event_id": "travel.service",
+            "tag": "travel.service",
+            "entrance": true,
+            "subject": "",
+            "scope": "",
+            "trigger_concepts": [
+                "intent=travel.service"
+            ],
+            "target_concepts": [],
+            "timeout": 5,
+            "type": "TYPE_SIMPLE"
+        },
+        "children": []
+    },
+    {
+        "data": {
+            "id": "travel_consume.query",
+            "event_id": "travel_consume.query",
+            "tag": "travel_consume.query",
+            "entrance": false,
+            "subject": "",
+            "scope": "",
+            "trigger_concepts": [
+                "intent=consume.query"
+            ],
+            "target_concepts": [],
+            "timeout": 5,
+            "type": "TYPE_SIMPLE"
+        },
+        "children": []
+    },
+    {
+        "data": {
+            "id": "travel_left.query",
+            "event_id": "travel_left.query",
+            "tag": "travel_left.query",
+            "entrance": false,
+            "subject": "",
+            "scope": "",
+            "trigger_concepts": [
+                "intent=left.query"
+            ],
+            "target_concepts": [],
+            "timeout": 5,
+            "type": "TYPE_SIMPLE"
+        },
+        "children": []
+    },
+
+    {
+
+        "data": {
+            "id": "mix_weather",
+            "event_id": "mix_weather",
+            "tag": "mix_weather",
+            "entrance": false,
+            "subject": "",
+            "scope": "",
+            "type": "TYPE_MIX"
+        },
+        "children": [{
+            "data": {
+                "id": "weather.query",
+                "event_id": "weather.query",
+                "tag": "weather.query",
+                "entrance": true,
+                "subject": "",
+                "scope": "",
+                "type": "TYPE_TARGET"
+            },
+            "children": [{
+                "data": {
+                    "id": "default@weather.query",
+                    "tag": "default@weather.query",
+                    "entrance": false,
+                    "event_id": "default@weather.query",
+                    "subject": "",
+                    "scope": "",
+                    "trigger_concepts": [
+                        "intent=weather.query"
+                    ],
+                    "target_concepts": [],
+                    "timeout": 5,
+                    "type": "TYPE_TRIGGER_RESPONSE"
+                },
+                "children": []
+
+            },
+            {
+                "data": {
+                    "id": "city",
+                    "tag": "city",
+                    "entrance": false,
+                    "event_id": "city",
+                    "subject": "",
+                    "scope": "",
+                    "trigger_concepts": [
+                        "intent=weather.query"
+                    ],
+                    "target_concepts": [
+                        "city"
+                    ],
+                    "timeout": 5,
+                    "type": "TYPE_TARGET_RESPONSE"
+                },
+                "children": []
+
+            },
+            {
+                "data": {
+                    "id": "date",
+                    "tag": "date",
+                    "entrance": false,
+                    "event_id": "date",
+                    "subject": "",
+                    "scope": "",
+                    "trigger_concepts": [
+                        "intent=weather.query"
+                    ],
+                    "target_concepts": [
+                        "date"
+                    ],
+                    "timeout": 5,
+                    "type": "TYPE_TARGET_RESPONSE"
+                },
+                "children": []
+
+            },
+            {
+                "data": {
+                    "id": "result",
+                    "tag": "result",
+                    "entrance": false,
+                    "event_id": "result",
+                    "subject": "",
+                    "scope": "",
+                    "trigger_concepts": [
+                        "intent=weather.query",
+                        "date=*",
+                        "city=*"
+                    ],
+                    "target_concepts": [],
+                    "timeout": 5,
+                    "type": "TYPE_TRIGGER_RESPONSE"
+                },
+                "children": []
+            }
+            ]
+        },
+        {
+            "data": {
+                "id": "spots.query",
+                "tag": "spots.query",
+                "type": "TYPE_CLUSTER",
+                "subject": "",
+                "scope": "",
+                "entrance": false
+            },
+            "children": [{
+                "data": {
+                    "id": "all_city",
+                    "event_id": "all_city",
+                    "tag": "all_city",
+                    "entrance": true,
+                    "subject": "",
+                    "scope": "",
+                    "trigger_concepts": [
+                        "intent=spots.query",
+                        "location=*"
+                    ],
+                    "target_concepts": [],
+                    "timeout": 5,
+                    "type": "TYPE_CLUSTER_RESPONSE"
+                },
+                "children": []
+
+            }]
+
+        }
+        ]
+
+    }
+
+    ]
+
+}
