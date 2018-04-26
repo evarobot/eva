@@ -13,8 +13,6 @@ class DMRobot(object):
         self._domain_name = domain_name
         self._id = robotid
         self._dialog = DialogEngine()
-        import pdb
-        pdb.set_trace()
         self._dialog.init_from_db(domain_name)
 
     @property

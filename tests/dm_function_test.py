@@ -6,11 +6,12 @@ import json
 import logging
 import pprint
 import requests
+import mock
 
 from vikicommon.timer import TimerThread
 from vikicommon.log import init_logger
 
-from vikidm.util import PROJECT_DIR
+from vikidm.util import PROJECT_DIR, cms_rpc
 from vikidm.dm import DialogEngine
 from vikidm.context import Concept
 from vikidm.config import ConfigLog
@@ -21,17 +22,37 @@ init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
 
+def to_concepts_request(request):
+    params = {
+        'robot_id': '123',
+        'project': 'test',
+        'sid': request['sid']
+    }
+    concepts = {}
+    for key, value in request['concepts'].iteritems():
+        concepts[key] = value
+    params['concepts'] = concepts
+    url = "http://127.0.0.1:8888/v2/dm/concepts/"
+    return url, params
+
+
+def to_question_request(request):
+    params = {
+        'robot_id': '123',
+        'project': 'test',
+        'sid': request['sid']
+    }
+    params['question'] = request['question']
+    url = "http://127.0.0.1:8888/v2/dm/question/"
+    return url, params
+
+
 class TestDM(object):
     """  测试对话管理引擎 """
     def init(self):
         self._task = None
         self._timeunit = 0
         self._test_cases = self._load_test_case()
-        self._dm = DialogEngine()
-
-        fpath1 = os.path.join(data_path, 'biz_simulate_data/biz_12.json')
-        fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
-        self._dm.init_from_json_files([fpath1, fpath2])
         self._debug_timeunit = 0.5
 
     def test_engine(self):
@@ -59,7 +80,7 @@ class TestDM(object):
             if request['time'] == self._timeunit:
                 request = copy.deepcopy(request)
                 del request['time']
-                del request['question']
+                #  TODO: SID #
                 request['sid'] = str(self._timeunit)
                 self._process_request(request)
             if confirm['time'] == self._timeunit:
@@ -69,19 +90,10 @@ class TestDM(object):
                 self._process_confirm(confirm)
 
     def _process_request(self, request):
-        """
-        """
-        log.info("post request: \n%s" % pprint.pformat(request))
-        params = {
-                'robot_id': '123',
-                'project': 'test',
-        }
-        url = "http://127.0.0.1:8888/v2/dm/concepts/"
         headers = { 'content-type': 'application/json' }
-        concepts = {}
-        for key, value in request['concepts'].iteritems():
-            concepts[key] = value
-        params['concepts'] = concepts
+        url, params = to_concepts_request(request)
+        #url, params = to_question_request(request)
+        log.info("post %s \n%s" % (url, pprint.pformat(params)))
         data = requests.post(url, data=json.dumps(params), headers=headers, timeout=2).text
         print data
 

@@ -14,12 +14,26 @@ class Concept(JSONEncoder):
     LIFE_STACK = "LIFE_STACK"
 
     def __init__(self, key, value=None, life_type="LIFE_STACK"):
-        self.key = key
-        self.value = value
+        self._key = key
+        self._value = value
         self.life_type = life_type
 
     def default(self, o):
         return o.__dict__
+
+    @property
+    def key(self):
+        return self._key
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, v):
+        self._value = v
+        if hasattr(self, '_hash'):
+            self._hash = hash(str(self))
 
     @property
     def dirty(self):

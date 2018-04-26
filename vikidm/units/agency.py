@@ -40,6 +40,10 @@ class Agency(BizUnit):
         return self.data['state']
 
     @property
+    def entrance(self):
+        return self.data['entrance']
+
+    @property
     def children(self):
         for child in self._dm.biz_tree.children(self.identifier):
             yield child
@@ -51,6 +55,7 @@ class Agency(BizUnit):
         if self.parent.is_root() or self.parent.state == BizUnit.STATUS_TREEWAIT:
             for child in self.children:
                 child.reset_concepts()
+        self._dm.context.reset_concept("intent")
 
 
 class ClusterAgency(Agency):
@@ -91,20 +96,20 @@ class TargetAgency(Agency):
     def executable(self):
         return self.state in self._execute_condition
 
-    def activate(self):
-        if self.state not in [BizUnit.STATUS_ABNORMAL, BizUnit.STATUS_WAIT_TARGET]:
-            # activate by target child
-            self.set_state(BizUnit.STATUS_TRIGGERED)
-
-        if self._is_default_node(self.active_child):
+    def re_enter_after_child_done(self):
+        if self.state == BizUnit.STATUS_ABNORMAL:
+            return
+        if self._is_target_node(self.active_child):
+                self.set_state(BizUnit.STATUS_TRIGGERED)
+        elif self._is_default_node(self.active_child):
             self.set_state(BizUnit.STATUS_WAIT_TARGET)
             self._execute_condition.add(BizUnit.STATUS_WAIT_TARGET)
-
         elif self._is_result_node(self.active_child):
             self.set_state(BizUnit.STATUS_DELAY_EXIST)
             self._execute_condition.add(BizUnit.STATUS_DELAY_EXIST)
 
         self.active_child = None
+        self.restore_context(self._dm.context)
 
     def round_back(self):
         self.restore_context(self._dm.context)
@@ -113,7 +118,8 @@ class TargetAgency(Agency):
         self._execute_condition.add(self.state)
 
     def restore_context(self, context):
-        context.update_concept(self._intent.key, self._intent)
+        #context.update_concept(self._intent.key, self._intent)
+        pass
 
     def _execute(self):
         log.debug("EXECUTE TargetAgency({0})".format(self.tag))
@@ -148,6 +154,7 @@ class TargetAgency(Agency):
             elif self._is_target_node(child) and not child.target_completed:
                 # return first none complete target child
                 return child
+        assert(False)
 
     def _is_default_node(self, bizunit):
         return len(bizunit.target_concepts) == 0 and len(bizunit.trigger_concepts) == 1
@@ -164,5 +171,34 @@ class MixAgency(Agency):
     def __init__(self, dm, tag, data):
         super(MixAgency, self).__init__(dm, tag, data)
 
-    def _execute(self):
+    def executable(self):
+        return self.state in self._execute_condition
+
+    def re_enter_after_child_done(self):
+        if self.state == BizUnit.STATUS_ABNORMAL:
+            return
+        self.set_state(BizUnit.STATUS_DELAY_EXIST)
+        self._execute_condition.add(BizUnit.STATUS_DELAY_EXIST)
+
+    def round_back(self):
+        self.restore_context(self._dm.context)
+        assert(self.state == BizUnit.STATUS_DELAY_EXIST)
+        self._execute_condition.add(self.state)
+
+    def restore_context(self, context):
         pass
+        # context.update_concept(self._intent.key, self._intent)
+
+    def _execute(self):
+        log.debug("EXECUTE MixAgency({0})".format(self.tag))
+        if self.state == BizUnit.STATUS_DELAY_EXIST:
+            self._execute_condition.remove(BizUnit.STATUS_DELAY_EXIST)
+            self._dm._start_timer(self, ConfigDM.input_timeout, self._dm._delaywait_timeout)
+            log.debug("START_DELAY_TIMER MixAgency({0})".format(self.tag))
+            return
+
+        self._intent = self._dm.context["intent"]  # for restore
+        self.trigger_child.set_state(BizUnit.STATUS_TRIGGERED)
+        self._dm.stack.push(self.trigger_child)
+        self.trigger_child = None
+        self.set_state(BizUnit.STATUS_STACKWAIT)

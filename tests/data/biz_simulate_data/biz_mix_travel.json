@@ -179,7 +179,7 @@
                     "scope": "",
                     "trigger_concepts": [
                         "intent=spots.query",
-                        "location=*"
+                        "city=*"
                     ],
                     "target_concepts": [],
                     "timeout": 5,

@@ -1,6 +1,7 @@
 {
 
     "data": {
+        "id": "项目ID=1001;intent=where.query",
         "event_id": "项目ID=1001;intent=where.query",
         "tag": "biz12",
         "type": "TYPE_CLUSTER"
@@ -9,7 +10,8 @@
         {
            "data":{
                 "tag": "nike",
-                "agency_entrance": true,
+                "entrance": false,
+                "id": "intent=where.query:location=耐克",
                 "event_id": "intent=where.query:location=耐克",
                 "subject": "",
                 "scope": "",
@@ -19,7 +21,8 @@
                 ],
                 "target_concepts": [
                 ],
-                "timeout": 5
+                "timeout": 5,
+                "type": "TYPE_CLUSTER_RESPONSE"
             },
             "children": []
 
@@ -27,8 +30,9 @@
         {
             "data":{
                 "tag": "haidilao",
-                "agency_entrance": true,
+                "entrance": false,
                 "event_id": "intent=where.query:location=海底捞",
+                "id": "intent=where.query:location=海底捞",
                 "subject": "",
                 "scope": "",
                 "trigger_concepts": [
@@ -37,7 +41,8 @@
                 ],
                 "target_concepts": [
                 ],
-                "timeout": "5"
+                "timeout": "5",
+                "type": "TYPE_CLUSTER_RESPONSE"
             },
             "children": []
         }

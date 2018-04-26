@@ -59,60 +59,190 @@ def mock_cms_rpc(paths):
     cms_rpc.get_json_biztree = mock.Mock(return_value=json.dumps(root))
 
 
-def test_get_triggered_bizunits():
-    """
-    Test trigger a simple Agent;
-    Test trigger entrance_agent of Agency;
-    TODO: Test trigger None entrance_agent of Agency;
-    """
-    dm = DialogEngine()
-    fpath = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
-    fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
-    fpath3 = os.path.join(data_path, 'biz_simulate_data/biz_01_failed.json')
-    mock_cms_rpc([fpath, fpath2, fpath3])
-    dm.init_from_db("mock_domain_id")
-    concepts = [
-        Concept("intent", "where.query"),
-        Concept("location", "nike")
-    ]
-    dm._update_concepts(concepts)
-    for bizunit in dm._get_triggered_bizunits():
-        assert(bizunit.tag == 'where.query')
-
-    concepts = [
-        Concept("intent", "name.query"),
-    ]
-    dm._update_concepts(concepts)
-    for bizunit in dm._get_triggered_bizunits():
-        assert(bizunit.tag == 'name.query')
-
-
-
 class TestMixAgency(object):
 
     def _construct_dm(self):
         fpath1 = os.path.join(data_path, 'biz_simulate_data/biz_mix_travel.json')
         fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_mix_home.json')
         fpath3 = os.path.join(data_path, 'biz_simulate_data/biz_chat.json')
+        fpath4 = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
+        fpath5 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
         dm = DialogEngine()
         dm.debug_timeunit = 0.2
-        mock_cms_rpc([fpath1, fpath2, fpath3])
+        mock_cms_rpc([fpath1, fpath2, fpath3, fpath4, fpath5])
         dm.init_from_db("mock_domain_id")
         return dm
 
-    def test_weather(self):
+    def test_mix_trigger(self):
         dm = self._construct_dm()
-        import pdb
-        pdb.set_trace()
+        dm.process_concepts("sid001", [
+            Concept("intent", "consume.query"),
+        ])
+        assert(dm.is_waiting == False)
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)''')
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=None)
+                Concept(date=None)
+                Concept(intent=None)
+                Concept(location=None)'''
+        )
 
+        # 2
+        dm.process_concepts("sid002", [
+            Concept("intent", "travel.service"),
+        ])
+        valid_agents = [agent.tag for agent in dm._agenda.candicate_agents]
+        assert(set(valid_agents) == set([
+            'nike', 'zhou_hei_ya', 'home.service',
+            'travel.service', 'casual_talk', 'name.query'
+        ]))
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                mix_travel(STATUS_STACKWAIT)
+                travel.service(STATUS_WAIT_ACTION_CONFIRM)''')
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=None)
+                Concept(date=None)
+                Concept(intent=travel.service)
+                Concept(location=None)'''
+        )
+        dm.process_confirm('sid002', {
+            'code': 0,
+        })
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                mix_travel(STATUS_DELAY_EXIST)''')
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=None)
+                Concept(date=None)
+                Concept(intent=None)
+                Concept(location=None)'''
+        )
+        dm.process_concepts("sid003", [
+            Concept("intent", "consume.query"),
+        ])
+        # test ExpectAgenda
+        assert(str(dm._agenda) == '''
+            ValidIntents:
+                casual_talk
+                consume.query
+                home.service
+                left.query
+                name.query
+                travel.service
+                weather.query
+                where.query
+            ValidSlots:
+                city
+                date
+                intent
+                location'''
+        )
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                mix_travel(STATUS_STACKWAIT)
+                travel_consume.query(STATUS_WAIT_ACTION_CONFIRM)''')
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=None)
+                Concept(date=None)
+                Concept(intent=consume.query)
+                Concept(location=None)'''
+        )
+        assert(dm.is_waiting == True)
+        # 3
+        dm.process_confirm('sid003', {
+            'code': 0,
+        })
+        dm.process_concepts('sid004', [
+            Concept("intent", "weather.query"),
+            Concept("date", "明天"),
+            Concept("city", "深圳")
+        ])
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                mix_travel(STATUS_STACKWAIT)
+                mix_weather(STATUS_STACKWAIT)
+                weather.query(STATUS_STACKWAIT)
+                result(STATUS_WAIT_ACTION_CONFIRM)''')
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=深圳)
+                Concept(date=明天)
+                Concept(intent=weather.query)
+                Concept(location=None)'''
+        )
+        assert(dm.debug_loop == 12)
+        dm._cancel_timer()
 
+    def mix_trigger(self):
+        dm = self._construct_dm()
+        dm.process_concepts("sid001", [
+            Concept("intent", "consume.query"),
+        ])
+        dm.process_concepts("sid002", [
+            Concept("intent", "travel.service"),
+        ])
+        dm.process_confirm('sid002', {
+            'code': 0,
+        })
+        dm.process_concepts("sid003", [
+            Concept("intent", "consume.query"),
+        ])
+        dm.process_confirm('sid003', {
+            'code': 0,
+        })
+        dm.process_concepts('sid004', [
+            Concept("intent", "weather.query"),
+            Concept("date", "明天"),
+            Concept("city", "深圳")
+        ])
+        return dm
 
-if __name__ == '__main__':
-    #test_stack()
-    #test_init_biz_from_json_file()
-    #test_get_triggered_bizunits()
-    #test_process_confirm()
-    #tengine = TestEngine()
-    #tengine.test_engine()
-    tc = TestConceptsConfirm()
-    tc.test_process_confirm_case_agent_timeout()
+    def test_clear_and_share(self):
+        dm = self.mix_trigger()
+        dm.process_confirm('sid004', {
+            'code': 0,
+        })
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                mix_travel(STATUS_STACKWAIT)
+                mix_weather(STATUS_STACKWAIT)
+                weather.query(STATUS_DELAY_EXIST)''')
+        time.sleep(6 * dm.debug_timeunit)
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                mix_travel(STATUS_STACKWAIT)
+                mix_weather(STATUS_DELAY_EXIST)''')
+        assert(str(dm.context) == '''
+            Context:
+                Concept(city=深圳)
+                Concept(date=明天)
+                Concept(intent=None)
+                Concept(location=None)'''
+        )
+        dm.process_concepts("sid005", [
+            Concept("intent", "spots.query"),
+        ])
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                mix_travel(STATUS_STACKWAIT)
+                mix_weather(STATUS_STACKWAIT)
+                spots.query(STATUS_STACKWAIT)
+                all_city(STATUS_WAIT_ACTION_CONFIRM)''')
+        assert(dm.debug_loop == 19)
+
+    def clear_share_clear(self):
+        pass

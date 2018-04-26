@@ -54,6 +54,12 @@ class Agent(BizUnit):
                     self._dm.context.reset_concept(concept.key)
                     self.target_completed = False
                     log.debug("RESET_CONCEPT [{0}]".format(concept.key))
+        if not isinstance(self, TargetAgent):
+            self._dm.context.reset_concept("intent")
+
+    def satisfied(self):
+        return all([self._dm.context.satisfied(c) for c in self.trigger_concepts]) and\
+            self.trigger_concepts != []
 
     @property
     def subject(self):

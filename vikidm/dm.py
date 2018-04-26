@@ -14,6 +14,7 @@ from vikidm.units import (
     Agent,
     TargetAgent,
     BizUnit,
+    MixAgency,
     AbnormalHandler
 )
 from vikidm.util import cms_rpc
@@ -45,6 +46,10 @@ class Stack(object):
     """
     def __init__(self):
         self._items = []
+
+    @property
+    def items(self):
+        return self._items
 
     def is_empty(self):
         return self._items == []
@@ -83,6 +88,60 @@ class Stack(object):
         return "%s(%s)" % (name, ", ".join(kwargs))
 
 
+class ExpectAgenda(object):
+    def __init__(self, stack):
+        self._candicates = None
+        self._stack = stack
+
+    def compute_candicate_units(self):
+        candicates = self._tree_candicate_units()
+        candicates.extend(self._context_candicae_units())
+
+        self.valid_intents = set()
+        valid_concepts = []
+        for agent in candicates:
+            valid_concepts.extend(agent.target_concepts)
+            valid_concepts.extend(agent.trigger_concepts)
+            for concept in agent.trigger_concepts:
+                if concept.key == "intent":
+                    self.valid_intents.add(concept.value)
+        self.valid_slots = set([c.key for c in valid_concepts])
+        self.candicate_agents = set(candicates)
+
+    def _tree_candicate_units(self):
+        if self._candicates:
+            return self._candicates
+        self._candicates = self._get_candicates(self._stack.items[0])
+        return self._candicates
+
+    def _get_candicates(self, bizunit):
+        candicates = []
+        def visit_tree(unit):
+            # log.debug("visit %s" % unit.tag)
+            if isinstance(unit, Agent):
+                candicates.append(unit)
+            elif isinstance(unit, MixAgency):
+                for child in unit.children:
+                    if child.entrance or unit in self._stack.items:
+                        visit_tree(child)
+            else:
+                for child in unit.children:
+                    visit_tree(child)
+        visit_tree(bizunit)
+        return candicates
+
+    def _context_candicae_units(self):
+        candicates = []
+        for unit in self._stack.items[1:]:
+            candicates.extend(self._get_candicates(unit))
+        return candicates
+
+    def __repr__(self):
+        str_slots = "\n                ".join(["\n            ValidSlots:"] + ["{0}".format(c) for c in sorted(self.valid_slots)])
+        str_intents = "\n                ".join(["\n            ValidIntents:"] + ["{0}".format(c) for c in sorted(self.valid_intents)])
+        return str_intents + str_slots
+
+
 class DialogEngine(object):
     """ 对话管理单元 """
     def __init__(self):
@@ -95,6 +154,7 @@ class DialogEngine(object):
         self.debug_loop = 0
         self.debug_timeunit = 1  # 为了测试的时候加速时间计数
         self._timer_count = 0
+        self._agenda = ExpectAgenda(self.stack)
 
     @property
     def is_waiting(self):
@@ -157,7 +217,7 @@ class DialogEngine(object):
             log.debug("ROUND_RETURN BizUnit({0})".format(focus_unit.tag))
             focus_unit.round_back()
         else:
-            focus_unit.activate()
+            focus_unit.re_enter_after_child_done()
         log.debug("STATUS: \n{0}\n{1}".format(self.stack, self.context))
 
     def _cancel_timer(self):
@@ -172,7 +232,7 @@ class DialogEngine(object):
         self._timer.start()
 
     def process_concepts(self, sid, concepts):
-        log.info("PROCESS_CONCEPTS: {0}=====".format(concepts))
+        log.info("-------- {0} -------------------".format(concepts))
         if self._session.new_session(sid) or self.is_waiting:
             if self._session.new_session(sid):
                 # could be a remote error
@@ -181,16 +241,30 @@ class DialogEngine(object):
             log.debug("CANCEL_TIMER {0}({1})".format(self._timer.owner.__class__.__name__,
                                                      self._timer.owner.tag))
         self._session.begin_session(sid)
+        self._agenda.compute_candicate_units()
+        log.info(self._agenda)
         self._update_concepts(concepts)
         self._mark_completed_bizunits()
-        bizunits = self._get_triggered_bizunits()
-        if bizunits:
-            if bizunits[0].state == BizUnit.STATUS_TREEWAIT:
-                self.stack.push(bizunits[0])
-            bizunits[0].trigger()
+        self._trigger_bizunit()
+        ret = self.execute_focus_agent()
+        if ret is None:
+            self._session.end_session()
         log.info(self.stack)
         log.info(self.context)
-        return self.execute_focus_agent()
+        return ret
+
+    def _trigger_bizunit(self):
+        # 如果多个，都执行，就需要多个反馈，可能需要主动推送功能。
+        # 目前只支持返回一个。
+        for bizunit in self._agenda.candicate_agents:
+            if not isinstance(bizunit, Agent):
+                continue
+            if not bizunit.satisfied() or bizunit.target_completed:
+                continue
+            bizunit.hierarchy_trigger()
+            log.debug("Triggered Stack:")
+            log.debug(self.stack)
+            break
 
     def _handle_success_confirm(self):
         focus_unit = self.stack.top()
@@ -203,13 +277,13 @@ class DialogEngine(object):
         self.execute_focus_agent()
         self._session.end_session()
 
-    def process_confirm(self, data):
-        log.info("PROCESS_CONFIRM: {0}=====".format(data))
+    def process_confirm(self, sid, data):
+        log.info("========= {0} ===================".format(data))
         ret = {
             'code': 0,
             'message': ''
         }
-        if not self._session.valid_session(data['sid']):
+        if not self._session.valid_session(sid):
             return ret
         if data['code'] != 0:
             self._handle_abnormal(AbnormalHandler.ABNORMAL_ACTION_FAILED)
@@ -223,8 +297,16 @@ class DialogEngine(object):
         return ret
 
     def _update_concepts(self, concepts):
+        valid_concepts = []
+        for agent in self._agenda.candicate_agents:
+            valid_concepts.extend(agent.target_concepts)
+            valid_concepts.extend(agent.trigger_concepts)
+        valid_slots = set([c.key for c in valid_concepts])
         for concept in concepts:
-            self.context.update_concept(concept.key, concept)
+            if concept.key in valid_slots:
+                if (concept.key == "intent" and concept.value in self._agenda.valid_intents) or\
+                        concept.key != "intent":
+                    self.context.update_concept(concept.key, concept)
 
     def _init_context(self):
         for bizunit in self.biz_tree.all_nodes_itr():
@@ -233,22 +315,7 @@ class DialogEngine(object):
                     concept = copy.deepcopy(concept)
                     self.context.add_concept(concept)
 
-    def _get_triggered_bizunits(self):
-        # 如果多个，都执行，就需要多个反馈，可能需要主动推送功能。
-        # 目前只支持返回一个。
-        for bizunit in self.biz_tree.all_nodes_itr():
-            if isinstance(bizunit, Agent):
-                trigger_satisified = all([self.context.satisfied(c) for c in bizunit.trigger_concepts]) and\
-                    bizunit.trigger_concepts != []
-                if not trigger_satisified:
-                    continue
-                if isinstance(bizunit, Agent) and not bizunit.parent.is_root():
-                    if bizunit.target_completed:
-                        continue
-                    bizunit.parent.trigger_child = bizunit
-                    return [bizunit.parent]
-                else:
-                    return [bizunit]
+
 
     def _mark_completed_bizunits(self):
         for bizunit in self.biz_tree.all_nodes_itr():

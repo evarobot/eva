@@ -31,7 +31,6 @@
 			},
 			"output": {
 				"event_id": "intent=where.query:location=海底捞"
-
 			}
 		}]
 	}
