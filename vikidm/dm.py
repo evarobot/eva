@@ -132,9 +132,17 @@ class ExpectAgenda(object):
 
     def _context_candicae_units(self):
         candicates = []
-        for unit in self._stack.items[1:]:
+        for unit in self._filtered_hierarchy_units():
             candicates.extend(self._get_candicates(unit))
         return candicates
+
+    def _filtered_hierarchy_units(self):
+        # return agent which is in the hierarchy path and not root
+        focus = self._stack.top()
+        unit = focus
+        while not unit.is_root():
+            yield unit
+            unit = unit.parent
 
     def __repr__(self):
         str_slots = "\n                ".join(["\n            ValidSlots:"] + ["{0}".format(c) for c in sorted(self.valid_slots)])
@@ -148,11 +156,11 @@ class DialogEngine(object):
         self.context = Context()
         self.biz_tree = BizTree(self)
         self.stack = Stack()
+        self.debug_loop = 0
+        self.debug_timeunit = 1  # 为了测试的时候加速时间计数
         self._timer = None
         self._datetime = datetime.now()
         self._session = Session()
-        self.debug_loop = 0
-        self.debug_timeunit = 1  # 为了测试的时候加速时间计数
         self._timer_count = 0
         self._agenda = ExpectAgenda(self.stack)
 
@@ -160,8 +168,8 @@ class DialogEngine(object):
     def is_waiting(self):
         return self._timer_count > 0
 
-    def init_from_db(self, domain_name):
-        json_tree = cms_rpc.get_json_biztree(domain_name)
+    def init_from_db(self, domain_id):
+        json_tree = cms_rpc.get_json_biztree(domain_id)
         self.biz_tree.init_from_json(json_tree)
         self._init_context()
         node = self.biz_tree.get_node(self.biz_tree.root)
