@@ -3,6 +3,7 @@
         "tag": "FAILED|name.query",
         "entrance": false,
         "event_id": "FAILED|name.query",
+        "id": "FAILED|name.query",
         "subject": "主题",
         "scope": "可见域",
         "trigger_concepts": [

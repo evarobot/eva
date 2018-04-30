@@ -93,7 +93,12 @@ class Context(object):
 
     def satisfied(self, concept):
         target = self._all_concepts.get(concept.key, None)
+        #  TODO:  remove *
         if target and target == concept or (concept.value == "*" and target.dirty):
+            return True
+        if target and target.dirty and concept.value.startswith("@"):
+            # mathch any
+            # target result
             return True
         return False
 

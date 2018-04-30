@@ -7,7 +7,9 @@ import time
 from datetime import datetime
 from treelib.tree import NodeIDAbsentError
 
+from vikidm import errors
 from vikicommon.timer import TimerReset
+from vikicommon.collections import OrderedSet
 from vikidm.context import Context
 from vikidm.biztree import BizTree
 from vikidm.units import (
@@ -94,8 +96,9 @@ class ExpectAgenda(object):
         self._stack = stack
 
     def compute_candicate_units(self):
-        candicates = self._tree_candicate_units()
-        candicates.extend(self._context_candicae_units())
+        # ordered by context priority
+        candicates = self._context_candicae_units()
+        candicates.extend(self._tree_candicate_units())
 
         self.valid_intents = set()
         valid_concepts = []
@@ -106,7 +109,8 @@ class ExpectAgenda(object):
                 if concept.key == "intent":
                     self.valid_intents.add(concept.value)
         self.valid_slots = set([c.key for c in valid_concepts])
-        self.candicate_agents = set(candicates)
+        self.valid_slots.remove("intent")
+        self.candicate_agents = OrderedSet(candicates)
 
     def _tree_candicate_units(self):
         if self._candicates:
@@ -169,8 +173,10 @@ class DialogEngine(object):
         return self._timer_count > 0
 
     def init_from_db(self, domain_id):
-        json_tree = cms_rpc.get_json_biztree(domain_id)
-        self.biz_tree.init_from_json(json_tree)
+        ret = cms_rpc.get_dm_biztree(domain_id)
+        if ret['code'] != 0:
+            raise errors.RPCError
+        self.biz_tree.init_from_json(ret['tree'])
         self._init_context()
         node = self.biz_tree.get_node(self.biz_tree.root)
         node.set_state(BizUnit.STATUS_STACKWAIT)
@@ -180,7 +186,9 @@ class DialogEngine(object):
         event_id = None
         focus_unit = self.stack.top()
         while focus_unit.executable():
-            event_id = focus_unit.execute()
+            ret = focus_unit.execute()
+            if event_id is None and ret is not None:
+                event_id = ret
             focus_unit = self.stack.top()
             self.debug_loop += 1
         return event_id
@@ -261,6 +269,14 @@ class DialogEngine(object):
         log.info(self.context)
         return ret
 
+    def get_candicate_units(self):
+        self._agenda.compute_candicate_units()
+        return {
+            "valid_slots": list(self._agenda.valid_slots),
+            "valid_intents": list(self._agenda.valid_intents),
+            "agents": [(agent.tag, agent.intent, agent.identifier) for agent in self._agenda.candicate_agents]
+        }
+
     def _trigger_bizunit(self):
         # 如果多个，都执行，就需要多个反馈，可能需要主动推送功能。
         # 目前只支持返回一个。
@@ -270,6 +286,11 @@ class DialogEngine(object):
             if not bizunit.satisfied() or bizunit.target_completed:
                 continue
             bizunit.hierarchy_trigger()
+            for unit in self.stack.items[-1:]:
+                if unit.state == BizUnit.STATUS_TRIGGERED:
+                    break
+                unit.pop_from_stack()
+                self.stack.pop()
             log.debug("Triggered Stack:")
             log.debug(self.stack)
             break

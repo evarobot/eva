@@ -32,8 +32,11 @@ class Agency(BizUnit):
             return ClusterAgency(dm, tag, data)
         elif data['type'] == Agency.TYPE_TARGET:
             return TargetAgency(dm, tag, data)
-        if data['type'] == Agency.TYPE_MIX:
+        elif data['type'] == Agency.TYPE_MIX:
             return MixAgency(dm, tag, data)
+        else:
+            assert(False)
+
 
     @property
     def state(self):
@@ -78,7 +81,7 @@ class TargetAgency(Agency):
     """"""
     def __init__(self, dm, tag, data):
         super(TargetAgency, self).__init__(dm, tag, data)
-        self.event_id = data['event_id']
+        self.event_id = ""
         self._timer = None
         self._target_concepts = None
 
@@ -125,12 +128,14 @@ class TargetAgency(Agency):
         log.debug("EXECUTE TargetAgency({0})".format(self.tag))
         if self.state == BizUnit.STATUS_WAIT_TARGET:
             self._execute_condition.remove(BizUnit.STATUS_WAIT_TARGET)
-            self._dm._start_timer(self, ConfigDM.input_timeout, self._dm._inputwait_timeout)
+            self._dm._start_timer(self, ConfigDM.input_timeout,
+                                  self._dm._inputwait_timeout)
             log.debug("START_INPUT_TIMER TargetAgency({0})".format(self.tag))
             return
         elif self.state == BizUnit.STATUS_DELAY_EXIST:
             self._execute_condition.remove(BizUnit.STATUS_DELAY_EXIST)
-            self._dm._start_timer(self, ConfigDM.input_timeout, self._dm._delaywait_timeout)
+            self._dm._start_timer(self, ConfigDM.input_timeout,
+                                  self._dm._delaywait_timeout)
             log.debug("START_DELAY_TIMER TargetAgency({0})".format(self.tag))
             return
 

@@ -78,11 +78,12 @@ class DefaultHandlerAgent(Agent):
             'entrance': False,
             'trigger_concepts': {},
             'state': '',
+            'id': 'default_handler',
             'target_concepts': [],
         })
         self._trigger_concepts = []
         self._target_concepts = []
-        super(DefaultHandlerAgent, self).__init__(dm, data["event_id"], data)
+        super(DefaultHandlerAgent, self).__init__(dm, data["id"], data)
 
     def _execute(self):
         if self.state == BizUnit.STATUS_TRIGGERED:

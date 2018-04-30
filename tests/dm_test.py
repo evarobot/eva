@@ -56,7 +56,11 @@ def mock_cms_rpc(paths):
         "children": []
     }
     root["children"] = d_subtrees
-    cms_rpc.get_json_biztree = mock.Mock(return_value=json.dumps(root))
+    data = {
+        "code": 0,
+        "tree": json.dumps(root)
+    }
+    cms_rpc.get_dm_biztree = mock.Mock(return_value=data)
 
 
 class TestMixAgency(object):
@@ -91,18 +95,29 @@ class TestMixAgency(object):
         )
 
         # 2
+        context = dm.get_candicate_units()
+        priority_nodes = [agent[0] for agent in context["agents"]]
+        assert(priority_nodes == [
+            'travel.service', 'home.service', 'casual_talk',
+            'nike', 'zhou_hei_ya', 'name.query'
+        ])
+        assert(context["valid_slots"] == ["location"])
         dm.process_concepts("sid002", [
             Concept("intent", "travel.service"),
         ])
-        valid_agents = [agent.tag for agent in dm._agenda.candicate_agents]
-        assert(set(valid_agents) == set([
-            'nike', 'zhou_hei_ya', 'home.service',
-            'travel.service', 'casual_talk', 'name.query'
-        ]))
+        context = dm.get_candicate_units()
+        priority_nodes = [agent[0] for agent in context["agents"]]
+        assert(priority_nodes == [
+            'travel.service', 'travel_consume.query', 'travel_left.query',
+            'default@weather.query', 'city', 'date', 'result',
+            'home.service', 'casual_talk', u'nike', 'zhou_hei_ya',
+            'name.query'
+        ])
+        assert(set(context["valid_slots"]) == set(["date", "city", "location"]))
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                mix_travel(STATUS_STACKWAIT)
+                Mix(travel.service)(STATUS_STACKWAIT)
                 travel.service(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
@@ -117,7 +132,7 @@ class TestMixAgency(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                mix_travel(STATUS_DELAY_EXIST)''')
+                Mix(travel.service)(STATUS_DELAY_EXIST)''')
         assert(str(dm.context) == '''
             Context:
                 Concept(city=None)
@@ -142,13 +157,12 @@ class TestMixAgency(object):
             ValidSlots:
                 city
                 date
-                intent
                 location'''
         )
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                mix_travel(STATUS_STACKWAIT)
+                Mix(travel.service)(STATUS_STACKWAIT)
                 travel_consume.query(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
@@ -170,8 +184,8 @@ class TestMixAgency(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                mix_travel(STATUS_STACKWAIT)
-                mix_weather(STATUS_STACKWAIT)
+                Mix(travel.service)(STATUS_STACKWAIT)
+                Mix(weather.query)(STATUS_STACKWAIT)
                 weather.query(STATUS_STACKWAIT)
                 result(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
@@ -181,6 +195,14 @@ class TestMixAgency(object):
                 Concept(intent=weather.query)
                 Concept(location=None)'''
         )
+        context = dm.get_candicate_units()
+        priority_nodes = [agent[0] for agent in context["agents"]]
+        assert(priority_nodes == [
+            'result', 'default@weather.query', 'city', 'date',
+            'all_city', 'travel.service', 'travel_consume.query',
+            'travel_left.query', 'home.service', 'casual_talk',
+            'nike', 'zhou_hei_ya', 'name.query'
+        ])
         assert(dm.debug_loop == 12)
         dm._cancel_timer()
 
@@ -216,15 +238,15 @@ class TestMixAgency(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                mix_travel(STATUS_STACKWAIT)
-                mix_weather(STATUS_STACKWAIT)
+                Mix(travel.service)(STATUS_STACKWAIT)
+                Mix(weather.query)(STATUS_STACKWAIT)
                 weather.query(STATUS_DELAY_EXIST)''')
         time.sleep(6 * dm.debug_timeunit)
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                mix_travel(STATUS_STACKWAIT)
-                mix_weather(STATUS_DELAY_EXIST)''')
+                Mix(travel.service)(STATUS_STACKWAIT)
+                Mix(weather.query)(STATUS_DELAY_EXIST)''')
         assert(str(dm.context) == '''
             Context:
                 Concept(city=深圳)
@@ -238,8 +260,8 @@ class TestMixAgency(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                mix_travel(STATUS_STACKWAIT)
-                mix_weather(STATUS_STACKWAIT)
+                Mix(travel.service)(STATUS_STACKWAIT)
+                Mix(weather.query)(STATUS_STACKWAIT)
                 spots.query(STATUS_STACKWAIT)
                 all_city(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(dm.debug_loop == 19)

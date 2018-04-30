@@ -6,6 +6,7 @@ import logging
 from vikidm.libs.handler import RobotAPIHandler
 from vikidm.libs.route import Route
 from vikidm.robot import DMRobot
+from evecms.models import Domain
 log = logging.getLogger(__name__)
 
 
@@ -16,6 +17,7 @@ class QAHandler(RobotAPIHandler):
         ret = {
             "name": "hello world"
         }
-        robot = DMRobot.get_robot(self.data['robot_id'], self.data['project'])
+        domain_id = Domain.objects.get(name=self.data["project"])
+        robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
 
         return self.write_json(ret)

@@ -56,7 +56,11 @@ def mock_cms_rpc(paths):
         "children": []
     }
     root["children"] = d_subtrees
-    cms_rpc.get_json_biztree = mock.Mock(return_value=json.dumps(root))
+    data = {
+        "code": 0,
+        "tree": json.dumps(root)
+    }
+    cms_rpc.get_dm_biztree = mock.Mock(return_value=data)
 
 
 def construct_dm():

@@ -68,7 +68,6 @@ class BizUnit(treelib.Node):
         while unit.parent.state == BizUnit.STATUS_TREEWAIT:
             unit.parent.trigger_child = unit
             unit = unit.parent
-
         if unit.parent.is_root():
             # none stack parent
             # uint.state == treewait

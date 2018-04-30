@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 class Agent(BizUnit):
 
     def __init__(self, dm, tag, data):
-        data = {   # 用于tree.to_json(), 方便调试。
+        filtered_data = {   # 用于tree.to_json(), 方便调试。
             'subject': data['subject'],
             'scope': data['scope'],
             'event_id': data['event_id'],
@@ -23,11 +23,14 @@ class Agent(BizUnit):
             'state': BizUnit.STATUS_TREEWAIT,
             'target_concepts': data['target_concepts']
         }
-
-        self._trigger_concepts = list(self._deserialize_trigger_concepts(data))
-        self._target_concepts = list(self._deserialize_target_concepts(data))
+        self._trigger_concepts = list(self._deserialize_trigger_concepts(filtered_data))
+        self._target_concepts = list(self._deserialize_target_concepts(filtered_data))
         self.target_completed = False
-        super(Agent, self).__init__(dm, data["event_id"], tag, data)
+        self.children = []
+        if "id" not in data:
+            import pdb
+            pdb.set_trace()
+        super(Agent, self).__init__(dm, data["id"], tag, filtered_data)
 
     @classmethod
     def get_agent(self, dm, tag, data):
@@ -36,6 +39,15 @@ class Agent(BizUnit):
         elif data["trigger_concepts"] != []:
             return TriggerAgent(dm, tag, data)
         assert(False)
+
+    @property
+    def intent(self):
+        for concept in self.trigger_concepts:
+            if concept.key == "intent":
+                return concept.value
+        #  TODO:  <28-04-18, yourname> #
+        if self.trigger_concepts:
+            assert(False)
 
     def activate(self):
         if self.state not in [BizUnit.STATUS_ACTION_COMPLETED, BizUnit.STATUS_ABNORMAL]:
@@ -147,13 +159,12 @@ class TargetAgent(Agent):
         if self.state == BizUnit.STATUS_TRIGGERED:
             log.debug("WAIT_CONFIRM TargetAgent(%s)" % self.tag)
             self.set_state(BizUnit.STATUS_WAIT_ACTION_CONFIRM)
-
-            if self.timeout == 0:
+            #if self.timeout == 0:
                 # 默认的异常处理节点倒计时总是为0
-                self.set_state(BizUnit.STATUS_ACTION_COMPLETED)
-            else:
-                self._dm._start_timer(self, self.timeout, self._dm._actionwait_timeout)
-                log.debug("START_ACTION_TIMER TargetAgent({0})".format(self.tag))
+                # self.set_state(BizUnit.STATUS_ABNORMAL)
+            # else:
+            self._dm._start_timer(self, self.timeout, self._dm._actionwait_timeout)
+            log.debug("START_ACTION_TIMER TargetAgent({0})".format(self.tag))
 
         elif self.state == BizUnit.STATUS_WAIT_TARGET:
             # start timer
