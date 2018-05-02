@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-define("port", type=int, default=ConfigDM.port
+define("port", type=int, default=ConfigDM.port,
        help="the server port")
 define("address", type=str, default=ConfigDM.host,
        help="the server address")
