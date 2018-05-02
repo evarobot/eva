@@ -195,11 +195,7 @@ class TriggerAgent(Agent):
             log.debug("WAIT_CONFIRM Agent(%s)" % self.tag)
             self.set_state(BizUnit.STATUS_WAIT_ACTION_CONFIRM)
 
-            if self.timeout == 0:
-                # 默认的异常处理节点倒计时总是为0
-                self.set_state(BizUnit.STATUS_ACTION_COMPLETED)
-            else:
-                self._dm._start_timer(self, self.timeout, self._dm._actionwait_timeout)
-                log.debug("START_ACTION_TIMER TriggerAgent({0})".format(self.tag))
+            self._dm._start_timer(self, self.timeout, self._dm._actionwait_timeout)
+            log.debug("START_ACTION_TIMER TriggerAgent({0})".format(self.tag))
 
         return self.event_id

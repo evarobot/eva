@@ -37,7 +37,6 @@ class Agency(BizUnit):
         else:
             assert(False)
 
-
     @property
     def state(self):
         return self.data['state']

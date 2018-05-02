@@ -113,6 +113,17 @@ class VersionedHandler(RequestHandler):
 class RobotAPIHandler(VersionedHandler):
     """发给机器人的API基类"""
 
+    def set_default_headers(self):
+        # COR
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
+        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+
+    def options(self):
+        # no body
+        self.set_status(204)
+        self.finish()
+
     def prepare(self):
         data_raw = self.request.body
         try:

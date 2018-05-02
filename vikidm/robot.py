@@ -3,9 +3,9 @@
 import logging
 from vikidm.dm import DialogEngine
 from vikidm.context import Concept
-from vikidm.util import nlu_robot
+from vikidm.util import nlu_robot, cms_rpc
+from vikidm.chat import CasualTalk
 from evecms.models import Domain
-
 log = logging.getLogger(__name__)
 
 
@@ -40,14 +40,23 @@ class DMRobot(object):
             for slot_name, value_name in ret["slots"].iteritems():
                 concepts.append(Concept(slot_name, value_name))
             event_id = self._dialog.process_concepts(sid, concepts)
+            self._dialog.process_confirm(sid, {'code': 0})  # 模拟执行成功 TODO
+            action = cms_rpc.event_id_to_answer(self.domain_id, event_id)
+            if ret["intent"] == "casual_talk":
+                tts = CasualTalk.get_tuling_answer(question)
+                action["tts"] = tts
             return {
                 "code": 0,
-                "sid": "",
+                "sid": sid,
                 "event_id": event_id,
-                "action": {},
+                "action": action,
                 "nlu": {
                     "intent": ret["intent"],
                     "slots": ret["slots"]
+                },
+                "debug": {
+                    "stack": str(self._dialog.stack),
+                    "context": str(self._dialog.context),
                 }
             }
 
@@ -58,8 +67,8 @@ class DMRobot(object):
     def process_event(self, event_id):
         pass
 
-    def process_confirm(self, d_confirm):
-        pass
+    def process_confirm(self, sid, d_confirm):
+        return self._dialog.process_confirm(sid, d_confirm)
 
     @classmethod
     def get_robot(self, robotid, domain_id):
@@ -69,6 +78,12 @@ class DMRobot(object):
         robot = DMRobot(robotid, domain_id)
         DMRobot.robots_pool[robotid] = robot
         return robot
+
+    @classmethod
+    def reset_robot(self, robotid, domain_id):
+        robot = DMRobot(robotid, domain_id)
+        DMRobot.robots_pool[robotid] = robot
+        return True
 
     def get_context(self):
         return self._dialog.get_candicate_units()

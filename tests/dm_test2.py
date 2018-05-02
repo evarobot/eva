@@ -51,7 +51,7 @@ def mock_cms_rpc(paths):
             "subject": "",
             "scope": "",
             "timeout": "5",
-            "type": "TYPE_ROOT"
+            "type": "TYPE_MIX"
         },
         "children": []
     }
@@ -115,7 +115,11 @@ class TestAgentCase(object):
         assert(dm.context['intent'].value == 'name.query')
         assert(dm._session.valid_session("sid001"))
         assert(dm.debug_loop == 1)
-        dm._cancel_timer()
+        time.sleep(6 * dm.debug_timeunit)
+        time.sleep(6 * dm.debug_timeunit)
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)''')
 
     @classmethod
     def name_input(self):
@@ -131,7 +135,7 @@ class TestAgentCase(object):
             'code': 0,
             'message': ''
         })
-        assert(dm.debug_loop == 2)
+        assert(dm.debug_loop == 1)
         assert(len(dm.stack) == 1)
         assert(dm.stack.top().tag == 'root')
 
@@ -141,7 +145,7 @@ class TestAgentCase(object):
             'code': -1,
             'message': ''
         })
-        assert(dm.debug_loop == 6)
+        assert(dm.debug_loop == 5)
         assert(len(dm.stack) == 1)
         assert(dm._session._sid is None)
         assert(dm.context['intent'].value is None)
@@ -177,7 +181,7 @@ class TestClusterAgencyCase(object):
             'code': 0,
             'message': ''
         })
-        assert(dm.debug_loop == 5)
+        assert(dm.debug_loop == 3)
         assert(len(dm.stack) == 1)
         assert(dm._session._sid is None)
         assert(dm.context['intent'].value is None)
@@ -194,7 +198,7 @@ class TestClusterAgencyCase(object):
         assert(dm._session._sid is None)
         assert(dm.context['intent'].value is None)
         assert(dm.context['location'].value is None)
-        assert(dm.debug_loop == 8)
+        assert(dm.debug_loop == 6)
 
 
 class TestTargetAgencyCase(object):
@@ -381,7 +385,7 @@ class TestTiemoutCase(object):
         time.sleep(6 * dm.debug_timeunit)
         assert(dm.is_waiting == False)
         assert(len(dm.stack) == 1)
-        assert(dm.debug_loop == 9)
+        assert(dm.debug_loop == 7)
         assert(dm.context["intent"].value == None)
 
 
@@ -398,7 +402,7 @@ class TestSessionCase(object):
         assert(dm.is_waiting == True)
         time.sleep(6 * dm.debug_timeunit)
         assert(dm.is_waiting == False)
-        assert(dm.debug_loop == 6)
+        assert(dm.debug_loop == 5)
 
 
     def test_wait_action_agent_switch_to_chat(self):
@@ -416,7 +420,7 @@ class TestSessionCase(object):
         assert(len(dm.stack) == 1)
         assert(dm.context['intent'].value is None)
         assert(dm.is_waiting == False)
-        assert(dm.debug_loop == 4)
+        assert(dm.debug_loop == 2)
 
     def test_target_agency_wait_switch_to_chat(self):
         dm = TestTargetAgencyCase.default_triggered()
@@ -480,7 +484,7 @@ class TestSessionCase(object):
                 Concept(intent=None)
                 Concept(location=None)'''
         )
-        assert(dm.debug_loop == 12)
+        assert(dm.debug_loop == 7)
         assert(dm.is_waiting == False)
 
 

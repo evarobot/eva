@@ -51,7 +51,7 @@ def mock_cms_rpc(paths):
             "subject": "",
             "scope": "",
             "timeout": "5",
-            "type": "TYPE_ROOT"
+            "type": "TYPE_MIX"
         },
         "children": []
     }
@@ -203,7 +203,7 @@ class TestMixAgency(object):
             'travel_left.query', 'home.service', 'casual_talk',
             'nike', 'zhou_hei_ya', 'name.query'
         ])
-        assert(dm.debug_loop == 12)
+        assert(dm.debug_loop == 4)
         dm._cancel_timer()
 
     def mix_trigger(self):
@@ -264,7 +264,7 @@ class TestMixAgency(object):
                 Mix(weather.query)(STATUS_STACKWAIT)
                 spots.query(STATUS_STACKWAIT)
                 all_city(STATUS_WAIT_ACTION_CONFIRM)''')
-        assert(dm.debug_loop == 19)
+        assert(dm.debug_loop == 3)
 
     def clear_share_clear(self):
         pass

@@ -33,7 +33,7 @@ class Session(object):
         self._sid = sid
 
     def valid_session(self, sid):
-        return sid >= self._sid
+        return self._sid and sid >= self._sid
 
     def end_session(self):
         self._sid = None
@@ -232,7 +232,7 @@ class DialogEngine(object):
         if _to_pop_unit.parent and _to_pop_unit.parent != focus_unit:
             log.debug("ROUND_RETURN BizUnit({0})".format(focus_unit.tag))
             focus_unit.round_back()
-        else:
+        elif not focus_unit.is_root():  # make sure root never tirggered
             focus_unit.re_enter_after_child_done()
         log.debug("STATUS: \n{0}\n{1}".format(self.stack, self.context))
 
@@ -248,6 +248,7 @@ class DialogEngine(object):
         self._timer.start()
 
     def process_concepts(self, sid, concepts):
+        self.debug_loop = 0
         log.info("-------- {0} -------------------".format(concepts))
         if self._session.new_session(sid) or self.is_waiting:
             if self._session.new_session(sid):
@@ -268,6 +269,27 @@ class DialogEngine(object):
         log.info(self.stack)
         log.info(self.context)
         return ret
+
+    def process_confirm(self, sid, data):
+        log.info("========= {0} ===================".format(data))
+        self.debug_loop = 0
+        ret = {
+            'code': 0,
+            'message': ''
+        }
+        if not self._session.valid_session(sid):
+            return ret
+        if data['code'] != 0:
+            self._handle_abnormal(AbnormalHandler.ABNORMAL_ACTION_FAILED)
+            self._cancel_timer()
+            log.debug("CANCEL_TIMER {0}({1})".format(self._timer.owner.__class__.__name__,
+                                                    self._timer.owner.tag))
+        else:
+            self._handle_success_confirm()
+        log.info(self.stack)
+        log.info(self.context)
+        return ret
+
 
     def get_candicate_units(self):
         self._agenda.compute_candicate_units()
@@ -305,25 +327,6 @@ class DialogEngine(object):
         focus_unit.confirm()
         self.execute_focus_agent()
         self._session.end_session()
-
-    def process_confirm(self, sid, data):
-        log.info("========= {0} ===================".format(data))
-        ret = {
-            'code': 0,
-            'message': ''
-        }
-        if not self._session.valid_session(sid):
-            return ret
-        if data['code'] != 0:
-            self._handle_abnormal(AbnormalHandler.ABNORMAL_ACTION_FAILED)
-            self._cancel_timer()
-            log.debug("CANCEL_TIMER {0}({1})".format(self._timer.owner.__class__.__name__,
-                                                    self._timer.owner.tag))
-        else:
-            self._handle_success_confirm()
-        log.info(self.stack)
-        log.info(self.context)
-        return ret
 
     def _update_concepts(self, concepts):
         valid_concepts = []
