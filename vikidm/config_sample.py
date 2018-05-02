@@ -12,9 +12,20 @@ def init():
     pass
 
 
-
 class _ConfigDM(object):
     input_timeout = 5.0
+    _host = "0.0.0.0"
+    _port = 80
+
+    @property
+    def host(self):
+        host = os.environ.get("DM_HOST")
+        return host if host is not None else self._host
+
+    @property
+    def port(self):
+        port = os.environ.get("DM_PORT")
+        return port if port is not None else self._port
 
 class _ConfigLog(object):
     _log_level = 'INFO'

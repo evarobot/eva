@@ -7,6 +7,7 @@ from tornado.options import define, parse_command_line, options
 
 from vikidm.libs.route import Route
 from vikidm.controller import init_controllers
+from vikidm.config import ConfigDM
 
 from vikidm.config import ConfigLog
 from vikicommon.log import init_logger
@@ -16,9 +17,9 @@ log = logging.getLogger(__name__)
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-define("port", type=int, default=8888,
+define("port", type=int, default=ConfigDM.port
        help="the server port")
-define("address", type=str, default='0.0.0.0',
+define("address", type=str, default=ConfigDM.host,
        help="the server address")
 define("debug", type=bool, default=False,
        help="switch debug mode")
