@@ -12,11 +12,26 @@ def init():
     pass
 
 
+class _ConfigDM(object):
+    input_timeout = 5.0
+    _host = "0.0.0.0"
+    _port = 80
+
+    @property
+    def host(self):
+        host = os.environ.get("DM_HOST")
+        return host if host is not None else self._host
+
+    @property
+    def port(self):
+        port = os.environ.get("DM_PORT")
+        return port if port is not None else self._port
+
 class _ConfigLog(object):
     _log_level = 'INFO'
     log_to_file = True
     log_to_console = True
-    log_path = '/var/log/viki_qa/'
+    log_path = '/var/log/vikidm/'
 
     @property
     def log_level(self):
@@ -67,7 +82,7 @@ class _ConfigMongo:
 
 
 class _ConfigApps(object):
-    data_path = "/src/VikiQA/data"
+    data_path = "/src/VikiDM/data"
     apps_path = os.path.join(data_path, "apps")
 
 
@@ -97,3 +112,4 @@ ConfigRedis = _ConfigRedis()
 ConfigLog = _ConfigLog()
 ConfigApps = _ConfigApps()
 ConfigNeo4j = _ConfigNeo4j()
+ConfigDM = _ConfigDM()
