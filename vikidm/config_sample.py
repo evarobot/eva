@@ -12,6 +12,10 @@ def init():
     pass
 
 
+
+class _ConfigDM(object):
+    input_timeout = 5.0
+
 class _ConfigLog(object):
     _log_level = 'INFO'
     log_to_file = True
@@ -97,3 +101,4 @@ ConfigRedis = _ConfigRedis()
 ConfigLog = _ConfigLog()
 ConfigApps = _ConfigApps()
 ConfigNeo4j = _ConfigNeo4j()
+ConfigDM = _ConfigDM()
