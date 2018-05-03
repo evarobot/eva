@@ -15,7 +15,7 @@ def init():
 class _ConfigDM(object):
     input_timeout = 5.0
     _host = "0.0.0.0"
-    _port = 80
+    _port = 9999
 
     @property
     def host(self):
