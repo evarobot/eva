@@ -33,4 +33,5 @@ log.debug(log.level)
 application.settings = {"debug": True}
 app_server = tornado.httpserver.HTTPServer(application, xheaders=True)
 app_server.listen(options.port, options.address)
+log.info("listening: http://{0}:{1}".format(ConfigDM.host, ConfigDM.port))
 tornado.ioloop.IOLoop.instance().start()
