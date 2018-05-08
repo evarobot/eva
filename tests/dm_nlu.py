@@ -86,7 +86,7 @@ class TestDM(object):
             Stack:
                 root(STATUS_STACKWAIT)
                 Mix(travel.query)(STATUS_STACKWAIT)
-                Mix(weather.query)(STATUS_STACKWAIT)
+                天气查询(STATUS_STACKWAIT)
                 weather.query(STATUS_DELAY_EXIST)''')
         ret = dm_robot.process_question("sid0005", u"附近有什么景点")
         assert(ret["nlu"]["intent"] == "spots.query")

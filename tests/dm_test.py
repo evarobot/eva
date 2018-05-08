@@ -48,6 +48,7 @@ def mock_cms_rpc(paths):
             "tag": "root",
             "entrance": False,
             "event_id": "root",
+            "title": "Mix(root)",
             "subject": "",
             "scope": "",
             "timeout": "5",
@@ -77,6 +78,19 @@ class TestMixAgency(object):
         dm.init_from_db("mock_domain_id")
         return dm
 
+    def test_multi_entrance(self):
+        dm = self._construct_dm()
+        dm.process_concepts("sid002", [
+            Concept("intent", "weather.query"),
+        ])
+        assert(str(dm.stack) == '''
+            Stack:
+                root(STATUS_STACKWAIT)
+                Mix(Mix(weather.query))(STATUS_STACKWAIT)
+                Mix(weather.query)(STATUS_STACKWAIT)
+                weather.query(STATUS_STACKWAIT)
+                default@weather.query(STATUS_WAIT_ACTION_CONFIRM)''')
+
     def test_mix_trigger(self):
         dm = self._construct_dm()
         dm.process_concepts("sid001", [
@@ -98,10 +112,11 @@ class TestMixAgency(object):
         context = dm.get_candicate_units()
         priority_nodes = [agent[0] for agent in context["agents"]]
         assert(priority_nodes == [
-            'travel.service', 'home.service', 'casual_talk',
-            'nike', 'zhou_hei_ya', 'name.query'
+            u'travel.service', u'default@weather.query', u'city',
+            u'date', u'result', u'home.service', u'casual_talk',
+            u'nike', u'zhou_hei_ya', u'name.query'
         ])
-        assert(context["valid_slots"] == ["location"])
+        assert(set(context["valid_slots"]) == set(["date", "city", "location"]))
         dm.process_concepts("sid002", [
             Concept("intent", "travel.service"),
         ])
@@ -117,7 +132,7 @@ class TestMixAgency(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                Mix(travel.service)(STATUS_STACKWAIT)
+                Mix(Mix(weather.query))(STATUS_STACKWAIT)
                 travel.service(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
@@ -132,7 +147,7 @@ class TestMixAgency(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                Mix(travel.service)(STATUS_DELAY_EXIST)''')
+                Mix(Mix(weather.query))(STATUS_DELAY_EXIST)''')
         assert(str(dm.context) == '''
             Context:
                 Concept(city=None)
@@ -162,7 +177,7 @@ class TestMixAgency(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                Mix(travel.service)(STATUS_STACKWAIT)
+                Mix(Mix(weather.query))(STATUS_STACKWAIT)
                 travel_consume.query(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
@@ -184,7 +199,7 @@ class TestMixAgency(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                Mix(travel.service)(STATUS_STACKWAIT)
+                Mix(Mix(weather.query))(STATUS_STACKWAIT)
                 Mix(weather.query)(STATUS_STACKWAIT)
                 weather.query(STATUS_STACKWAIT)
                 result(STATUS_WAIT_ACTION_CONFIRM)''')
@@ -238,14 +253,14 @@ class TestMixAgency(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                Mix(travel.service)(STATUS_STACKWAIT)
+                Mix(Mix(weather.query))(STATUS_STACKWAIT)
                 Mix(weather.query)(STATUS_STACKWAIT)
                 weather.query(STATUS_DELAY_EXIST)''')
         time.sleep(6 * dm.debug_timeunit)
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                Mix(travel.service)(STATUS_STACKWAIT)
+                Mix(Mix(weather.query))(STATUS_STACKWAIT)
                 Mix(weather.query)(STATUS_DELAY_EXIST)''')
         assert(str(dm.context) == '''
             Context:
@@ -260,7 +275,7 @@ class TestMixAgency(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                Mix(travel.service)(STATUS_STACKWAIT)
+                Mix(Mix(weather.query))(STATUS_STACKWAIT)
                 Mix(weather.query)(STATUS_STACKWAIT)
                 spots.query(STATUS_STACKWAIT)
                 all_city(STATUS_WAIT_ACTION_CONFIRM)''')

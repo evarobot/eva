@@ -2,7 +2,7 @@
     "data": {
         "id": "mix_travel",
         "event_id": "mix_travel",
-        "tag": "mix_travel",
+        "tag": "Mix(Mix(weather.query))",
         "entrance": false,
         "subject": "",
         "scope": "",
@@ -65,8 +65,8 @@
         "data": {
             "id": "mix_weather",
             "event_id": "mix_weather",
-            "tag": "mix_weather",
-            "entrance": false,
+            "tag": "Mix(weather.query)",
+            "entrance": true,
             "subject": "",
             "scope": "",
             "type": "TYPE_MIX"

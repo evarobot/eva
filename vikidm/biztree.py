@@ -6,7 +6,7 @@ import treelib
 import pprint
 
 from vikidm.units.agent import Agent
-from vikidm.units.agency import Agency, MixAgency
+from vikidm.units.agency import Agency
 log = logging.getLogger(__name__)
 
 
@@ -24,17 +24,9 @@ class BizTree(treelib.Tree):
         self.add_subtree_from_json(json_tree, parent=None)
 
         def visit_tree(unit):
-            ismix = False
-            entrance_child = None
-            if isinstance(unit, MixAgency):
-                ismix = True
             for child in unit.children:
                 visit_tree(child)
-                if child.entrance:
-                    entrance_child = child
-            # post order travel
-            if ismix and entrance_child:
-                unit.tag = "Mix({0})".format(entrance_child.tag)
+
         visit_tree(self.get_node(self.root))
         self.get_node(self.root).tag = "root"
 

@@ -11,9 +11,9 @@ from vikidm.config import ConfigLog
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
-dm_host = "192.168.0.44"
+dm_host = "eve.axm.ai"
 dm_port = 9999
-cms_host = "192.168.0.44"
+cms_host = "eve.axm.ai"
 cms_port = 8888
 
 
@@ -25,7 +25,7 @@ def test_question(q):
         'sid': "sid001",
         'question': q
     }
-    url = 'http://{0}:{1}/v2/robot/question/'.format(dm_host, dm_port)
+    url = 'https://{0}:{1}/v2/robot/question/'.format(dm_host, dm_port)
     headers = { 'content-type': 'application/json' }
     v =  json.dumps(params).encode('utf8')
     data = requests.post(url, data=v,
@@ -42,7 +42,7 @@ def test_confirm():
             'code': 0
         }
     }
-    url = 'http://{0}:{1}/v2/robot/confirm/'.format(dm_host, dm_port)
+    url = 'https://{0}:{1}/v2/robot/confirm/'.format(dm_host, dm_port)
     headers = { 'content-type': 'application/json' }
     v =  json.dumps(params).encode('utf8')
     data = requests.post(url, data=v,
@@ -55,7 +55,18 @@ def test_login():
         'username': 'admin',
         'password': 'admin'
     }
-    url = 'http://{0}:{1}/v2/login/'.format(cms_host, cms_port)
+    url = 'https://{0}:{1}/v2/login/'.format(cms_host, cms_port)
+    headers = { 'content-type': 'application/json' }
+    v =  json.dumps(params).encode('utf8')
+    data = requests.post(url, data=v,
+                        headers=headers, timeout=2).text
+    data = json.loads(data)
+    log.info(data)
+
+
+def test_train():
+    params = { }
+    url = 'https://{0}:{1}/v2/train/5aeac09aa7bf9b8f579257bc'.format(cms_host, cms_port)
     headers = { 'content-type': 'application/json' }
     v =  json.dumps(params).encode('utf8')
     data = requests.post(url, data=v,
@@ -69,7 +80,7 @@ def test_reset():
         'robot_id': 'test',
         'project': 'C'
     }
-    url = 'http://{0}:{1}/v2/robot/reset/'.format(dm_host, dm_port)
+    url = 'https://{0}:{1}/v2/robot/reset/'.format(dm_host, dm_port)
     headers = { 'content-type': 'application/json' }
     v =  json.dumps(params).encode('utf8')
     data = requests.post(url, data=v,
@@ -90,6 +101,10 @@ if __name__ == '__main__':
             if inp.strip() == "cms":
                 # 测试EVE CMS登录
                 test_login()
+                continue
+            if inp.strip() == "train":
+                # 测试EVE CMS登录
+                test_train()
                 continue
             if not inp:
                 continue

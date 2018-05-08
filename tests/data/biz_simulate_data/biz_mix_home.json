@@ -3,7 +3,7 @@
     "data": {
         "id": "mix_home",
         "event_id": "mix_home",
-        "tag": "mix_home",
+        "tag": "Mix(home.service)",
         "entrance": false,
         "subject": "",
         "scope": "",

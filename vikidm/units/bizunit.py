@@ -64,43 +64,15 @@ class BizUnit(treelib.Node):
         if unit.parent.is_root():
             unit.trigger()
             return
-
         while unit.parent.state == BizUnit.STATUS_TREEWAIT:
+            # find the first ancestor node whose parent is in the stack.
             unit.parent.trigger_child = unit
             unit = unit.parent
         if unit.parent.is_root():
-            # none stack parent
-            # uint.state == treewait
-            unit.trigger()
-            unit.trigger_child = self
+            # push to stack and triggered
+            if unit.state == BizUnit.STATUS_TREEWAIT:
+                self._dm.stack.push(unit)
+            unit.set_state(BizUnit.STATUS_TRIGGERED)
         else:
-            # stack parent
-            # none tree wait none root parent
             unit.parent.set_state(BizUnit.STATUS_TRIGGERED)
             unit.parent.trigger_child = unit
-
-
-        #focus_unit = self._dm.stack.top()
-        #if focus_unit.executable() == False:
-            #self._dm.stack.top().set_state(BizUnit.STATUS_TRIGGERED)
-
-
-        #j.if self.trigger_child and self.trigger_child.state != BizUnit.STATUS_TREEWAIT:
-            #return
-
-    def ahierarchy_trigger(self):
-        trigger_unit = self
-        unit = self
-        if unit.parent.is_root():
-            unit.trigger()
-            return
-
-        while not unit.parent.is_root():
-            unit.parent.trigger_child = unit
-            if unit.parent.state == BizUnit.STATUS_TREEWAIT:
-                self._dm.stack.push(unit.parent)
-                unit.parent.set_state(BizUnit.STATUS_STACKWAIT)
-            unit = unit.parent
-        focus_unit = self._dm.stack.top()
-        if focus_unit.executable() == False:
-            self._dm.stack.top().set_state(BizUnit.STATUS_TRIGGERED)
