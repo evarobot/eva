@@ -10,7 +10,7 @@ from vikidm.robot import DMRobot
 from evecms.models import Domain
 
 
-@Route('/v2/robot/concepts/')
+@Route('/dm/robot/concepts/')
 class DMHandler(RobotAPIHandler):
 
     def post(self):
@@ -22,7 +22,7 @@ class DMHandler(RobotAPIHandler):
         return self.write_json(ret)
 
 
-@Route('/v2/robot/question/')
+@Route('/dm/robot/question/')
 class DMQuestionHandler(RobotAPIHandler):
 
     def post(self):
@@ -32,7 +32,7 @@ class DMQuestionHandler(RobotAPIHandler):
         return self.write_json(ret)
 
 
-@Route('/v2/robot/event/')
+@Route('/dm/robot/event/')
 class DMEventHandler(RobotAPIHandler):
 
     def post(self):
@@ -42,7 +42,7 @@ class DMEventHandler(RobotAPIHandler):
         return self.write_json(ret)
 
 
-@Route('/v2/robot/confirm/')
+@Route('/dm/robot/confirm/')
 class DMConfirmHandler(RobotAPIHandler):
 
     def post(self):
@@ -52,7 +52,7 @@ class DMConfirmHandler(RobotAPIHandler):
         return self.write_json(ret)
 
 
-@Route('/v2/robot/reset/')
+@Route('/dm/robot/reset/')
 class DMResetRobotHandler(RobotAPIHandler):
 
     def post(self):

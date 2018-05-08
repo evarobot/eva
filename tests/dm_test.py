@@ -7,17 +7,16 @@ import time
 import mock
 
 from vikicommon.log import init_logger
+from vikidm.config import ConfigLog
 
 from vikidm.util import PROJECT_DIR, cms_rpc
 from vikidm.dm import DialogEngine, Stack
 from vikidm.context import Concept
-from vikidm.biztree import Agent
-from vikidm.config import ConfigLog
 
 data_path = os.path.join(PROJECT_DIR, "tests", "data")
-
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
+
 
 
 def check_biz_tree(tree):
@@ -90,6 +89,7 @@ class TestMixAgency(object):
                 Mix(weather.query)(STATUS_STACKWAIT)
                 weather.query(STATUS_STACKWAIT)
                 default@weather.query(STATUS_WAIT_ACTION_CONFIRM)''')
+        dm._cancel_timer()
 
     def test_mix_trigger(self):
         dm = self._construct_dm()

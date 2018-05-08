@@ -12,12 +12,13 @@ from vikidm.util import PROJECT_DIR, cms_rpc
 from vikidm.dm import DialogEngine, Stack
 from vikidm.context import Concept
 from vikidm.biztree import Agent
-from vikidm.config import ConfigLog
+from vikidm.config import ConfigLog, ConfigDM
 
 data_path = os.path.join(PROJECT_DIR, "tests", "data")
 
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
+ConfigDM.input_timeout = 5.0
 
 
 def check_biz_tree(tree):
