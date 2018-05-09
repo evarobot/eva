@@ -10,15 +10,17 @@ from vikidm.config import ConfigLog
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
-dm_host = "http://127.0.0.1"
-dm_port = 9999
-cms_host = "eve.axm.ai"
+#dm_host = "http://192.168.0.30"
+dm_host = "https://eve.axm.ai"
+dm_port = 80
+cms_host = "http://192.168.0.30"
 cms_port = 8888
 
 
 def test_dm():
     url = '{0}:{1}/dm/test/'.format(dm_host, dm_port)
     data = requests.get(url, timeout=2)
+    log.info(url)
     log.info(data.status_code)
     assert(data.status_code == 200)
     return data
@@ -34,6 +36,7 @@ def test_question(q):
     url = '{0}:{1}/dm/robot/question/'.format(dm_host, dm_port)
     headers = { 'content-type': 'application/json' }
     v =  json.dumps(params).encode('utf8')
+    log.info(url)
     data = requests.post(url, data=v,
                         headers=headers, timeout=2).text
     data = json.loads(data)
@@ -51,6 +54,7 @@ def test_confirm():
     url = '{0}:{1}/dm/robot/confirm/'.format(dm_host, dm_port)
     headers = { 'content-type': 'application/json' }
     v =  json.dumps(params).encode('utf8')
+    log.info(url)
     data = requests.post(url, data=v,
                         headers=headers, timeout=2).text
     data = json.loads(data)
@@ -61,9 +65,10 @@ def test_cms():
         'username': 'admin',
         'password': 'admin'
     }
-    url = 'https://{0}:{1}/v2/login/'.format(cms_host, cms_port)
+    url = '{0}:{1}/v2/login/'.format(cms_host, cms_port)
     headers = { 'content-type': 'application/json' }
     v =  json.dumps(params).encode('utf8')
+    log.info(url)
     data = requests.post(url, data=v,
                         headers=headers, timeout=2).text
     data = json.loads(data)
@@ -72,8 +77,9 @@ def test_cms():
 
 def test_train():
     params = { }
-    url = 'https://{0}:{1}/v2/train/5aeac09aa7bf9b8f579257bc'.format(cms_host, cms_port)
+    url = '{0}:{1}/v2/train/5aeac09aa7bf9b8f579257bc'.format(cms_host, cms_port)
     headers = { 'content-type': 'application/json' }
+    log.info(url)
     v =  json.dumps(params).encode('utf8')
     data = requests.post(url, data=v,
                         headers=headers, timeout=2).text
@@ -89,6 +95,7 @@ def test_reset():
     url = '{0}:{1}/dm/robot/reset/'.format(dm_host, dm_port)
     headers = { 'content-type': 'application/json' }
     v =  json.dumps(params).encode('utf8')
+    log.info(url)
     data = requests.post(url, data=v,
                         headers=headers, timeout=2).text
     data = json.loads(data)

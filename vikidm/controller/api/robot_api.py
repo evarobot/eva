@@ -14,6 +14,7 @@ from evecms.models import Domain
 class DMHandler(RobotAPIHandler):
 
     def post(self):
+        log.info("[REQUEST: {0}]".format(self.data))
         ret = {
             "name": "hello world"
         }
@@ -26,6 +27,7 @@ class DMHandler(RobotAPIHandler):
 class DMQuestionHandler(RobotAPIHandler):
 
     def post(self):
+        log.info("[REQUEST: {0}]".format(self.data))
         domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
         robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
         ret = robot.process_question(self.data['sid'], self.data['question'])
@@ -36,6 +38,7 @@ class DMQuestionHandler(RobotAPIHandler):
 class DMEventHandler(RobotAPIHandler):
 
     def post(self):
+        log.info("[REQUEST: {0}]".format(self.data))
         domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
         robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
         ret = robot.process_question(self.data['sid'], self.data['question'])
@@ -46,6 +49,7 @@ class DMEventHandler(RobotAPIHandler):
 class DMConfirmHandler(RobotAPIHandler):
 
     def post(self):
+        log.info("[REQUEST: {0}]".format(self.data))
         domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
         robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
         ret = robot.process_confirm(self.data['sid'], self.data['result'])
@@ -56,6 +60,7 @@ class DMConfirmHandler(RobotAPIHandler):
 class DMResetRobotHandler(RobotAPIHandler):
 
     def post(self):
+        log.info("[REQUEST: {0}]".format(self.data))
         domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
         ret = DMRobot.reset_robot(self.data['robot_id'], domain_id)
         if ret:

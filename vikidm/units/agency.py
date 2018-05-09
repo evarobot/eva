@@ -35,6 +35,7 @@ class Agency(BizUnit):
         elif data['type'] == Agency.TYPE_MIX:
             return MixAgency(dm, tag, data)
         else:
+            log.error(data)
             assert(False)
 
     @property
