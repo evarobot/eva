@@ -1,12 +1,19 @@
 # VikiDM
+## 测试
+{
 
-
-。
-  * 如果输入就是概念和值：则直接走对话DM引擎。
-* DM引擎
-  * 输入： 概念和值
-  * 输出： 上下文信息和事件ID。
-
+}
+* 项目名称：宝洁
+* 问题：有什么旅游服务
+```
+/dm/robot/question
+     ｛
+          "robotid": "12345",
+          "project": "宝洁",
+          "sid": "2342423424",
+          "question": "小点声",
+       }
+```
 
 #### 终端到DM请求
 ``` 
@@ -14,14 +21,14 @@
     ｛
           "robotid": ppepper的ID,
           "project": 项目名, 
-          "sid": "xxxx", // session id
+          "sid": "xxxx", // session id, 用时间的整数形式
           "event_id": "xxxxxx",
       }
 /dm/robot/question
      ｛
           "robotid": ppepper的ID,
           "project": 项目名, 
-           "sid": "xxxx", // session id
+          "sid": "xxxx", // session id
           "question": "请问你叫什么名字",
        }
 /dm/backend/concepts
@@ -34,7 +41,7 @@
       ｛
           "robotid": ppepper的ID,
           "project": 项目名, 
-           "sid": "xxxx", // session id
+          "sid": "xxxx", // session id
           "concepts": {
               "XXX": "YYY"
          }
