@@ -258,9 +258,7 @@ class DialogEngine(object):
             log.debug("CANCEL_TIMER {0}({1})".format(self._timer.owner.__class__.__name__,
                                                      self._timer.owner.tag))
         self._session.begin_session(sid)
-        self._agenda.compute_candicate_units()
-        log.info(self._agenda)
-        self._update_concepts(concepts)
+        self.update_concepts(concepts)
         self._mark_completed_bizunits()
         self._trigger_bizunit()
         ret = self.execute_focus_agent()
@@ -328,7 +326,9 @@ class DialogEngine(object):
         self.execute_focus_agent()
         self._session.end_session()
 
-    def _update_concepts(self, concepts):
+    def update_concepts(self, concepts):
+        self._agenda.compute_candicate_units()
+        log.info(self._agenda)
         valid_concepts = []
         for agent in self._agenda.candicate_agents:
             valid_concepts.extend(agent.target_concepts)

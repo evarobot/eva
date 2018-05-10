@@ -3,11 +3,11 @@
 推荐系统API
 """
 import logging
-log = logging.getLogger(__name__)
 from vikidm.libs.handler import RobotAPIHandler
 from vikidm.libs.route import Route
 from vikidm.robot import DMRobot
 from evecms.models import Domain
+log = logging.getLogger(__name__)
 
 
 @Route('/dm/robot/concepts/')
@@ -18,8 +18,17 @@ class DMHandler(RobotAPIHandler):
         ret = {
             "name": "hello world"
         }
-        domain_id = Domain.objects.get(name=self.data["project"])
+        return self.write_json(ret)
+
+
+@Route('/dm/backend/concepts/')
+class BackendConceptsHandler(RobotAPIHandler):
+
+    def post(self):
+        log.info("[REQUEST: {0}]".format(self.data))
+        domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
         robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
+        ret = robot.update_concepts_by_backend(self.data['concepts'])
         return self.write_json(ret)
 
 

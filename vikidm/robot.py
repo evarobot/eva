@@ -60,6 +60,12 @@ class DMRobot(object):
                 }
             }
 
+    def update_concepts_by_backend(self, d_concepts):
+        concepts = [Concept(key, value) for key, value in d_concepts.iteritems()]
+        self._dialog.update_concepts(concepts)
+        log.info(self._dialog.context)
+        return {"code": 0}
+
     def process_concepts(self, d_concepts):
         concepts = [Concept(key, value) for key, value in d_concepts.iteritems()]
         self._dialog.process_concepts(concepts)

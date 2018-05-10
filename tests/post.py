@@ -10,9 +10,9 @@ from vikidm.config import ConfigLog
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
-#dm_host = "http://192.168.0.30"
-dm_host = "https://eve.axm.ai"
-dm_port = 80
+dm_host = "http://192.168.0.44"
+#dm_host = "https://eve.axm.ai"
+dm_port = 9999
 cms_host = "http://192.168.0.30"
 cms_port = 8888
 
@@ -58,6 +58,24 @@ def test_confirm():
     data = requests.post(url, data=v,
                         headers=headers, timeout=2).text
     data = json.loads(data)
+
+def test_update_concepts():
+    params = {
+        'robot_id': '123',
+        'project': 'C',
+        'sid': "sid001",
+        'concepts': {
+            'location': '深圳'
+        }
+    }
+    url = '{0}:{1}/dm/backend/concepts/'.format(dm_host, dm_port)
+    headers = { 'content-type': 'application/json' }
+    v =  json.dumps(params).encode('utf8')
+    log.info(url)
+    data = requests.post(url, data=v,
+                        headers=headers, timeout=2).text
+    data = json.loads(data)
+    return data
 
 
 def test_cms():
@@ -122,6 +140,11 @@ if __name__ == '__main__':
             if inp.strip() == "train":
                 # 测试EVE CMS登录
                 test_train()
+                continue
+            #  TODO: move to unit tests #
+            if inp.strip() == "concepts":
+                # 测试EVE CMS登录
+                test_update_concepts()
                 continue
             if not inp:
                 continue
