@@ -30,7 +30,9 @@
      ｛
           "robotid": ppepper的ID,
           "project": 项目名, 
-          "question": "请问你叫什么名字",
+          "concepts": {
+              "XXX": "YYY"
+         }
        }
 /dm/robot/concepts
       ｛
