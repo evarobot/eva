@@ -64,7 +64,10 @@ class DMRobot(object):
         concepts = [Concept(key, value) for key, value in d_concepts.iteritems()]
         self._dialog.update_concepts(concepts)
         log.info(self._dialog.context)
-        return {"code": 0}
+        return {
+            "code": 0,
+            "context": str(self._dialog.context)
+        }
 
     def process_concepts(self, d_concepts):
         concepts = [Concept(key, value) for key, value in d_concepts.iteritems()]

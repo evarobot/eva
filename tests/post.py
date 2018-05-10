@@ -63,7 +63,6 @@ def test_update_concepts():
     params = {
         'robot_id': '123',
         'project': 'C',
-        'sid': "sid001",
         'concepts': {
             'location': '深圳'
         }
