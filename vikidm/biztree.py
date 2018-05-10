@@ -33,7 +33,8 @@ class BizTree(treelib.Tree):
     def _parse_node(self, dict_node, parent):
         data = dict_node['data']
         tag = dict_node['data']['tag']
-        if dict_node['children']:
+        # if dict_node['children']:
+        if dict_node["type"] in [Agency.TYPE_MIX, Agency.TYPE_TARGET, Agency.TYPE_CLUSTER]:
             tr_node = Agency.get_agency(self._dm, tag, data)
             self.add_node(tr_node, parent)
             for child in dict_node['children']:

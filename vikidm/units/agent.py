@@ -13,23 +13,24 @@ log = logging.getLogger(__name__)
 class Agent(BizUnit):
 
     def __init__(self, dm, tag, data):
-        filtered_data = {   # 用于tree.to_json(), 方便调试。
-            'subject': data['subject'],
-            'scope': data['scope'],
-            'event_id': data['event_id'],
-            'timeout': float(data['timeout']),
-            'entrance': data['entrance'],
-            'trigger_concepts': data['trigger_concepts'],
-            'state': BizUnit.STATUS_TREEWAIT,
-            'target_concepts': data['target_concepts']
-        }
+        try:
+            filtered_data = {   # 用于tree.to_json(), 方便调试。
+                'subject': data['subject'],
+                'scope': data['scope'],
+                'event_id': data['event_id'],
+                'timeout': float(data['timeout']),
+                'entrance': data['entrance'],
+                'trigger_concepts': data['trigger_concepts'],
+                'state': BizUnit.STATUS_TREEWAIT,
+                'target_concepts': data['target_concepts']
+            }
+        except KeyError as e:
+            log.error(data)
+            raise e
         self._trigger_concepts = list(self._deserialize_trigger_concepts(filtered_data))
         self._target_concepts = list(self._deserialize_target_concepts(filtered_data))
         self.target_completed = False
         self.children = []
-        if "id" not in data:
-            import pdb
-            pdb.set_trace()
         super(Agent, self).__init__(dm, data["id"], tag, filtered_data)
 
     @classmethod
