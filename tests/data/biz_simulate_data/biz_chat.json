@@ -10,7 +10,8 @@
             "intent=casual_talk"
         ],
         "target_concepts": [],
-        "timeout": "5"
+        "timeout": "5",
+        "type": "SIMPLE"
     },
     "children": []
 }

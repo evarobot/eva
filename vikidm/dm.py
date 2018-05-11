@@ -17,6 +17,8 @@ from vikidm.units import (
     TargetAgent,
     BizUnit,
     MixAgency,
+    TargetAgency,
+    ClusterAgency,
     AbnormalHandler
 )
 from vikidm.util import cms_rpc
@@ -288,13 +290,20 @@ class DialogEngine(object):
         log.info(self.context)
         return ret
 
-
     def get_candicate_units(self):
         self._agenda.compute_candicate_units()
+        agents = []
+        for agent in self._agenda.candicate_agents:
+            parent = agent.parent
+            identifier = agent.identifier
+            if isinstance(parent, TargetAgency) or isinstance(parent, ClusterAgency):
+                identifier = parent.identifier
+            agents.append((agent.tag, agent.intent, identifier))
+
         return {
             "valid_slots": list(self._agenda.valid_slots),
             "valid_intents": list(self._agenda.valid_intents),
-            "agents": [(agent.tag, agent.intent, agent.identifier) for agent in self._agenda.candicate_agents]
+            "agents": agents
         }
 
     def _trigger_bizunit(self):

@@ -18,7 +18,6 @@ init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
 
-
 def check_biz_tree(tree):
     assert(len(tree.children('root')) == 1)
     assert(len(tree.children('where.query')) == 2)
