@@ -314,6 +314,7 @@ class DialogEngine(object):
                 continue
             if not bizunit.satisfied() or bizunit.target_completed:
                 continue
+            log.debug("Init Trigger: {0}".format(bizunit))
             bizunit.hierarchy_trigger()
             for unit in self.stack.items[-1:]:
                 if unit.state == BizUnit.STATUS_TRIGGERED:
