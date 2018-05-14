@@ -156,10 +156,17 @@ class TargetAgency(Agency):
             elif self._is_default_node(child) and targets_clean:
                 log.debug("WAIT_INPUT TargetAgency({0})".format(self.tag))
                 return child
-            elif self._is_target_node(child) and not child.target_completed:
+
+        #  TODO: Hack code
+        candicates = []
+        for child in self.children:
+            if self._is_target_node(child) and not child.target_completed:
                 # return first none complete target child
-                return child
-        assert(False)
+                candicates.append(child)
+        for node in candicates:
+            if node.target_concepts[0].key == u"种类":
+                return node
+        return candicates[0]
 
     def _is_default_node(self, bizunit):
         return len(bizunit.target_concepts) == 0 and len(bizunit.trigger_concepts) == 1

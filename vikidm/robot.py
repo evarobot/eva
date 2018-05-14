@@ -52,7 +52,7 @@ class DMRobot(object):
                 "action": action,
                 "nlu": {
                     "intent": ret["intent"],
-                    "ask": ret["target"],
+                    "ask": dm_ret.get('target', ""),
                     "slots": ret["slots"]
                 },
                 "debug": {

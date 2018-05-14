@@ -175,7 +175,7 @@ class TargetAgent(Agent):
         assert(len(self.target_concepts) <= 1)
         return {
             'event_id': self.event_id,
-            'target': self.target_concepts[0]
+            'target': self.target_concepts[0].key
         }
 
     def confirm(self):
@@ -202,7 +202,4 @@ class TriggerAgent(Agent):
             self._dm._start_timer(self, self.timeout, self._dm._actionwait_timeout)
             log.debug("START_ACTION_TIMER TriggerAgent({0})".format(self.tag))
 
-        return {
-            'event_id': self.event_id,
-            'target': None
-        }
+        return {'event_id': self.event_id}
