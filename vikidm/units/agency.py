@@ -164,7 +164,7 @@ class TargetAgency(Agency):
                 # return first none complete target child
                 candicates.append(child)
         for node in candicates:
-            if node.target_concepts[0].key == u"种类":
+            if node.target_concepts[0].key in [u"种类", "种类"]:
                 return node
         return candicates[0]
 
