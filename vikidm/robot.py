@@ -43,7 +43,19 @@ class DMRobot(object):
             if dm_ret is None:
                 return {
                     'code': -1,
-                    'message': '识别错误'
+                    'message': '识别错误',
+                    "sid": sid,
+                    "event_id": "",
+                    "action": {},
+                    "nlu": {
+                        "intent": ret["intent"],
+                        "ask": "",
+                        "slots": ret["slots"]
+                    },
+                    "debug": {
+                        "stack": str(self._dialog.stack),
+                        "context": str(self._dialog.context),
+                    }
                 }
             self._dialog.process_confirm(sid, {'code': 0})  # 模拟执行成功 TODO
             action = cms_rpc.event_id_to_answer(self.domain_id, dm_ret["event_id"])
