@@ -40,6 +40,11 @@ class DMRobot(object):
             for slot_name, value_name in ret["slots"].iteritems():
                 concepts.append(Concept(slot_name, value_name))
             dm_ret = self._dialog.process_concepts(sid, concepts)
+            if dm_ret is None:
+                return {
+                    'code': -1,
+                    'message': '识别错误'
+                }
             self._dialog.process_confirm(sid, {'code': 0})  # 模拟执行成功 TODO
             action = cms_rpc.event_id_to_answer(self.domain_id, dm_ret["event_id"])
             if ret["intent"] == "casual_talk":
