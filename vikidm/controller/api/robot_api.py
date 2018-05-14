@@ -76,3 +76,25 @@ class DMResetRobotHandler(RobotAPIHandler):
             return self.write_json({"code": 0})
         else:
             return self.write_json({"code": -1})
+
+
+@Route('/dm/robot/train/')
+class DMTrainHandler(RobotAPIHandler):
+
+    def post(self):
+        log.info("[REQUEST: {0}]".format(self.data))
+        from vikinlu.service import NLUService
+        nlu = NLUService()
+        ret = nlu.train(self.data["domain_id"], ("logistic", "0.1"))
+        if ret["code"] == 0:
+            return self.write_json({
+                "code": 0,
+                "question_num": ret["question_num"],
+                "intent_questions": ret["intent_questions"],
+                "message": u"训练成功!",
+                "avg_precision": "adfkjdslf",
+            })
+        return self.write_json({
+            "code": -1,
+            "message": "failed"
+        })
