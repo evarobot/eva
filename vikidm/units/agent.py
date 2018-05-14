@@ -172,8 +172,11 @@ class TargetAgent(Agent):
             self._dm._start_timer(self, ConfigDM.input_timeout, self._dm._inputwait_timeout)
             log.debug("START_INPUT_TIMER TargetAgent({0})".format(self.tag))
             self._execute_condition.remove(BizUnit.STATUS_WAIT_TARGET)
-
-        return self.event_id
+        assert(len(self.target_concepts) <= 1)
+        return {
+            'event_id': self.event_id,
+            'target': self.target_concepts[0]
+        }
 
     def confirm(self):
         assert(self.state == Agent.STATUS_WAIT_ACTION_CONFIRM)
@@ -199,4 +202,7 @@ class TriggerAgent(Agent):
             self._dm._start_timer(self, self.timeout, self._dm._actionwait_timeout)
             log.debug("START_ACTION_TIMER TriggerAgent({0})".format(self.tag))
 
-        return self.event_id
+        return {
+            'event_id': self.event_id,
+            'target': None
+        }

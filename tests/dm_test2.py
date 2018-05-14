@@ -412,7 +412,7 @@ class TestSessionCase(object):
         ret = dm.process_concepts("sid002", [
             Concept("intent", "casual_talk"),
         ])
-        assert(ret == 'casual_talk')
+        assert(ret['event_id'] == 'casual_talk')
         ret = dm.process_confirm('sid002', {
             'code': 0,
             'message': ''

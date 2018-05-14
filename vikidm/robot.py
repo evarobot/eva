@@ -39,19 +39,20 @@ class DMRobot(object):
             concepts.append(Concept("intent", ret["intent"]))
             for slot_name, value_name in ret["slots"].iteritems():
                 concepts.append(Concept(slot_name, value_name))
-            event_id = self._dialog.process_concepts(sid, concepts)
+            dm_ret = self._dialog.process_concepts(sid, concepts)
             self._dialog.process_confirm(sid, {'code': 0})  # 模拟执行成功 TODO
-            action = cms_rpc.event_id_to_answer(self.domain_id, event_id)
+            action = cms_rpc.event_id_to_answer(self.domain_id, dm_ret["event_id"])
             if ret["intent"] == "casual_talk":
                 tts = CasualTalk.get_tuling_answer(question)
                 action["tts"] = tts
             return {
                 "code": 0,
                 "sid": sid,
-                "event_id": event_id,
+                "event_id": dm_ret["event_id"],
                 "action": action,
                 "nlu": {
                     "intent": ret["intent"],
+                    "ask": ret["target"],
                     "slots": ret["slots"]
                 },
                 "debug": {

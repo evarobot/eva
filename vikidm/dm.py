@@ -185,15 +185,15 @@ class DialogEngine(object):
         self.stack.push(node)
 
     def execute_focus_agent(self):
-        event_id = None
+        ret = None
         focus_unit = self.stack.top()
         while focus_unit.executable():
-            ret = focus_unit.execute()
-            if event_id is None and ret is not None:
-                event_id = ret
+            temp_ret = focus_unit.execute()
+            if ret is None and temp_ret is not None:
+                ret = temp_ret
             focus_unit = self.stack.top()
             self.debug_loop += 1
-        return event_id
+        return ret
 
     def _actionwait_timeout(self):
         self._timer_count -= 1
