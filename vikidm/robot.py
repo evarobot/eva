@@ -58,6 +58,10 @@ class DMRobot(object):
                     }
                 }
             self._dialog.process_confirm(sid, {'code': 0})  # 模拟执行成功 TODO
+            slots = {}
+            for concept in self._dialog.context._all_concepts.values():
+                if concept.dirty and concept.key != "intent":
+                    slots[concept.key] = concept.value
             action = cms_rpc.event_id_to_answer(self.domain_id, dm_ret["event_id"])
             if ret["intent"] == "casual_talk":
                 tts = CasualTalk.get_tuling_answer(question)
@@ -70,7 +74,7 @@ class DMRobot(object):
                 "nlu": {
                     "intent": ret["intent"],
                     "ask": dm_ret.get('target', ""),
-                    "slots": ret["slots"]
+                    "slots": slots
                 },
                 "debug": {
                     "stack": str(self._dialog.stack),
