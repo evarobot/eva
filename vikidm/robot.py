@@ -22,6 +22,7 @@ class DMRobot(object):
 
     def process_question(self, sid, question):
         # if rpc, pass robot id
+        question = question.strip(' \n')
         ret = nlu_robot.predict(self, self.domain_id, question)
         if ret["intent"] is None:
             return {
@@ -43,7 +44,7 @@ class DMRobot(object):
             if dm_ret is None:
                 return {
                     'code': -1,
-                    'message': '识别错误',
+                    'message': '对话管理无响应',
                     "sid": sid,
                     "event_id": "",
                     "action": {},
@@ -57,11 +58,11 @@ class DMRobot(object):
                         "context": str(self._dialog.context),
                     }
                 }
-            self._dialog.process_confirm(sid, {'code': 0})  # 模拟执行成功 TODO
             slots = {}
             for concept in self._dialog.context._all_concepts.values():
                 if concept.dirty and concept.key != "intent":
                     slots[concept.key] = concept.value
+            self._dialog.process_confirm(sid, {'code': 0})  # 模拟执行成功 TODO
             action = cms_rpc.event_id_to_answer(self.domain_id, dm_ret["event_id"])
             if ret["intent"] == "casual_talk":
                 tts = CasualTalk.get_tuling_answer(question)

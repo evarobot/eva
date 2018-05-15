@@ -199,7 +199,7 @@ class DialogEngine(object):
         self._timer_count -= 1
         delta = (time.time() - self._start_time) / self.debug_timeunit
         focus_unit = self.stack.top()
-        log.debug("ACTION_TIMEOUT {2}({0}) {1}".format(focus_unit.tag, delta,
+        log.debug("ACTION_TIMEOUT {2}({0}) {1}".format(self._timer.owner.tag, delta,
                                                        focus_unit.__class__.__name__))
         self._handle_abnormal(AbnormalHandler.ABNORMAL_ACTION_TIMEOUT)
 
@@ -207,7 +207,7 @@ class DialogEngine(object):
         self._timer_count -= 1
         delta = (time.time()- self._start_time) / self.debug_timeunit
         focus_unit = self.stack.top()
-        log.debug("INPUT_TIMEOUT {2}({0}) {1}".format(focus_unit.tag, delta,
+        log.debug("INPUT_TIMEOUT {2}({0}) {1}".format(self._timer.owner.tag, delta,
                                                       focus_unit.__class__.__name__))
         self._handle_abnormal(AbnormalHandler.ABNORMAL_INPUT_TIMEOUT)
 
@@ -215,7 +215,7 @@ class DialogEngine(object):
         self._timer_count -= 1
         delta = (time.time()- self._start_time) / self.debug_timeunit
         focus_unit = self.stack.top()
-        log.debug("DELAY_TIMEOUT {2}({0}) {1}".format(focus_unit.tag, delta,
+        log.debug("DELAY_TIMEOUT {2}({0}) {1}".format(self._timer.owner.tag, delta,
                                                       focus_unit.__class__.__name__))
         focus_unit.set_state(BizUnit.STATUS_AGENCY_COMPLETED)
         self.execute_focus_agent()
@@ -338,7 +338,7 @@ class DialogEngine(object):
 
     def update_concepts(self, concepts):
         self._agenda.compute_candicate_units()
-        log.info(self._agenda)
+        #log.debug(self._agenda)
         valid_concepts = []
         for agent in self._agenda.candicate_agents:
             valid_concepts.extend(agent.target_concepts)
@@ -349,6 +349,8 @@ class DialogEngine(object):
                 if (concept.key == "intent" and concept.value in self._agenda.valid_intents) or\
                         concept.key != "intent":
                     self.context.update_concept(concept.key, concept)
+            else:
+                log.info("Invalid Concept: [{0}]".format(concept.key))
 
     def _init_context(self):
         for bizunit in self.biz_tree.all_nodes_itr():

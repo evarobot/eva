@@ -121,29 +121,37 @@ class TargetAgency(Agency):
         self._execute_condition.add(self.state)
 
     def restore_context(self, context):
-        #context.update_concept(self._intent.key, self._intent)
+        # context.update_concept(self._intent.key, self._intent)
         pass
 
     def _execute(self):
         log.debug("EXECUTE TargetAgency({0})".format(self.tag))
         if self.state == BizUnit.STATUS_WAIT_TARGET:
             self._execute_condition.remove(BizUnit.STATUS_WAIT_TARGET)
+            log.debug("START_INPUT_TIMER TargetAgency({0})".format(self.tag))
             self._dm._start_timer(self, ConfigDM.input_timeout,
                                   self._dm._inputwait_timeout)
-            log.debug("START_INPUT_TIMER TargetAgency({0})".format(self.tag))
             return
         elif self.state == BizUnit.STATUS_DELAY_EXIST:
             self._execute_condition.remove(BizUnit.STATUS_DELAY_EXIST)
+            log.debug("START_DELAY_TIMER TargetAgency({0})".format(self.tag))
             self._dm._start_timer(self, ConfigDM.input_timeout,
                                   self._dm._delaywait_timeout)
-            log.debug("START_DELAY_TIMER TargetAgency({0})".format(self.tag))
             return
 
         self._intent = self._dm.context["intent"]  # for restore
         self.active_child = self._plan()
-        self.active_child.set_state(BizUnit.STATUS_TRIGGERED)
-        self._dm.stack.push(self.active_child)
-        self.set_state(BizUnit.STATUS_STACKWAIT)
+        if self.active_child:
+            self.active_child.set_state(BizUnit.STATUS_TRIGGERED)
+            self._dm.stack.push(self.active_child)
+            self.set_state(BizUnit.STATUS_STACKWAIT)
+        else:
+            # switch back when context cleared
+            self.set_state(BizUnit.STATUS_DELAY_EXIST)
+            self._execute_condition.add(BizUnit.STATUS_DELAY_EXIST)
+            log.info(self._dm.stack)
+            log.info(self._dm.context)
+            return
 
     def _plan(self):
         # log.debug(self._dm.context)
@@ -166,7 +174,11 @@ class TargetAgency(Agency):
         for node in candicates:
             if node.target_concepts[0].key in [u"种类", "种类"]:
                 return node
-        return candicates[0]
+        if candicates:
+            return candicates[0]
+        else:
+            # when swtiched back, context could be cleared, and none child could be triggered
+            return None
 
     def _is_default_node(self, bizunit):
         return len(bizunit.target_concepts) == 0 and len(bizunit.trigger_concepts) == 1
