@@ -5,6 +5,8 @@ import logging
 import time
 
 from vikicommon.log import init_logger
+from evecms.services.service import connect_db
+connect_db()
 from vikidm.config import ConfigLog, ConfigDM
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
@@ -22,6 +24,7 @@ domain = Domain.objects.get(name="C")
 robot = NLURobot.get_robot(str(domain.pk))
 robot.train(("logistic", "0.1"))
 robot.use_fuzzy = False
+
 
 
 class TestDM(object):
