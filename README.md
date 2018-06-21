@@ -5,7 +5,6 @@
      ｛
           "robotid": "12345",
           "project": "宝洁",
-          "sid": "2342423424",
           "question": "小点声",
        }
 ```
@@ -16,14 +15,12 @@
     ｛
           "robotid": ppepper的ID,
           "project": 项目名, 
-          "sid": "xxxx", // session id, 用时间的整数形式
           "event_id": "xxxxxx",
       }
 /dm/robot/question
      ｛
           "robotid": ppepper的ID,
           "project": 项目名, 
-          "sid": "xxxx", // session id
           "question": "请问你叫什么名字",
        }
 /dm/backend/concepts
@@ -38,7 +35,6 @@
       ｛
           "robotid": ppepper的ID,
           "project": 项目名, 
-          "sid": "xxxx", // session id
           "concepts": {
               "XXX": "YYY"
          }

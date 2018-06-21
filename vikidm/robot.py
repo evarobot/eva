@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import logging
+import time
+from vikinlu.robot import NLURobot
 from vikidm.dm import DialogEngine
 from vikidm.context import Concept
-from vikidm.util import nlu_robot, cms_rpc
+from vikidm.util import cms_rpc
 from vikidm.chat import CasualTalk
 from evecms.models import Domain
 log = logging.getLogger(__name__)
@@ -18,17 +20,18 @@ class DMRobot(object):
         self.robot_id = robot_id
         self._dialog = DialogEngine()
         self._dialog.init_from_db(self.domain_id)
+        self.nlu = NLURobot.get_robot(domain_id)
         log.info("CREATE ROBOT: [{0}] of domain [{1}]".format(robot_id, self.domain_name))
 
-    def process_question(self, sid, question):
+    def process_question(self, question):
         # if rpc, pass robot id
         question = question.strip(' \n')
-        ret = nlu_robot.predict(self, self.domain_id, question)
-        if ret["intent"] is None:
+        ret = self.nlu.predict(self, question)
+        if ret["intent"] in [None, "nonsense"]:
             return {
                 "code": 0,
                 "sid": "",
-                "event_id": None,
+                "event_id": ret["intent"],
                 "action": {},
                 "nlu": {
                     "intent": ret["intent"],
@@ -40,6 +43,7 @@ class DMRobot(object):
             concepts.append(Concept("intent", ret["intent"]))
             for slot_name, value_name in ret["slots"].iteritems():
                 concepts.append(Concept(slot_name, value_name))
+            sid = int(round(time.time() * 1000))
             dm_ret = self._dialog.process_concepts(sid, concepts)
             if dm_ret is None:
                 return {
@@ -59,10 +63,17 @@ class DMRobot(object):
                     }
                 }
             slots = {}
-            for concept in self._dialog.context._all_concepts.values():
-                if concept.dirty and concept.key != "intent":
-                    slots[concept.key] = concept.value
-            self._dialog.process_confirm(sid, {'code': 0})  # 模拟执行成功 TODO
+            ret2 = cms_rpc.get_intent_slots_without_value(self.domain_id, ret["intent"])
+            if ret2['code'] != 0:
+                log.error("调用错误")
+            else:
+                for slot_name in ret2['slots']:
+                    value = self._dialog.context[slot_name].value
+                    if value:
+                        slots[slot_name] = value
+            #for concept in self._dialog.context._all_concepts.values():
+                #if concept.dirty and concept.key != "intent":
+                    #slots[concept.key] = concept.value
             action = cms_rpc.event_id_to_answer(self.domain_id, dm_ret["event_id"])
             if ret["intent"] == "casual_talk":
                 tts = CasualTalk.get_tuling_answer(question)
@@ -85,7 +96,7 @@ class DMRobot(object):
 
     def update_concepts_by_backend(self, d_concepts):
         concepts = [Concept(key, value) for key, value in d_concepts.iteritems()]
-        self._dialog.update_concepts(concepts)
+        self._dialog.update_by_remote(concepts)
         log.info(self._dialog.context)
         return {
             "code": 0,
@@ -114,6 +125,7 @@ class DMRobot(object):
     @classmethod
     def reset_robot(self, robotid, domain_id):
         robot = DMRobot(robotid, domain_id)
+        robot.nlu.reset_robot()
         DMRobot.robots_pool[robotid] = robot
         return True
 

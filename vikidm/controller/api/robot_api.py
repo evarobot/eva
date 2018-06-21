@@ -3,6 +3,8 @@
 推荐系统API
 """
 import logging
+import time
+from vikinlu.robot import NLURobot
 from vikidm.libs.handler import RobotAPIHandler
 from vikidm.libs.route import Route
 from vikidm.robot import DMRobot
@@ -39,7 +41,8 @@ class DMQuestionHandler(RobotAPIHandler):
         log.info("[REQUEST: {0}]".format(self.data))
         domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
         robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
-        ret = robot.process_question(self.data['sid'], self.data['question'])
+        ret = robot.process_question(self.data['question'])
+        log.info(ret)
         return self.write_json(ret)
 
 
@@ -74,8 +77,7 @@ class DMResetRobotHandler(RobotAPIHandler):
         ret = DMRobot.reset_robot(self.data['robot_id'], domain_id)
         if ret:
             return self.write_json({"code": 0})
-        else:
-            return self.write_json({"code": -1})
+        else: return self.write_json({"code": -1})
 
 
 @Route('/dm/robot/train/')
@@ -83,17 +85,16 @@ class DMTrainHandler(RobotAPIHandler):
 
     def post(self):
         log.info("[REQUEST: {0}]".format(self.data))
-        from vikinlu.service import NLUService
-        nlu = NLUService()
-        ret = nlu.train(self.data["domain_id"], ("logistic", "0.1"))
+        robot = NLURobot.get_robot(self.data["domain_id"])
+        start = time.time()
+        ret = robot.train(("logistic", "0.1"))
+        end = time.time()
+        log.info("Training takes {0} seconds".format(end - start))
         if ret["code"] == 0:
-            return self.write_json({
-                "code": 0,
-                "question_num": ret["question_num"],
-                "intent_questions": ret["intent_questions"],
+            return self.write_json(ret.update({
                 "message": u"训练成功!",
-                "avg_precision": "adfkjdslf",
-            })
+                "duration": "%.2f" % (end - start)
+            }))
         return self.write_json({
             "code": -1,
             "message": "failed"

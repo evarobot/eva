@@ -13,6 +13,7 @@ from vikicommon.collections import OrderedSet
 from vikidm.context import Context
 from vikidm.biztree import BizTree
 from vikidm.units import (
+    Agency,
     Agent,
     TargetAgent,
     BizUnit,
@@ -249,18 +250,25 @@ class DialogEngine(object):
         self._timer_count += 1
         self._timer.start()
 
+    def update_by_remote(self, concepts):
+        focus_unit = self.stack.top()
+        # 增量设计
+        assert(isinstance(focus_unit.parent, TargetAgency))
+        focus_unit.parent.remote_concept_keys = [c.key for c in concepts]
+        self._update_concepts(concepts)
+
     def process_concepts(self, sid, concepts):
         self.debug_loop = 0
-        log.info("-------- {0} -------------------".format(concepts))
+        log.info("-------- {0} ----- {1} -------------------".format(sid, concepts))
         if self._session.new_session(sid) or self.is_waiting:
             if self._session.new_session(sid):
                 # could be a remote error
-                log.debug("IGNORE_OLD_SESSION")
+                log.debug("NEW_SESSION, ABANDON OLD CONFIRM WAITING")
             self._cancel_timer()
             log.debug("CANCEL_TIMER {0}({1})".format(self._timer.owner.__class__.__name__,
                                                      self._timer.owner.tag))
         self._session.begin_session(sid)
-        self.update_concepts(concepts)
+        self._update_concepts(concepts)
         self._mark_completed_bizunits()
         self._trigger_bizunit()
         ret = self.execute_focus_agent()
@@ -271,13 +279,14 @@ class DialogEngine(object):
         return ret
 
     def process_confirm(self, sid, data):
-        log.info("========= {0} ===================".format(data))
+        log.info("======== {0} ===== {1} ===================".format(sid, data))
         self.debug_loop = 0
         ret = {
             'code': 0,
             'message': ''
         }
         if not self._session.valid_session(sid):
+            log.info("IGNORE_OLD_SESSION_CONFIRM")
             return ret
         if data['code'] != 0:
             self._handle_abnormal(AbnormalHandler.ABNORMAL_ACTION_FAILED)
@@ -309,18 +318,32 @@ class DialogEngine(object):
     def _trigger_bizunit(self):
         # 如果多个，都执行，就需要多个反馈，可能需要主动推送功能。
         # 目前只支持返回一个。
+        #focus_unit = self.stack.top()
         for bizunit in self._agenda.candicate_agents:
             if not isinstance(bizunit, Agent):
                 continue
-            if not bizunit.satisfied() or bizunit.target_completed:
+            if not bizunit.satisfied() or bizunit.target_completed():
                 continue
+            #if isinstance(focus_unit, Agency) and focus_unit.is_ancestor_of(bizunit) == False\
+                    #and isinstance(bizunit, Agency):
+                # 长话题切换
+                #log.debug("SWITCH LONG TOPIC")
+                #focus_unit.notify_switch_topic()
             log.debug("Init Trigger: {0}".format(bizunit))
             bizunit.hierarchy_trigger()
-            for unit in self.stack.items[-1:]:
+            count = 0
+            for unit in reversed(self.stack.items):
                 if unit.state == BizUnit.STATUS_TRIGGERED:
                     break
-                unit.pop_from_stack()
+                # 清理trigger到栈顶间的节点，假设的仍然是中间节点都是亲属关系。
+                count += 1
+
+            while count > 0:
+                # 案例，平时防晒霜购买-不等确认-户外防晒霜购买
+                self.stack.top().pop_from_stack(False)
                 self.stack.pop()
+                count -= 1
+
             log.debug("Triggered Stack:")
             log.debug(self.stack)
             break
@@ -336,7 +359,7 @@ class DialogEngine(object):
         self.execute_focus_agent()
         self._session.end_session()
 
-    def update_concepts(self, concepts):
+    def _update_concepts(self, concepts):
         self._agenda.compute_candicate_units()
         #log.debug(self._agenda)
         valid_concepts = []

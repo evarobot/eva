@@ -13,7 +13,7 @@ def init():
 
 
 class _ConfigDM(object):
-    input_timeout = 30.0
+    input_timeout = 10.0
     _host = "0.0.0.0"
     _port = 9999
 

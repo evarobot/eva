@@ -29,9 +29,11 @@ class Agent(BizUnit):
             raise e
         self._trigger_concepts = list(self._deserialize_trigger_concepts(filtered_data))
         self._target_concepts = list(self._deserialize_target_concepts(filtered_data))
-        self.target_completed = False
         self.children = []
         super(Agent, self).__init__(dm, data["id"], tag, filtered_data)
+
+    def target_completed(self):
+        return False
 
     @classmethod
     def get_agent(self, dm, tag, data):
@@ -65,7 +67,6 @@ class Agent(BizUnit):
             for concept in self.trigger_concepts + self.target_concepts:
                 if concept.life_type == Concept.LIFE_STACK and self._dm.context.dirty(concept):
                     self._dm.context.reset_concept(concept.key)
-                    self.target_completed = False
                     log.debug("RESET_CONCEPT [{0}]".format(concept.key))
         if not isinstance(self, TargetAgent):
             self._dm.context.reset_concept("intent")
@@ -143,7 +144,9 @@ class Agent(BizUnit):
 class TargetAgent(Agent):
     def __init__(self, dm, tag, data):
         super(TargetAgent, self).__init__(dm, tag, data)
-        self.target_completed = False
+
+    def target_completed(self):
+        return all([self._dm.context.dirty(c) for c in self.target_concepts])
 
     def round_back(self):
         if self.state == BizUnit.STATUS_WAIT_ACTION_CONFIRM:
@@ -152,7 +155,6 @@ class TargetAgent(Agent):
             self._execute_condition.add(BizUnit.STATUS_WAIT_TARGET)
 
     def mark_target_completed(self):
-        self.target_completed = True
         self.set_state(self.STATUS_TARGET_COMPLETED)
 
     def _execute(self):

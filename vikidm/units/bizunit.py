@@ -29,7 +29,16 @@ class BizUnit(treelib.Node):
                                        BizUnit.STATUS_ACTION_COMPLETED, BizUnit.STATUS_ABNORMAL,
                                        BizUnit.STATUS_AGENCY_COMPLETED])
         self.parent = None
-        self.trigger_child = None
+        self._trigger_child = None
+
+    @property
+    def trigger_child(self):
+        return self._trigger_child
+
+    @trigger_child.setter
+    def trigger_child(self, v):
+        self._trigger_child = v
+        self._handler_finished = False
 
     def execute(self):
         if self.state in [BizUnit.STATUS_ACTION_COMPLETED,
@@ -39,6 +48,7 @@ class BizUnit(treelib.Node):
             self._dm._focus_bizunit_out(self)
             return None
         return self._execute()
+
 
     def re_enter_after_child_done(self):
         if not self.is_root() and self.state != BizUnit.STATUS_ABNORMAL:
@@ -50,9 +60,11 @@ class BizUnit(treelib.Node):
     def executable(self):
         return self.state in self._execute_condition
 
-    def pop_from_stack(self):
+    def pop_from_stack(self, reset=True):
+        #  TODO: 改名 #
         self.set_state(BizUnit.STATUS_TREEWAIT)
-        self.reset_concepts()
+        if reset:
+            self.reset_concepts()
 
     def trigger(self):
         if self.state == BizUnit.STATUS_TREEWAIT:
@@ -76,3 +88,32 @@ class BizUnit(treelib.Node):
         else:
             unit.parent.set_state(BizUnit.STATUS_TRIGGERED)
             unit.parent.trigger_child = unit
+
+    def ancestor_in_stack(self):
+        unit = self  # inlcude itself
+        while unit.parent is not None:
+            if unit in self._dm.stack._items:
+                return True
+            unit = unit.parent
+        return False
+
+    def is_ancestor_of(self, bizunit):
+        #  TODO: test #
+        unit = bizunit.parent
+        while unit is not None:
+            if unit == self:
+                return True
+            unit = unit.parent
+        return False
+
+    def is_family(self, bizunit):
+        #  TODO: test #
+        # share a none root ancestor node node
+        unit = self
+        while unit.parent.is_root() == False:
+            unit = unit.parent
+        return unit.is_ancestor_of(bizunit)
+
+    def notify_switch_topic(self):
+        #self.reset_concepts()
+        pass

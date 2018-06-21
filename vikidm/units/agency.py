@@ -20,6 +20,7 @@ class Agency(BizUnit):
         self.trigger_child = None
         self._type = data['type']
         self._handler_finished = False
+        self.remote_concept_keys = []
 
     def __str__(self):
         return self.tag.encode('utf8')
@@ -59,12 +60,25 @@ class Agency(BizUnit):
             for child in self.children:
                 child.reset_concepts()
         self._dm.context.reset_concept("intent")
+        for key in self.remote_concept_keys:
+            self._dm.context.reset_concept(key)
+            log.info("RESET remote concept {0}".format(key))
+        self.remote_concept_keys = []
 
 
 class ClusterAgency(Agency):
     """"""
     def __init__(self, dm, tag, data):
         super(ClusterAgency, self).__init__(dm, tag, data)
+
+    @property
+    def trigger_child(self):
+        return self._trigger_child
+
+    @trigger_child.setter
+    def trigger_child(self, v):
+        self._trigger_child = v
+        self._handler_finished = False
 
     def _execute(self):
         if self._handler_finished:
@@ -147,6 +161,7 @@ class TargetAgency(Agency):
             self.set_state(BizUnit.STATUS_STACKWAIT)
         else:
             # switch back when context cleared
+            #  TODO:  TEST
             self.set_state(BizUnit.STATUS_DELAY_EXIST)
             self._execute_condition.add(BizUnit.STATUS_DELAY_EXIST)
             log.info(self._dm.stack)
@@ -168,7 +183,7 @@ class TargetAgency(Agency):
         #  TODO: Hack code
         candicates = []
         for child in self.children:
-            if self._is_target_node(child) and not child.target_completed:
+            if self._is_target_node(child) and not child.target_completed():
                 # return first none complete target child
                 candicates.append(child)
         for node in candicates:
