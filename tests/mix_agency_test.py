@@ -1,68 +1,37 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import os
-import json
-import logging
 import time
-import mock
-
-from vikicommon.log import init_logger
-from vikidm.config import ConfigLog
-
-from vikidm.util import PROJECT_DIR, cms_rpc
-from vikidm.dm import DialogEngine, Stack
 from vikidm.context import Concept
-
-data_path = os.path.join(PROJECT_DIR, "tests", "data")
-init_logger(level="DEBUG", path=ConfigLog.log_path)
-log = logging.getLogger(__name__)
-
-
-def check_biz_tree(tree):
-    assert(len(tree.children('root')) == 1)
-    assert(len(tree.children('where.query')) == 2)
-    assert(tree.get_node('zhou_hei_ya').trigger_concepts[0] in ["Concept(intent=where.query)"])
-
-
-def test_stack():
-    log.info("test_stack")
-    stack = Stack()
-    stack.push(1)
-    stack.push(2)
-    stack.push(3)
-    assert(stack.top() == 3)
-    assert(stack.pop() == 3)
-    assert(stack.top() == 2)
-
-
-def mock_cms_rpc(paths):
-    d_subtrees = []
-    for fpath in paths:
-        with open(fpath, 'r') as file_obj:
-            d_subtrees.append(json.load(file_obj))
-    root = {
-        "data": {
-            "id": "root",
-            "tag": "root",
-            "entrance": False,
-            "event_id": "root",
-            "title": "Mix(root)",
-            "subject": "",
-            "scope": "",
-            "timeout": "5",
-            "type": "TYPE_MIX"
-        },
-        "children": []
-    }
-    root["children"] = d_subtrees
-    data = {
-        "code": 0,
-        "tree": json.dumps(root)
-    }
-    cms_rpc.get_dm_biztree = mock.Mock(return_value=data)
+from vikidm.dm import DialogEngine
+from .prepare import data_path, mock_cms_rpc
 
 
 class TestMixAgency(object):
+    '''
+    root
+    ├── Mix(Mix(weather.query))
+    │   ├── Mix(weather.query)
+    │   │   ├── spots.query
+    │   │   │   └── all_city
+    │   │   └── weather.query
+    │   │       ├── city
+    │   │       ├── date
+    │   │       ├── default@weather.query
+    │   │       └── result
+    │   ├── travel.service
+    │   ├── travel_consume.query
+    │   └── travel_left.query
+    ├── Mix(home.service)
+    │   ├── home.service
+    │   ├── home_consume.query
+    │   └── home_left.query
+    ├── casual_talk
+    ├── name.query
+    └── where.query
+        ├── nike
+            └── zhou_hei_ya
+    '''
 
     def _construct_dm(self):
         fpath1 = os.path.join(data_path, 'biz_simulate_data/biz_mix_travel.json')
