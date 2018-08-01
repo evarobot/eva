@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>vikidm package &mdash; numpydoc v0.9.dev0 Manual</title>
+    
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9.0.dev0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/copybutton.js"></script>
+    <link rel="top" title="numpydoc v0.9.dev0 Manual" href="../index.html" >
+    <link rel="up" title="vikidm" href="modules.html" >
+    <link rel="next" title="vikidm.const package" href="vikidm.const.html" >
+    <link rel="prev" title="vikidm" href="modules.html" > 
+  </head>
+  <body>
+
+  <div class="container">
+    <div class="header">
+    </div>
+  </div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../index.html">numpydoc v0.9.dev0 Manual</a></li>
+	
+          <li class="active"><a href="modules.html" accesskey="U">vikidm</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+      <li class="active">
+        <a href="vikidm.const.html" title="vikidm.const package"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="modules.html" title="vikidm"
+           accesskey="P">previous</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">vikidm package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-vikidm.biztree">vikidm.biztree module</a></li>
+<li><a class="reference internal" href="#module-vikidm.chat">vikidm.chat module</a></li>
+<li><a class="reference internal" href="#module-vikidm.config">vikidm.config module</a></li>
+<li><a class="reference internal" href="#module-vikidm.config_sample">vikidm.config_sample module</a></li>
+<li><a class="reference internal" href="#module-vikidm.context">vikidm.context module</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-vikidm.dm">vikidm.dm module</a></li>
+<li><a class="reference internal" href="#module-vikidm.errors">vikidm.errors module</a></li>
+<li><a class="reference internal" href="#module-vikidm.robot">vikidm.robot module</a></li>
+<li><a class="reference internal" href="#module-vikidm">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">vikidm</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="vikidm.const.html"
+                        title="next chapter">vikidm.const package</a></p>
+  <h3>This Page</h3>
+  <div>
+    <a href="../_sources/code/vikidm.txt"
+       rel="nofollow">Show Source</a>
+  </div>
+        </div>
+      </div>
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <div class="section" id="vikidm-package">
+<h1>vikidm package<a class="headerlink" href="#vikidm-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="vikidm.const.html">vikidm.const package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.const.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.const.html#module-vikidm.const.cls_const">vikidm.const.cls_const module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.const.html#module-vikidm.const.ordinary_const">vikidm.const.ordinary_const module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.const.html#module-vikidm.const">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vikidm.controller.html">vikidm.controller package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.controller.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="vikidm.controller.api.html">vikidm.controller.api package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="vikidm.controller.api.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vikidm.controller.api.html#module-vikidm.controller.api.robot_api">vikidm.controller.api.robot_api module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="vikidm.controller.api.html#module-vikidm.controller.api.test">vikidm.controller.api.test module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="vikidm.controller.api.html#module-vikidm.controller.api">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.controller.html#module-vikidm.controller">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vikidm.libs.html">vikidm.libs package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.libs.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.libs.html#module-vikidm.libs.autodiscover">vikidm.libs.autodiscover module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.libs.html#module-vikidm.libs.handler">vikidm.libs.handler module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.libs.html#module-vikidm.libs.route">vikidm.libs.route module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.libs.html#module-vikidm.libs">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vikidm.units.html">vikidm.units package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.units.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.units.html#module-vikidm.units.abnormal">vikidm.units.abnormal module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.units.html#module-vikidm.units.agency">vikidm.units.agency module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.units.html#module-vikidm.units.agent">vikidm.units.agent module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.units.html#module-vikidm.units.bizunit">vikidm.units.bizunit module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.units.html#module-vikidm.units">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vikidm.util.html">vikidm.util package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vikidm.util.html#module-vikidm.util">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-vikidm.biztree">
+<span id="vikidm-biztree-module"></span><h2>vikidm.biztree module<a class="headerlink" href="#module-vikidm.biztree" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="vikidm.biztree.BizTree">
+<em class="property">class </em><code class="descclassname">vikidm.biztree.</code><code class="descname">BizTree</code><a class="reference internal" href="../_modules/vikidm/biztree.html#BizTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.biztree.BizTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">treelib.tree.Tree</span></code></p>
+<p>Dialog configure tree.</p>
+<p>We can print tree through <cite>to_json</cite> function, with <cite>with_data</cite> argument
+setting to <cite>True</cite> or <cite>False</cite>. Alternative, We can call <cite>show</cite> function to
+show the tree topology.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><code class="xref py py-obj docutils literal"><span class="pre">nodes</span></code></dt>
+<dd><p class="first last">Return a dict form of nodes in a tree: {id: node_instance}</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.biztree.BizTree.add_subtree_from_json" title="vikidm.biztree.BizTree.add_subtree_from_json"><code class="xref py py-obj docutils literal"><span class="pre">add_subtree_from_json</span></code></a>(json_subtree,&nbsp;parent,&nbsp;dm)</td>
+<td>Add a subtree to parent node.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.biztree.BizTree.init_from_json" title="vikidm.biztree.BizTree.init_from_json"><code class="xref py py-obj docutils literal"><span class="pre">init_from_json</span></code></a>(json_tree,&nbsp;dm)</td>
+<td>Constructing a biz tree with json data.</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="60%" />
+<col width="40%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>is_ancestor</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>show</strong></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="vikidm.biztree.BizTree.TAG_ROOT">
+<code class="descname">TAG_ROOT</code><em class="property"> = 'root'</em><a class="headerlink" href="#vikidm.biztree.BizTree.TAG_ROOT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.biztree.BizTree.add_subtree_from_json">
+<code class="descname">add_subtree_from_json</code><span class="sig-paren">(</span><em>json_subtree</em>, <em>parent</em>, <em>dm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/biztree.html#BizTree.add_subtree_from_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.biztree.BizTree.add_subtree_from_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a subtree to parent node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>json_subtree</strong> <span class="classifier-delimiter">:</span> <span class="classifier">json, json tree data</span></dt>
+<dd></dd>
+<dt><strong>parent: treelib.Node</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.biztree.BizTree.init_from_json">
+<code class="descname">init_from_json</code><span class="sig-paren">(</span><em>json_tree</em>, <em>dm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/biztree.html#BizTree.init_from_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.biztree.BizTree.init_from_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructing a biz tree with json data.</p>
+<p>Each tree node is instance of some subtype of <cite>BizUnit</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>json_tree</strong> <span class="classifier-delimiter">:</span> <span class="classifier">json, json tree data</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vikidm.chat">
+<span id="vikidm-chat-module"></span><h2>vikidm.chat module<a class="headerlink" href="#module-vikidm.chat" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="vikidm.chat.CasualTalk">
+<em class="property">class </em><code class="descclassname">vikidm.chat.</code><code class="descname">CasualTalk</code><a class="reference internal" href="../_modules/vikidm/chat.html#CasualTalk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.chat.CasualTalk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>通用对话</p>
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="68%" />
+<col width="32%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>get_tuling_answer</strong></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<dl class="classmethod">
+<dt id="vikidm.chat.CasualTalk.get_tuling_answer">
+<em class="property">classmethod </em><code class="descname">get_tuling_answer</code><span class="sig-paren">(</span><em>question</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/chat.html#CasualTalk.get_tuling_answer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.chat.CasualTalk.get_tuling_answer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vikidm.config">
+<span id="vikidm-config-module"></span><h2>vikidm.config module<a class="headerlink" href="#module-vikidm.config" title="Permalink to this headline">¶</a></h2>
+<p>配置以Docker运行时为准，开发环境自己cp config.py后修改</p>
+</div>
+<div class="section" id="module-vikidm.config_sample">
+<span id="vikidm-config-sample-module"></span><h2>vikidm.config_sample module<a class="headerlink" href="#module-vikidm.config_sample" title="Permalink to this headline">¶</a></h2>
+<p>配置以Docker运行时为准，开发环境自己cp config.py后修改</p>
+</div>
+<div class="section" id="module-vikidm.context">
+<span id="vikidm-context-module"></span><h2>vikidm.context module<a class="headerlink" href="#module-vikidm.context" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="vikidm.context.Concept">
+<em class="property">class </em><code class="descclassname">vikidm.context.</code><code class="descname">Concept</code><span class="sig-paren">(</span><em>key</em>, <em>value=None</em>, <em>life_type='LIFE_STACK'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/context.html#Concept"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.context.Concept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">json.encoder.JSONEncoder</span></code></p>
+<p>概念类，包含键值对。</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>dirty</strong></dt>
+<dd></dd>
+<dt><strong>key</strong></dt>
+<dd></dd>
+<dt><strong>value</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="52%" />
+<col width="48%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>default</strong></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="vikidm.context.Concept.LIFE_STACK">
+<code class="descname">LIFE_STACK</code><em class="property"> = 'LIFE_STACK'</em><a class="headerlink" href="#vikidm.context.Concept.LIFE_STACK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.context.Concept.default">
+<code class="descname">default</code><span class="sig-paren">(</span><em>o</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/context.html#Concept.default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.context.Concept.default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vikidm.context.Concept.dirty">
+<code class="descname">dirty</code><a class="headerlink" href="#vikidm.context.Concept.dirty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vikidm.context.Concept.key">
+<code class="descname">key</code><a class="headerlink" href="#vikidm.context.Concept.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vikidm.context.Concept.value">
+<code class="descname">value</code><a class="headerlink" href="#vikidm.context.Concept.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vikidm.context.Context">
+<em class="property">class </em><code class="descclassname">vikidm.context.</code><code class="descname">Context</code><a class="reference internal" href="../_modules/vikidm/context.html#Context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.context.Context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>System have one context instance,
+which is used to manage a set of concepts(Memory).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>_all_concepts</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict, {&#8220;key1&#8221;: concept1, &#8220;key2&#8221;: concept2}</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.context.Context.add_concept" title="vikidm.context.Context.add_concept"><code class="xref py py-obj docutils literal"><span class="pre">add_concept</span></code></a>(concept)</td>
+<td>Add one concept instance to memory.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.context.Context.dirty" title="vikidm.context.Context.dirty"><code class="xref py py-obj docutils literal"><span class="pre">dirty</span></code></a>(key)</td>
+<td>Check if value of specific concept is asigned.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.context.Context.get_concept" title="vikidm.context.Context.get_concept"><code class="xref py py-obj docutils literal"><span class="pre">get_concept</span></code></a>(key)</td>
+<td>Get specific concept by string key.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.context.Context.reset_concept" title="vikidm.context.Context.reset_concept"><code class="xref py py-obj docutils literal"><span class="pre">reset_concept</span></code></a>(key)</td>
+<td>Set specific concept with <cite>None</cite> value.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.context.Context.satisfied" title="vikidm.context.Context.satisfied"><code class="xref py py-obj docutils literal"><span class="pre">satisfied</span></code></a>(concept)</td>
+<td>Check if memory have a concept equal to target concept.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.context.Context.update_concept" title="vikidm.context.Context.update_concept"><code class="xref py py-obj docutils literal"><span class="pre">update_concept</span></code></a>(key,&nbsp;concept)</td>
+<td>Update specific concept.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vikidm.context.Context.add_concept">
+<code class="descname">add_concept</code><span class="sig-paren">(</span><em>concept</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/context.html#Context.add_concept"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.context.Context.add_concept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add one concept instance to memory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>concept</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Concept, Concept instance</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.context.Context.dirty">
+<code class="descname">dirty</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/context.html#Context.dirty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.context.Context.dirty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if value of specific concept is asigned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>key</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, key of specific concept.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.context.Context.get_concept">
+<code class="descname">get_concept</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/context.html#Context.get_concept"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.context.Context.get_concept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get specific concept by string key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>key</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, used to identify concept.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.context.Context.reset_concept">
+<code class="descname">reset_concept</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/context.html#Context.reset_concept"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.context.Context.reset_concept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set specific concept with <cite>None</cite> value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>key</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, used to identify concept.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.context.Context.satisfied">
+<code class="descname">satisfied</code><span class="sig-paren">(</span><em>concept</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/context.html#Context.satisfied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.context.Context.satisfied" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if memory have a concept equal to target concept.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>concept: Concept, target comparing concept.</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.context.Context.update_concept">
+<code class="descname">update_concept</code><span class="sig-paren">(</span><em>key</em>, <em>concept</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/context.html#Context.update_concept"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.context.Context.update_concept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update specific concept.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>key</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, key of target concept.</span></dt>
+<dd></dd>
+<dt><strong>concept</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Concept, Concept instance.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vikidm.dm">
+<span id="vikidm-dm-module"></span><h2>vikidm.dm module<a class="headerlink" href="#module-vikidm.dm" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="vikidm.dm.DialogEngine">
+<em class="property">class </em><code class="descclassname">vikidm.dm.</code><code class="descname">DialogEngine</code><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>对话管理单元</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>is_waiting</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="70%" />
+<col width="30%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>debug_info</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>execute_focus_agent</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>get_candicate_units</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>init_from_db</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>process_concepts</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>process_confirm</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>update_by_remote</strong></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vikidm.dm.DialogEngine.debug_info">
+<code class="descname">debug_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.debug_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.debug_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.DialogEngine.execute_focus_agent">
+<code class="descname">execute_focus_agent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.execute_focus_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.execute_focus_agent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.DialogEngine.get_candicate_units">
+<code class="descname">get_candicate_units</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.get_candicate_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.get_candicate_units" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.DialogEngine.init_from_db">
+<code class="descname">init_from_db</code><span class="sig-paren">(</span><em>domain_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.init_from_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.init_from_db" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vikidm.dm.DialogEngine.is_waiting">
+<code class="descname">is_waiting</code><a class="headerlink" href="#vikidm.dm.DialogEngine.is_waiting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.DialogEngine.process_concepts">
+<code class="descname">process_concepts</code><span class="sig-paren">(</span><em>sid</em>, <em>concepts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.process_concepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.process_concepts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.DialogEngine.process_confirm">
+<code class="descname">process_confirm</code><span class="sig-paren">(</span><em>sid</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.process_confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.process_confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.DialogEngine.update_by_remote">
+<code class="descname">update_by_remote</code><span class="sig-paren">(</span><em>concepts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.update_by_remote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.update_by_remote" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vikidm.dm.ExpectAgenda">
+<em class="property">class </em><code class="descclassname">vikidm.dm.</code><code class="descname">ExpectAgenda</code><span class="sig-paren">(</span><em>stack</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#ExpectAgenda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.ExpectAgenda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="73%" />
+<col width="27%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>compute_candicate_units</strong></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vikidm.dm.ExpectAgenda.compute_candicate_units">
+<code class="descname">compute_candicate_units</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#ExpectAgenda.compute_candicate_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.ExpectAgenda.compute_candicate_units" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vikidm.dm.Session">
+<em class="property">class </em><code class="descclassname">vikidm.dm.</code><code class="descname">Session</code><a class="reference internal" href="../_modules/vikidm/dm.html#Session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="63%" />
+<col width="37%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>begin_session</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>end_session</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>new_session</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>valid_session</strong></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vikidm.dm.Session.begin_session">
+<code class="descname">begin_session</code><span class="sig-paren">(</span><em>sid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Session.begin_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Session.begin_session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.Session.end_session">
+<code class="descname">end_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Session.end_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Session.end_session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.Session.new_session">
+<code class="descname">new_session</code><span class="sig-paren">(</span><em>sid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Session.new_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Session.new_session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.Session.valid_session">
+<code class="descname">valid_session</code><span class="sig-paren">(</span><em>sid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Session.valid_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Session.valid_session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vikidm.dm.Stack">
+<em class="property">class </em><code class="descclassname">vikidm.dm.</code><code class="descname">Stack</code><a class="reference internal" href="../_modules/vikidm/dm.html#Stack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>模拟栈</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>items</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="55%" />
+<col width="45%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>is_empty</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>item</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>pop</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>push</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>top</strong></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vikidm.dm.Stack.is_empty">
+<code class="descname">is_empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Stack.is_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Stack.is_empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.Stack.item">
+<code class="descname">item</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Stack.item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Stack.item" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vikidm.dm.Stack.items">
+<code class="descname">items</code><a class="headerlink" href="#vikidm.dm.Stack.items" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.Stack.pop">
+<code class="descname">pop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Stack.pop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Stack.pop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.Stack.push">
+<code class="descname">push</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Stack.push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Stack.push" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.Stack.top">
+<code class="descname">top</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Stack.top"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Stack.top" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vikidm.errors">
+<span id="vikidm-errors-module"></span><h2>vikidm.errors module<a class="headerlink" href="#module-vikidm.errors" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="vikidm.errors.DMError">
+<em class="property">exception </em><code class="descclassname">vikidm.errors.</code><code class="descname">DMError</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/errors.html#DMError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.errors.DMError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+<dl class="attribute">
+<dt id="vikidm.errors.DMError.msg">
+<code class="descname">msg</code><em class="property"> = None</em><a class="headerlink" href="#vikidm.errors.DMError.msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="vikidm.errors.RPCError">
+<em class="property">exception </em><code class="descclassname">vikidm.errors.</code><code class="descname">RPCError</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/errors.html#RPCError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.errors.RPCError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vikidm.errors.DMError" title="vikidm.errors.DMError"><code class="xref py py-class docutils literal"><span class="pre">vikidm.errors.DMError</span></code></a></p>
+<dl class="attribute">
+<dt id="vikidm.errors.RPCError.msg">
+<code class="descname">msg</code><em class="property"> = 'RPC\xe8\xbf\x9c\xe7\xa8\x8b\xe8\xb0\x83\xe7\x94\xa8\xe5\xa4\xb1\xe8\xb4\xa5'</em><a class="headerlink" href="#vikidm.errors.RPCError.msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vikidm.robot">
+<span id="vikidm-robot-module"></span><h2>vikidm.robot module<a class="headerlink" href="#module-vikidm.robot" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="vikidm.robot.DMRobot">
+<em class="property">class </em><code class="descclassname">vikidm.robot.</code><code class="descname">DMRobot</code><span class="sig-paren">(</span><em>robot_id</em>, <em>domain_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/robot.html#DMRobot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.robot.DMRobot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Every DMRobot instance corresponds to a device.</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.robot.DMRobot.get_robot" title="vikidm.robot.DMRobot.get_robot"><code class="xref py py-obj docutils literal"><span class="pre">get_robot</span></code></a>(robotid,&nbsp;domain_id)</td>
+<td>Get a DMRobot instance with device id and it&#8217;s application id.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.robot.DMRobot.process_concepts" title="vikidm.robot.DMRobot.process_concepts"><code class="xref py py-obj docutils literal"><span class="pre">process_concepts</span></code></a>(d_concepts)</td>
+<td>Process concepts input from device</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.robot.DMRobot.process_confirm" title="vikidm.robot.DMRobot.process_confirm"><code class="xref py py-obj docutils literal"><span class="pre">process_confirm</span></code></a>(sid,&nbsp;d_confirm)</td>
+<td>Process confirm form device.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.robot.DMRobot.process_event" title="vikidm.robot.DMRobot.process_event"><code class="xref py py-obj docutils literal"><span class="pre">process_event</span></code></a>(event_id)</td>
+<td>Process event from device.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.robot.DMRobot.process_question" title="vikidm.robot.DMRobot.process_question"><code class="xref py py-obj docutils literal"><span class="pre">process_question</span></code></a>(question)</td>
+<td>Process question from device.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.robot.DMRobot.reset_robot" title="vikidm.robot.DMRobot.reset_robot"><code class="xref py py-obj docutils literal"><span class="pre">reset_robot</span></code></a>(robotid,&nbsp;domain_id)</td>
+<td>Delete old robot from buffer and recreate new one.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.robot.DMRobot.update_concepts_by_backend" title="vikidm.robot.DMRobot.update_concepts_by_backend"><code class="xref py py-obj docutils literal"><span class="pre">update_concepts_by_backend</span></code></a>(d_concepts)</td>
+<td>Update by business service.</td>
+</tr>
+</tbody>
+</table>
+<dl class="classmethod">
+<dt id="vikidm.robot.DMRobot.get_robot">
+<em class="property">classmethod </em><code class="descname">get_robot</code><span class="sig-paren">(</span><em>robotid</em>, <em>domain_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/robot.html#DMRobot.get_robot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.robot.DMRobot.get_robot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a DMRobot instance with device id and it&#8217;s application id.</p>
+<p>If there is no correspond robot instance in the robots buffer,
+create one. Otherwise, return the buffered one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>robotid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, device id.</span></dt>
+<dd></dd>
+<dt><strong>domain_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, application id.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>DMRobot.</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.robot.DMRobot.process_concepts">
+<code class="descname">process_concepts</code><span class="sig-paren">(</span><em>d_concepts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/robot.html#DMRobot.process_concepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.robot.DMRobot.process_concepts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process concepts input from device</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>d_concepts</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict, concepts with diction format.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>dict.</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.robot.DMRobot.process_confirm">
+<code class="descname">process_confirm</code><span class="sig-paren">(</span><em>sid</em>, <em>d_confirm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/robot.html#DMRobot.process_confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.robot.DMRobot.process_confirm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process confirm form device.</p>
+<p>System use sid to identify which request to confirm.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>sid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, correspond to request sid.</span></dt>
+<dd></dd>
+<dt><strong>d_confirm</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict,</span></dt>
+<dd><dl class="first docutils">
+<dt>{</dt>
+<dd><p class="first">&#8216;code&#8217;: 0,  // 0 &#8211; success; others &#8211; failed.</p>
+<p class="last">&#8216;message&#8217;: &#8216;&#8217;</p>
+</dd>
+</dl>
+<p class="last">}</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>dict.</strong></dt>
+<dd></dd>
+<dt><strong>{</strong></dt>
+<dd><p class="first">&#8216;code&#8217;: 0,  // always success</p>
+<p class="last">&#8216;message&#8217;: &#8216;&#8217;</p>
+</dd>
+<dt><strong>}</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.robot.DMRobot.process_event">
+<code class="descname">process_event</code><span class="sig-paren">(</span><em>event_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/robot.html#DMRobot.process_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.robot.DMRobot.process_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process event from device.</p>
+<p>System will convert event to <cite>Concepts</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>event_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, event id.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>dict.</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.robot.DMRobot.process_question">
+<code class="descname">process_question</code><span class="sig-paren">(</span><em>question</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/robot.html#DMRobot.process_question"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.robot.DMRobot.process_question" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process question from device.</p>
+<p>It will parse question to (<cite>Intent</cite>, Slots, Concepts) with NLU and
+query database or call thirdparty service.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>question</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, question text from human being.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>dict.</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="vikidm.robot.DMRobot.reset_robot">
+<em class="property">classmethod </em><code class="descname">reset_robot</code><span class="sig-paren">(</span><em>robotid</em>, <em>domain_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/robot.html#DMRobot.reset_robot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.robot.DMRobot.reset_robot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete old robot from buffer and recreate new one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>robotid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, device id.</span></dt>
+<dd></dd>
+<dt><strong>domain_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, application id.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>DMRobot.</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vikidm.robot.DMRobot.robots_pool">
+<code class="descname">robots_pool</code><em class="property"> = {}</em><a class="headerlink" href="#vikidm.robot.DMRobot.robots_pool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.robot.DMRobot.update_concepts_by_backend">
+<code class="descname">update_concepts_by_backend</code><span class="sig-paren">(</span><em>d_concepts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/robot.html#DMRobot.update_concepts_by_backend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.robot.DMRobot.update_concepts_by_backend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update by business service.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>d_concepts</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict, dict of concepts.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>dict.</strong></dt>
+<dd></dd>
+<dt><strong>{</strong></dt>
+<dd><p class="first last">&#8220;code&#8221;: 0   // alway success</p>
+</dd>
+<dt><strong>}</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vikidm">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-vikidm" title="Permalink to this headline">¶</a></h2>
+<p>对话框管理系统启动后初始化的一系列操作:包含 1:从MongoDB数据库中将数据模型解析为JSON数据,
+然后配置成业务配置树</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2017, numpydoc maintainers.
+      </li>
+      <li>
+      Last updated on Jul 31, 2018.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>

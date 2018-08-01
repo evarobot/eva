@@ -5,11 +5,6 @@
 '''
 
 import os
-#from django.conf import settings
-
-def init():
-    #settings.configure()
-    pass
 
 
 class _ConfigDM(object):
@@ -27,6 +22,7 @@ class _ConfigDM(object):
         port = os.environ.get("DM_PORT")
         return port if port is not None else self._port
 
+
 class _ConfigLog(object):
     _log_level = 'INFO'
     log_to_file = True
@@ -36,7 +32,7 @@ class _ConfigLog(object):
     @property
     def log_level(self):
         lv = os.environ.get("LOG_LEVEL")
-        return lv if lv != None else self._log_level
+        return lv if lv is not None else self._log_level
 
 
 class _ConfigRedis:
@@ -47,17 +43,17 @@ class _ConfigRedis:
     @property
     def host(self):
         hst = os.environ.get("REDIS_HOST")
-        return hst if hst != None else self._host
+        return hst if hst is not None else self._host
 
     @property
     def port(self):
         prt = os.environ.get("REDIS_PORT")
-        return prt if prt!= None else self._port
+        return prt if prt is not None else self._port
 
     @property
     def db(self):
         d = os.environ.get("REDIS_DB")
-        return d if d != None else self._db
+        return d if d is not None else self._db
 
 
 class _ConfigMongo:
@@ -68,17 +64,17 @@ class _ConfigMongo:
     @property
     def host(self):
         hst = os.environ.get("MONGO_HOST")
-        return hst if hst != None else self._host
+        return hst if hst is not None else self._host
 
     @property
     def port(self):
         prt = os.environ.get("MONGO_PORT")
-        return int(prt) if prt!= None else self._port
+        return int(prt) if prt is not None else self._port
 
     @property
     def database(self):
         d = os.environ.get("MONGO_DB")
-        return d if d != None else self._db
+        return d if d is not None else self._db
 
 
 class _ConfigApps(object):
@@ -94,17 +90,17 @@ class _ConfigNeo4j:
     @property
     def host(self):
         hst = os.environ.get("NEO4J_HOST")
-        return hst if hst != None else self._host
+        return hst if hst is not None else self._host
 
     @property
     def port(self):
         prt = os.environ.get("NEO4j_PORT")
-        return int(prt) if prt!= None else self._port
+        return int(prt) if prt is not None else self._port
 
     @property
     def namespace(self):
         d = os.environ.get("NEO4j_NAMESPACE")
-        return d if d != None else self._namespace
+        return d if d is not None else self._namespace
 
 
 ConfigMongo = _ConfigMongo()

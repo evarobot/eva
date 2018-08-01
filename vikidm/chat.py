@@ -20,20 +20,20 @@ class CasualTalk(object):
         try:
             t1 = time.time()
             params = {
-                    'key': ConfigChat.tuling_key,
-                    'info': question,
-                    'userid': ConfigChat.tuling_userid
-                    }
-            headers = { 'content-type': 'application/json' }
+                'key': ConfigChat.tuling_key,
+                'info': question,
+                'userid': ConfigChat.tuling_userid
+            }
+            headers = {'content-type': 'application/json'}
             json_data = requests.post(ConfigChat.tuling_apiurl,
                                       data=json.dumps(params),
                                       headers=headers,
                                       timeout=10).text
             rst = json.loads(json_data)['text'].encode('utf8')
-            cost = (time.time()-t1) * 1000
-            log.info("[tuling] Question:%s Answer:%s %sms", question, rst, int(cost))
-        except Exception, e:
-            ## @TODO log
+            cost = (time.time() - t1) * 1000
+            log.info("[tuling] Question:%s Answer:%s %sms",
+                     question, rst, int(cost))
+        except Exception:
             log.error('[tuling] 连接错误!')
             rst = '小莫困了，不和你闲聊了。'
         i = rst.find('http')

@@ -76,8 +76,8 @@
 				"scope": "",
 				"trigger_concepts": [
 					"intent=weather.query",
-					"date=*",
-					"city=*"
+					"date=@date",
+					"city=@city"
 				],
 				"target_concepts": [],
 				"timeout": 5,

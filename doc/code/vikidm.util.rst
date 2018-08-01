@@ -1,10 +1,10 @@
-evecms.util package
+vikidm.util package
 ===================
 
 Module contents
 ---------------
 
-.. automodule:: evecms.util
+.. automodule:: vikidm.util
     :members:
     :undoc-members:
     :show-inheritance:

@@ -65,7 +65,7 @@ class Agent(BizUnit):
     def reset_concepts(self):
         if self.parent.is_root() or self.parent.state == BizUnit.STATUS_TREEWAIT:
             for concept in self.trigger_concepts + self.target_concepts:
-                if concept.life_type == Concept.LIFE_STACK and self._dm.context.dirty(concept):
+                if concept.life_type == Concept.LIFE_STACK and self._dm.context.dirty(concept.key):
                     self._dm.context.reset_concept(concept.key)
                     log.debug("RESET_CONCEPT [{0}]".format(concept.key))
         if not isinstance(self, TargetAgent):
@@ -146,7 +146,7 @@ class TargetAgent(Agent):
         super(TargetAgent, self).__init__(dm, tag, data)
 
     def target_completed(self):
-        return all([self._dm.context.dirty(c) for c in self.target_concepts])
+        return all([self._dm.context.dirty(c.key) for c in self.target_concepts])
 
     def round_back(self):
         if self.state == BizUnit.STATUS_WAIT_ACTION_CONFIRM:

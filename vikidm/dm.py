@@ -5,15 +5,13 @@ import logging
 import pprint
 import time
 from datetime import datetime
-from treelib.tree import NodeIDAbsentError
 
-from vikidm import errors
 from vikicommon.timer import TimerReset
 from vikicommon.collections import OrderedSet
+from vikidm import errors
 from vikidm.context import Context
 from vikidm.biztree import BizTree
 from vikidm.units import (
-    Agency,
     Agent,
     TargetAgent,
     BizUnit,
@@ -161,7 +159,7 @@ class DialogEngine(object):
     """ 对话管理单元 """
     def __init__(self):
         self.context = Context()
-        self.biz_tree = BizTree(self)
+        self.biz_tree = BizTree()
         self.stack = Stack()
         self.debug_loop = 0
         self.debug_timeunit = 1  # 为了测试的时候加速时间计数
@@ -179,7 +177,7 @@ class DialogEngine(object):
         ret = cms_rpc.get_dm_biztree(domain_id)
         if ret['code'] != 0:
             raise errors.RPCError
-        self.biz_tree.init_from_json(ret['tree'])
+        self.biz_tree.init_from_json(ret['tree'], self)
         self._init_context()
         node = self.biz_tree.get_node(self.biz_tree.root)
         node.set_state(BizUnit.STATUS_STACKWAIT)
@@ -387,7 +385,7 @@ class DialogEngine(object):
     def _mark_completed_bizunits(self):
         for bizunit in self.biz_tree.all_nodes_itr():
             if isinstance(bizunit, TargetAgent):
-                completed = all([self.context.dirty(c) for c in bizunit.target_concepts])
+                completed = all([self.context.dirty(c.key) for c in bizunit.target_concepts])
                 if completed:
                     bizunit.mark_target_completed()
 
