@@ -36,8 +36,65 @@ class BackendConceptsHandler(RobotAPIHandler):
 
 @Route('/dm/robot/question/')
 class DMQuestionHandler(RobotAPIHandler):
+    """
 
+    Methods
+    -------
+    post
+
+    """
     def post(self):
+        """
+
+        URL: /dm/robot/question/
+
+        Parameters
+        ----------
+        data : {
+          "robotid": ppepper的ID,
+
+          "project": 项目名,
+
+          "question": "请问你叫什么名字",
+        }
+
+        Returns
+        -------
+        {
+            "code": 0,  // 非0都是错误
+
+            "message": "",
+
+            "event_id": "weather.query: date=今天&city=明天",    // 事件ID
+
+            "sid": "xxxx", // session id
+
+            "nlu": {
+
+            "intent": "",
+
+            "slots": {
+                "槽1": "值1",
+
+                "槽2": "值2"
+            }
+            }
+            "debug": {
+                "context": "上下文变量",
+
+                "stack": "上下文栈情况"
+            }
+            "action": {
+                "tts": "xxxxxxxxxx"， // 机器人要说的话
+
+                "web": {
+                    "text": "xxxxx
+                }
+            }
+
+        }
+
+        """
         log.info("[REQUEST: {0}]".format(self.data))
         domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
         robot = DMRobot.get_robot(self.data['robot_id'], domain_id)

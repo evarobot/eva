@@ -170,7 +170,7 @@ class TargetAgency(Agency):
 
     def _plan(self):
         # log.debug(self._dm.context)
-        targets_clean = all([not self._dm.context.dirty(c) for c in self.target_concepts])
+        targets_clean = all([not self._dm.context.dirty(c.key) for c in self.target_concepts])
         for child in self.children:
             if self._is_result_node(child):
                 trigger_satisified = all([self._dm.context.satisfied(c) for c in child.trigger_concepts])

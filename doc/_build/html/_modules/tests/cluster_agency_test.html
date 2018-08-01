@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <title>tests.cluster_agency_test &mdash; numpydoc v0.9.dev0 Manual</title>
+    
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../../_static/css/spc-extend.css">
+    <link rel="stylesheet" href="../../_static/scipy.css" type="text/css" >
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" >
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9.0.dev0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/js/copybutton.js"></script>
+    <link rel="top" title="numpydoc v0.9.dev0 Manual" href="../../index.html" >
+    <link rel="up" title="Module code" href="../index.html" > 
+  </head>
+  <body>
+
+  <div class="container">
+    <div class="header">
+    </div>
+  </div>
+
+
+    <div class="container">
+      <div class="main">
+        
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div class="spc-navbar">
+              
+    <ul class="nav nav-pills pull-left">
+	
+        <li class="active"><a href="../../index.html">numpydoc v0.9.dev0 Manual</a></li>
+	
+          <li class="active"><a href="../index.html" accesskey="U">Module code</a></li> 
+    </ul>
+              
+              
+    <ul class="nav nav-pills pull-right">
+      <li class="active">
+        <a href="../../genindex.html" title="General Index"
+           accesskey="I">index</a>
+      </li>
+      <li class="active">
+        <a href="../../py-modindex.html" title="Python Module Index"
+           >modules</a>
+      </li>
+    </ul>
+              
+	    </div>
+	  </div>
+	</div>
+        
+
+	<div class="row-fluid">
+      <div class="spc-rightsidebar span3">
+        <div class="sphinxsidebarwrapper">
+        </div>
+      </div>
+          <div class="span9">
+            
+        <div class="bodywrapper">
+          <div class="body" id="spc-section-body">
+            
+  <h1>Source code for tests.cluster_agency_test</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="c"># encoding: utf-8</span>
+<span class="kn">from</span> <span class="nn">vikidm.context</span> <span class="kn">import</span> <span class="n">Concept</span>
+<span class="kn">from</span> <span class="nn">.prepare</span> <span class="kn">import</span> <span class="n">construct_dm</span>
+
+
+<div class="viewcode-block" id="TestClusterAgencyCase"><a class="viewcode-back" href="../../code/tests.html#tests.cluster_agency_test.TestClusterAgencyCase">[docs]</a><span class="k">class</span> <span class="nc">TestClusterAgencyCase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    root</span>
+<span class="sd">    ├── casual_talk</span>
+<span class="sd">    ├── name.query</span>
+<span class="sd">    ├── weather.query</span>
+<span class="sd">    │   ├── city</span>
+<span class="sd">    │   ├── date</span>
+<span class="sd">    │   ├── default@weather.query</span>
+<span class="sd">    │   └── result</span>
+<span class="sd">    └── where.query</span>
+<span class="sd">        ├── nike</span>
+<span class="sd">        └── zhou_hei_ya</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="TestClusterAgencyCase.test_location_input"><a class="viewcode-back" href="../../code/tests.html#tests.cluster_agency_test.TestClusterAgencyCase.test_location_input">[docs]</a>    <span class="k">def</span> <span class="nf">test_location_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dm</span> <span class="o">=</span> <span class="n">construct_dm</span><span class="p">()</span>
+        <span class="n">dm</span><span class="o">.</span><span class="n">process_concepts</span><span class="p">(</span><span class="s">&quot;sid001&quot;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="n">Concept</span><span class="p">(</span><span class="s">&quot;intent&quot;</span><span class="p">,</span> <span class="s">&quot;where.query&quot;</span><span class="p">),</span>
+            <span class="n">Concept</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">,</span> <span class="s">&quot;nike&quot;</span><span class="p">)</span>
+        <span class="p">])</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">stack</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;&#39;&#39;</span>
+<span class="s">            Stack:</span>
+<span class="s">                root(STATUS_STACKWAIT)</span>
+<span class="s">                where.query(STATUS_STACKWAIT)</span>
+<span class="s">                nike(STATUS_WAIT_ACTION_CONFIRM)&#39;&#39;&#39;</span><span class="p">)</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">context</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;&#39;&#39;</span>
+<span class="s">            Context:</span>
+<span class="s">                Concept(city=None)</span>
+<span class="s">                Concept(date=None)</span>
+<span class="s">                Concept(intent=where.query)</span>
+<span class="s">                Concept(location=nike)&#39;&#39;&#39;</span>
+        <span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">debug_loop</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">is_waiting</span> <span class="o">==</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="n">dm</span><span class="o">.</span><span class="n">_cancel_timer</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="TestClusterAgencyCase.test_success_confirm"><a class="viewcode-back" href="../../code/tests.html#tests.cluster_agency_test.TestClusterAgencyCase.test_success_confirm">[docs]</a>    <span class="k">def</span> <span class="nf">test_success_confirm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dm</span> <span class="o">=</span> <span class="n">construct_dm</span><span class="p">()</span>
+        <span class="n">dm</span><span class="o">.</span><span class="n">process_concepts</span><span class="p">(</span><span class="s">&quot;sid001&quot;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="n">Concept</span><span class="p">(</span><span class="s">&quot;intent&quot;</span><span class="p">,</span> <span class="s">&quot;where.query&quot;</span><span class="p">),</span>
+            <span class="n">Concept</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">,</span> <span class="s">&quot;nike&quot;</span><span class="p">)</span>
+        <span class="p">])</span>
+        <span class="n">dm</span><span class="o">.</span><span class="n">process_confirm</span><span class="p">(</span><span class="s">&#39;sid001&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s">&#39;message&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
+        <span class="p">})</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">debug_loop</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">stack</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;&#39;&#39;</span>
+<span class="s">            Stack:</span>
+<span class="s">                root(STATUS_STACKWAIT)&#39;&#39;&#39;</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">context</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;&#39;&#39;</span>
+<span class="s">            Context:</span>
+<span class="s">                Concept(city=None)</span>
+<span class="s">                Concept(date=None)</span>
+<span class="s">                Concept(intent=None)</span>
+<span class="s">                Concept(location=None)&#39;&#39;&#39;</span>
+        <span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">is_waiting</span> <span class="o">==</span> <span class="bp">False</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TestClusterAgencyCase.test_failed_confirm"><a class="viewcode-back" href="../../code/tests.html#tests.cluster_agency_test.TestClusterAgencyCase.test_failed_confirm">[docs]</a>    <span class="k">def</span> <span class="nf">test_failed_confirm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dm</span> <span class="o">=</span> <span class="n">construct_dm</span><span class="p">()</span>
+        <span class="n">dm</span><span class="o">.</span><span class="n">process_concepts</span><span class="p">(</span><span class="s">&quot;sid001&quot;</span><span class="p">,</span> <span class="p">[</span>
+            <span class="n">Concept</span><span class="p">(</span><span class="s">&quot;intent&quot;</span><span class="p">,</span> <span class="s">&quot;where.query&quot;</span><span class="p">),</span>
+            <span class="n">Concept</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">,</span> <span class="s">&quot;nike&quot;</span><span class="p">)</span>
+        <span class="p">])</span>
+        <span class="n">dm</span><span class="o">.</span><span class="n">process_confirm</span><span class="p">(</span><span class="s">&#39;sid001&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="s">&#39;message&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
+        <span class="p">})</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">stack</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;&#39;&#39;</span>
+<span class="s">            Stack:</span>
+<span class="s">                root(STATUS_STACKWAIT)&#39;&#39;&#39;</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">context</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;&#39;&#39;</span>
+<span class="s">            Context:</span>
+<span class="s">                Concept(city=None)</span>
+<span class="s">                Concept(date=None)</span>
+<span class="s">                Concept(intent=None)</span>
+<span class="s">                Concept(location=None)&#39;&#39;&#39;</span>
+        <span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">debug_loop</span> <span class="o">==</span> <span class="mi">6</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container container-navbar-bottom">
+      <div class="spc-navbar">
+        
+      </div>
+    </div>
+    <div class="container">
+    <div class="footer">
+    <div class="row-fluid">
+    <ul class="inline pull-left">
+      <li>
+        &copy; Copyright 2017, numpydoc maintainers.
+      </li>
+      <li>
+      Last updated on Jul 31, 2018.
+      </li>
+      <li>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.
+      </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+  </body>
+</html>
