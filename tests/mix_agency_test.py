@@ -84,7 +84,7 @@ class TestMixAgency(object):
             u'date', u'result', u'home.service', u'casual_talk',
             u'nike', u'zhou_hei_ya', u'name.query'
         ])
-        assert(set(context["valid_slots"]) == set(["date", "city", "location"]))
+        assert(set(context["visible_slots"]) == set(["date", "city", "location"]))
         dm.process_concepts("sid002", [
             Concept("intent", "travel.service"),
         ])
@@ -96,7 +96,7 @@ class TestMixAgency(object):
             'home.service', 'casual_talk', u'nike', 'zhou_hei_ya',
             'name.query'
         ])
-        assert(set(context["valid_slots"]) == set(["date", "city", "location"]))
+        assert(set(context["visible_slots"]) == set(["date", "city", "location"]))
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
