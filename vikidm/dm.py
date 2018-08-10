@@ -13,11 +13,11 @@ from vikidm.context import Context
 from vikidm.biztree import BizTree
 from vikidm.units import (
     Agent,
-    TargetAgent,
     BizUnit,
-    MixAgency,
+    TargetAgent,
     TargetAgency,
     ClusterAgency,
+    MixAgency,
     AbnormalHandler
 )
 from vikidm.util import cms_rpc
@@ -116,78 +116,92 @@ class Stack(object):
 
 
 class ExpectAgenda(object):
+    """
+    Manage the visibility of bizunits and related intents and slots,
+    given specific stack state.
+
+    Attributes
+    ----------
+    visible_agents: OrderdSet, the visible agents
+
+    """
     def __init__(self, stack):
-        self._candicates = None
+        self._visible_tree_agents = None
         self._stack = stack
+        self.visible_slots = None
+        self.visible_slots = None
+        self.visible_agents = None
 
     def compute_candicate_units(self):
         """
 
-        Calculate valid bizunits, intents, slots
+        Calculate visible bizunits, intents, slots
         """
         # ordered by context priority
         candicates = self._context_candicae_units()
-        candicates.extend(self._tree_candicate_units())
+        if self._visible_tree_agents is None:
+            self._visible_tree_agents = self._visible_descendant_agents(
+                self._stack.items[0])
+        candicates.extend(self._visible_tree_agents)
 
-        self.valid_intents = set()
+        self.visible_intentss = set()
         valid_concepts = []
         for agent in candicates:
             valid_concepts.extend(agent.target_concepts)
             valid_concepts.extend(agent.trigger_concepts)
             for concept in agent.trigger_concepts:
                 if concept.key == "intent":
-                    self.valid_intents.add(concept.value)
+                    self.visible_intentss.add(concept.value)
 
         #  TODO: valid_concepts
-        self.valid_slots = set([c.key for c in valid_concepts])
-        self.valid_slots.remove("intent")
-        self.candicate_agents = OrderedSet(candicates)
+        self.visible_slots = set([c.key for c in valid_concepts])
+        self.visible_slots.remove("intent")
+        self.visible_agents = OrderedSet(candicates)
 
     def _context_candicae_units(self):
+        """
+        Search bizunits up along the hierarchy path, and for each bizunit,
+        search it's descendant.
+
+        """
         candicates = []
-        for unit in self._filtered_hierarchy_units():
-            candicates.extend(self._get_candicates(unit))
+        for unit in self._none_root_ancestors_of_top_agent():
+            candicates.extend(self._visible_descendant_agents(unit))
         return candicates
 
-    def _filtered_hierarchy_units(self):
-        # return agent which is in the hierarchy path and not root
+    def _none_root_ancestors_of_top_agent(self):
         focus = self._stack.top()
         unit = focus
         while not unit.is_root():
             yield unit
             unit = unit.parent
 
-    def _tree_candicate_units(self):
-        if self._candicates:
-            return self._candicates
-        self._candicates = self._get_candicates(self._stack.items[0])
-        return self._candicates
-
-    def _get_candicates(self, bizunit):
-        candicates = []
+    def _visible_descendant_agents(self, bizunit):
+        agents = []
 
         def visit_tree(unit):
             # log.debug("visit %s" % unit.tag)
             if isinstance(unit, Agent):
-                candicates.append(unit)
+                agents.append(unit)
             elif isinstance(unit, MixAgency):
                 for child in unit.children:
+                    # @BUG ?
                     if child.entrance or unit in self._stack.items:
                         visit_tree(child)
             else:
                 for child in unit.children:
                     visit_tree(child)
         visit_tree(bizunit)
-        return candicates
+        return agents
 
     def __repr__(self):
         str_slots = "\n                ".join(
             ["\n            ValidSlots:"] + ["{0}".format(c)
-                                             for c in sorted(self.valid_slots)])
+                                             for c in sorted(self.visible_slots)])
 
         str_intents = "\n                ".join(
             ["\n            ValidIntents:"] + ["{0}".format(c)
-                                               for c in sorted(self.valid_intents)])
+                                               for c in sorted(self.visible_intentss)])
         return str_intents + str_slots
 
 
@@ -336,7 +350,7 @@ class DialogEngine(object):
     def get_candicate_units(self):
         self._agenda.compute_candicate_units()
         agents = []
-        for agent in self._agenda.candicate_agents:
+        for agent in self._agenda.visible_agents:
             parent = agent.parent
             identifier = agent.identifier
             if isinstance(parent, TargetAgency) or isinstance(parent, ClusterAgency):
@@ -344,8 +358,8 @@ class DialogEngine(object):
             agents.append((agent.tag, agent.intent, identifier))
 
         return {
-            "valid_slots": list(self._agenda.valid_slots),
-            "valid_intents": list(self._agenda.valid_intents),
+            "visible_slots": list(self._agenda.visible_slots),
+            "visible_intentss": list(self._agenda.visible_intentss),
             "agents": agents
         }
 
@@ -353,7 +367,7 @@ class DialogEngine(object):
         # 如果多个，都执行，就需要多个反馈，可能需要主动推送功能。
         # 目前只支持返回一个。
         #focus_unit = self.stack.top()
-        for bizunit in self._agenda.candicate_agents:
+        for bizunit in self._agenda.visible_agents:
             if not isinstance(bizunit, Agent):
                 continue
             if not bizunit.satisfied() or bizunit.target_completed():
@@ -397,13 +411,13 @@ class DialogEngine(object):
         self._agenda.compute_candicate_units()
         #log.debug(self._agenda)
         valid_concepts = []
-        for agent in self._agenda.candicate_agents:
+        for agent in self._agenda.visible_agents:
             valid_concepts.extend(agent.target_concepts)
             valid_concepts.extend(agent.trigger_concepts)
-        valid_slots = set([c.key for c in valid_concepts])
+        visible_slots = set([c.key for c in valid_concepts])
         for concept in concepts:
-            if concept.key in valid_slots:
-                if (concept.key == "intent" and concept.value in self._agenda.valid_intents) or\
+            if concept.key in visible_slots:
+                if (concept.key == "intent" and concept.value in self._agenda.visible_intentss) or\
                         concept.key != "intent":
                     self.context.update_concept(concept.key, concept)
             else:
