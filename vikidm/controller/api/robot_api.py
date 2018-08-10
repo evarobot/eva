@@ -14,8 +14,67 @@ log = logging.getLogger(__name__)
 
 @Route('/dm/robot/concepts/')
 class DMHandler(RobotAPIHandler):
+    """
+    Methods
+    -------
+    post
+
+    """
 
     def post(self):
+        """
+
+        URL: /dm/robot/concepts/
+
+        Parameters
+        ----------
+        data : {
+          "robotid": ppepper的ID,
+
+          "project": 项目名,
+
+           "concepts": {
+              "XXX": "YYY"
+            }
+        }
+
+        Returns
+        -------
+        {
+            "code": 0,  // 0 -- sucess; none zero -- failed.
+
+            "message": "",
+
+            "event_id": "weather.query: date=今天&city=明天",
+
+            "sid": "xxxx", // session id
+
+            "nlu": {
+
+                "intent": "",
+
+                "slots": {
+                    "槽1": "值1",
+
+                    "槽2": "值2"
+                }
+            },
+            "debug": {
+                "context": "上下文变量",
+
+                "stack": "上下文栈情况"
+            },
+            "action": {
+                "tts": "xxxxxxxxxx",
+
+                "web": {
+                    "text": "xxxxx
+                }
+            }
+
+        }
+
+        """
         log.info("[REQUEST: {0}]".format(self.data))
         ret = {
             "name": "hello world"
@@ -25,8 +84,66 @@ class DMHandler(RobotAPIHandler):
 
 @Route('/dm/backend/concepts/')
 class BackendConceptsHandler(RobotAPIHandler):
+    """
+    Methods
+    -------
+    post
 
+    """
     def post(self):
+        """
+
+        URL: /dm/backend/concepts/
+
+        Parameters
+        ----------
+        data : {
+          "robotid": ppepper的ID,
+
+          "project": 项目名,
+
+           "concepts": {
+              "XXX": "YYY"
+            }
+        }
+
+        Returns
+        -------
+        {
+            "code": 0,  // 0 -- sucess; none zero -- failed.
+
+            "message": "",
+
+            "event_id": "weather.query: date=今天&city=明天",
+
+            "sid": "xxxx", // session id
+
+            "nlu": {
+
+                "intent": "",
+
+                "slots": {
+                    "槽1": "值1",
+
+                    "槽2": "值2"
+                }
+            },
+            "debug": {
+                "context": "上下文变量",
+
+                "stack": "上下文栈情况"
+            },
+            "action": {
+                "tts": "xxxxxxxxxx",
+
+                "web": {
+                    "text": "xxxxx
+                }
+            }
+
+        }
+
+        """
         log.info("[REQUEST: {0}]".format(self.data))
         domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
         robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
@@ -37,6 +154,7 @@ class BackendConceptsHandler(RobotAPIHandler):
 @Route('/dm/robot/question/')
 class DMQuestionHandler(RobotAPIHandler):
     """
+    Process question text from human being.
 
     Methods
     -------
@@ -61,31 +179,26 @@ class DMQuestionHandler(RobotAPIHandler):
         Returns
         -------
         {
-            "code": 0,  // 非0都是错误
+            "code": 0,  // 0 -- sucess; none zero -- failed.
 
             "message": "",
 
-            "event_id": "weather.query: date=今天&city=明天",    // 事件ID
+            "event_id": "weather.query: date=今天&city=明天",
 
             "sid": "xxxx", // session id
 
             "nlu": {
 
-            "intent": "",
+                "intent": "",
 
-            "slots": {
-                "槽1": "值1",
+                "slots": {
+                    "槽1": "值1",
 
-                "槽2": "值2"
-            }
-            }
-            "debug": {
-                "context": "上下文变量",
-
-                "stack": "上下文栈情况"
-            }
+                    "槽2": "值2"
+                }
+            },
             "action": {
-                "tts": "xxxxxxxxxx"， // 机器人要说的话
+                "tts": "xxxxxxxxxx",
 
                 "web": {
                     "text": "xxxxx
@@ -93,6 +206,7 @@ class DMQuestionHandler(RobotAPIHandler):
             }
 
         }
+
 
         """
         log.info("[REQUEST: {0}]".format(self.data))
@@ -105,8 +219,61 @@ class DMQuestionHandler(RobotAPIHandler):
 
 @Route('/dm/robot/event/')
 class DMEventHandler(RobotAPIHandler):
+    """
+    Methods
+    -------
+    post
 
+    """
     def post(self):
+        """
+
+        URL: /dm/robot/event/
+
+        Parameters
+        ----------
+        data : {
+          "robotid": ppepper的ID,
+
+          "project": 项目名,
+
+          "event_id": "weather.query: date=今天&city=明天"
+        }
+
+        Returns
+        -------
+        {
+            "code": 0,  // 0 -- sucess; none zero -- failed.
+
+            "message": "",
+
+            "event_id": "weather.query: date=今天&city=明天",
+
+            "sid": "xxxx", // session id
+
+            "nlu": {
+
+                "intent": "",
+
+                "slots": {
+                    "槽1": "值1",
+
+                    "槽2": "值2"
+                }
+            },
+            "action": {
+                "tts": "xxxxxxxxxx",
+
+                "web": {
+                    "text": "xxxxx
+                }
+            }
+
+        }
+
+
+        """
+
         log.info("[REQUEST: {0}]".format(self.data))
         domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
         robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
@@ -116,8 +283,43 @@ class DMEventHandler(RobotAPIHandler):
 
 @Route('/dm/robot/confirm/')
 class DMConfirmHandler(RobotAPIHandler):
+    """
+    Methods
+    -------
+    post
+
+    """
 
     def post(self):
+        """
+
+        URL: /dm/robot/confirm/
+
+        Parameters
+        ----------
+        data : {
+          "robotid": ppepper的ID,
+
+          "project": 项目名,
+
+          "sid": "xxxx",
+
+          "result": {
+              "code": 0, // 非0表示失败
+
+              "message": "" // 错误消息
+           }
+        }
+
+        Returns
+        -------
+        {
+            "code": 0,
+
+            "message": ""
+        }
+
+        """
         log.info("[REQUEST: {0}]".format(self.data))
         domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
         robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
@@ -131,10 +333,8 @@ class DMResetRobotHandler(RobotAPIHandler):
     def post(self):
         log.info("[REQUEST: {0}]".format(self.data))
         domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
-        ret = DMRobot.reset_robot(self.data['robot_id'], domain_id)
-        if ret:
-            return self.write_json({"code": 0})
-        else: return self.write_json({"code": -1})
+        DMRobot.reset_robot(self.data['robot_id'], domain_id)
+        return self.write_json({"code": 0})
 
 
 @Route('/dm/robot/train/')
