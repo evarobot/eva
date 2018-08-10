@@ -722,66 +722,79 @@ which is used to manage a set of concepts(Memory).</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>items</strong></dt>
-<dd></dd>
+<dt><a class="reference internal" href="#vikidm.dm.Stack.items" title="vikidm.dm.Stack.items"><code class="xref py py-obj docutils literal"><span class="pre">items</span></code></a></dt>
+<dd><p class="first last">items in the stack</p>
+</dd>
 </dl>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
-<table border="1" class="docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
-<col width="55%" />
-<col width="45%" />
+<col width="10%" />
+<col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>is_empty</strong></td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.dm.Stack.is_empty" title="vikidm.dm.Stack.is_empty"><code class="xref py py-obj docutils literal"><span class="pre">is_empty</span></code></a>()</td>
+<td>If there are items in the stack return True,</td>
 </tr>
-<tr class="row-even"><td><strong>item</strong></td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.dm.Stack.pop" title="vikidm.dm.Stack.pop"><code class="xref py py-obj docutils literal"><span class="pre">pop</span></code></a>()</td>
+<td>Pop an item from stack and return it.</td>
 </tr>
-<tr class="row-odd"><td><strong>pop</strong></td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.dm.Stack.push" title="vikidm.dm.Stack.push"><code class="xref py py-obj docutils literal"><span class="pre">push</span></code></a>(item)</td>
+<td>Push an item to stack.</td>
 </tr>
-<tr class="row-even"><td><strong>push</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>top</strong></td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.dm.Stack.top" title="vikidm.dm.Stack.top"><code class="xref py py-obj docutils literal"><span class="pre">top</span></code></a>()</td>
+<td>Return the top item of stack.</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="vikidm.dm.Stack.is_empty">
 <code class="descname">is_empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Stack.is_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Stack.is_empty" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vikidm.dm.Stack.item">
-<code class="descname">item</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Stack.item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Stack.item" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>If there are items in the stack return True,
+else return False</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>Boolean.</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="vikidm.dm.Stack.items">
 <code class="descname">items</code><a class="headerlink" href="#vikidm.dm.Stack.items" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>items in the stack</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="vikidm.dm.Stack.pop">
 <code class="descname">pop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Stack.pop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Stack.pop" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Pop an item from stack and return it.</p>
+<p>If none item exist, raise IndexError.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="vikidm.dm.Stack.push">
 <code class="descname">push</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Stack.push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Stack.push" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Push an item to stack.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="vikidm.dm.Stack.top">
 <code class="descname">top</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#Stack.top"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.Stack.top" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return the top item of stack.</p>
+<p>If none item exist, raise IndexError.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -999,16 +1012,10 @@ query database or call thirdparty service.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>robotid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, device id.</span></dt>
 <dd></dd>
 <dt><strong>domain_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, application id.</span></dt>
-<dd></dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>DMRobot.</strong></dt>
 <dd></dd>
 </dl>
 </td>
@@ -1082,7 +1089,7 @@ query database or call thirdparty service.</p>
         &copy; Copyright 2017, numpydoc maintainers.
       </li>
       <li>
-      Last updated on Jul 31, 2018.
+      Last updated on Aug 06, 2018.
       </li>
       <li>
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.

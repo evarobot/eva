@@ -224,12 +224,7 @@ class DMRobot(object):
         robotid : str, device id.
         domain_id : str, application id.
 
-        Returns
-        -------
-        DMRobot.
-
         """
         robot = DMRobot(robotid, domain_id)
         robot.nlu.reset_robot()
         DMRobot.robots_pool[robotid] = robot
-        return True

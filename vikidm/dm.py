@@ -4,8 +4,8 @@ import copy
 import logging
 import pprint
 import time
-from datetime import datetime
 
+from datetime import datetime
 from vikicommon.timer import TimerReset
 from vikicommon.collections import OrderedSet
 from vikidm import errors
@@ -52,35 +52,59 @@ class Stack(object):
 
     @property
     def items(self):
+        """ items in the stack
+
+        """
         return self._items
 
     def is_empty(self):
+        """ If there are items in the stack return True,
+        else return False
+
+        Returns
+        -------
+        Boolean.
+
+        """
         return self._items == []
 
     def push(self, item):
+        """ Push an item to stack.
+
+        """
         self._items.append(item)
 
     def pop(self):
+        """ Pop an item from stack and return it.
+
+        If none item exist, raise IndexError.
+
+        """
         try:
             return self._items.pop()
         except IndexError:
-            assert(False and "root node always in stack")
+            log.error("root node always in stack")
+            raise IndexError
 
     def top(self):
+        """ Return the top item of stack.
+
+        If none item exist, raise IndexError.
+
+        """
         try:
             return self._items[-1]
         except IndexError:
-            assert(False and "root node always in stack")
-            return None
-
-    def item(self, index):
-        return self._items[index]
+            log.error("root node always in stack")
+            raise IndexError
 
     def __len__(self):
         return len(self._items)
 
     def __str__(self):
-        return "\n                ".join(["\n            Stack:"] + ["{0}({1})".format(c.tag, c.state) for c in self._items])
+        return "\n                ".join(
+            ["\n            Stack:"] + ["{0}({1})".format(c.tag, c.state)
+                                        for c in self._items])
 
     def __repr__(self):
         name = self.__class__.__name__
@@ -97,6 +121,10 @@ class ExpectAgenda(object):
         self._stack = stack
 
     def compute_candicate_units(self):
+        """
+
+        Calculate valid bizunits, intents, slots
+        """
         # ordered by context priority
         candicates = self._context_candicae_units()
         candicates.extend(self._tree_candicate_units())
@@ -109,31 +137,11 @@ class ExpectAgenda(object):
             for concept in agent.trigger_concepts:
                 if concept.key == "intent":
                     self.valid_intents.add(concept.value)
+
+        #  TODO: valid_concepts
         self.valid_slots = set([c.key for c in valid_concepts])
         self.valid_slots.remove("intent")
         self.candicate_agents = OrderedSet(candicates)
-
-    def _tree_candicate_units(self):
-        if self._candicates:
-            return self._candicates
-        self._candicates = self._get_candicates(self._stack.items[0])
-        return self._candicates
-
-    def _get_candicates(self, bizunit):
-        candicates = []
-        def visit_tree(unit):
-            # log.debug("visit %s" % unit.tag)
-            if isinstance(unit, Agent):
-                candicates.append(unit)
-            elif isinstance(unit, MixAgency):
-                for child in unit.children:
-                    if child.entrance or unit in self._stack.items:
-                        visit_tree(child)
-            else:
-                for child in unit.children:
-                    visit_tree(child)
-        visit_tree(bizunit)
-        return candicates
 
     def _context_candicae_units(self):
         candicates = []
@@ -149,9 +157,37 @@ class ExpectAgenda(object):
             yield unit
             unit = unit.parent
 
+    def _tree_candicate_units(self):
+        if self._candicates:
+            return self._candicates
+        self._candicates = self._get_candicates(self._stack.items[0])
+        return self._candicates
+
+    def _get_candicates(self, bizunit):
+        candicates = []
+
+        def visit_tree(unit):
+            # log.debug("visit %s" % unit.tag)
+            if isinstance(unit, Agent):
+                candicates.append(unit)
+            elif isinstance(unit, MixAgency):
+                for child in unit.children:
+                    if child.entrance or unit in self._stack.items:
+                        visit_tree(child)
+            else:
+                for child in unit.children:
+                    visit_tree(child)
+        visit_tree(bizunit)
+        return candicates
+
     def __repr__(self):
-        str_slots = "\n                ".join(["\n            ValidSlots:"] + ["{0}".format(c) for c in sorted(self.valid_slots)])
-        str_intents = "\n                ".join(["\n            ValidIntents:"] + ["{0}".format(c) for c in sorted(self.valid_intents)])
+        str_slots = "\n                ".join(
+            ["\n            ValidSlots:"] + ["{0}".format(c)
+                                             for c in sorted(self.valid_slots)])
+
+        str_intents = "\n                ".join(
+            ["\n            ValidIntents:"] + ["{0}".format(c)
+                                               for c in sorted(self.valid_intents)])
         return str_intents + str_slots
 
 
