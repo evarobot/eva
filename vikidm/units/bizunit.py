@@ -8,6 +8,13 @@ log = logging.getLogger(__name__)
 
 
 class BizUnit(treelib.Node):
+    """
+    Base class of all business dealing unit.
+
+    Attributes
+    -----------
+
+    """
     STATUS_STACKWAIT = "STATUS_STACKWAIT"  # 栈中等待状态
     STATUS_TREEWAIT = "STATUS_TREEWAIT"
     STATUS_CANDICATE = "STATUS_CANDICATE"
@@ -18,76 +25,97 @@ class BizUnit(treelib.Node):
     STATUS_WAIT_TARGET = "STATUS_WAIT_TARGET"
     STATUS_TARGET_COMPLETED = "STATUS_TARGET_COMPLETED"
     STATUS_AGENCY_COMPLETED = "STATUS_AGENCY_COMPLETED"
-
     STATUS_DELAY_EXIST = "STATUS_DELAY_EXIST"
 
     def __init__(self, dm, identifier, tag, data):
         super(BizUnit, self).__init__(tag, identifier, data=data)
-        self._dm = dm
-        self.set_state(self.STATUS_TREEWAIT)
-        self._execute_condition = set([BizUnit.STATUS_TRIGGERED, BizUnit.STATUS_TARGET_COMPLETED,
-                                       BizUnit.STATUS_ACTION_COMPLETED, BizUnit.STATUS_ABNORMAL,
-                                       BizUnit.STATUS_AGENCY_COMPLETED])
         self.parent = None
-        self._trigger_child = None
+        self.set_state(self.STATUS_TREEWAIT)
+        self._dm = dm
+        self._execute_condition = set([
+            BizUnit.STATUS_TRIGGERED,
+            BizUnit.STATUS_TARGET_COMPLETED,
+            BizUnit.STATUS_ACTION_COMPLETED,
+            BizUnit.STATUS_ABNORMAL,
+            BizUnit.STATUS_AGENCY_COMPLETED
+        ])
 
-    @property
-    def trigger_child(self):
-        return self._trigger_child
+        self._pop_condition = set([
+            BizUnit.STATUS_ACTION_COMPLETED,
+            BizUnit.STATUS_AGENCY_COMPLETED,
+            BizUnit.STATUS_TARGET_COMPLETED
+        ])
 
-    @trigger_child.setter
-    def trigger_child(self, v):
-        self._trigger_child = v
-        self._handler_finished = False
+    def transferable(self):
+        """ If the node is in a trasferable state.
 
-    def execute(self):
-        if self.state in [BizUnit.STATUS_ACTION_COMPLETED,
-                          BizUnit.STATUS_AGENCY_COMPLETED,
-                          BizUnit.STATUS_ABNORMAL,
-                          BizUnit.STATUS_TARGET_COMPLETED]:
-            self._dm._focus_bizunit_out(self)
-            return None
-        return self._execute()
-
-
-    def re_enter_after_child_done(self):
-        if not self.is_root() and self.state != BizUnit.STATUS_ABNORMAL:
-            self.set_state(BizUnit.STATUS_TRIGGERED)
-
-    def set_state(self, value):
-        self.state = value
-
-    def executable(self):
+        The main routine of DM will call it's `execute` function if it's in
+        a transferable focus state.
+        """
         return self.state in self._execute_condition
 
-    def pop_from_stack(self, reset=True):
-        #  TODO: 改名 #
-        self.set_state(BizUnit.STATUS_TREEWAIT)
-        if reset:
-            self.reset_concepts()
+    def is_completed(self):
+        """ If the node finish executing, should pop out from stack.  """
+        return self.state in self._pop_condition
 
-    def trigger(self):
-        if self.state == BizUnit.STATUS_TREEWAIT:
-            self._dm.stack.push(self)
-        self.set_state(BizUnit.STATUS_TRIGGERED)
+    def is_abnormal(self):
+        """ If the unit in the ABNORMAL state.  """
+        return self.state == BizUnit.STATUS_ABNORMAL
+
+    def execute(self):
+        """
+        Execute the main routine of bizunit.
+
+        Instance of Agent will always return a vlaue.
+        Instance of Agency will always return `{}`.
+        """
+        return self._execute()
+
+    def restore_topic_and_focus(self):
+        """ Invoked when the agent become focus **again**, and it's not in the
+        same hierarchy path with previous focus.
+        """
+        raise NotImplementedError
+
+    def set_state(self, value):
+        """ Set unit state. """
+        self.state = value
 
     def hierarchy_trigger(self):
+        """ Activate and return the top ancestor node in the stack.
+
+        It will push `trigger_child` node to stack.
+        """
+        if self.parent.is_root():
+            self._trigger()
+            return self
+
         unit = self
-        if unit.parent.is_root():
-            unit.trigger()
-            return
         while unit.parent.state == BizUnit.STATUS_TREEWAIT:
-            # find the first ancestor node whose parent is in the stack.
             unit.parent.trigger_child = unit
             unit = unit.parent
+
         if unit.parent.is_root():
             # push to stack and triggered
             if unit.state == BizUnit.STATUS_TREEWAIT:
                 self._dm.stack.push(unit)
             unit.set_state(BizUnit.STATUS_TRIGGERED)
+            return unit
         else:
             unit.parent.set_state(BizUnit.STATUS_TRIGGERED)
             unit.parent.trigger_child = unit
+            return unit.parent
+
+    def _trigger(self):
+        if self.state == BizUnit.STATUS_TREEWAIT:
+            self._dm.stack.push(self)
+        self.set_state(BizUnit.STATUS_TRIGGERED)
+
+
+class Topic(object):
+    """"""
+    def __init__(self):
+        self._dm = None
 
     def ancestor_in_stack(self):
         unit = self  # inlcude itself

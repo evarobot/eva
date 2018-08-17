@@ -153,6 +153,8 @@ class Context(object):
         target = self._all_concepts.get(key, None)
         if target and target.dirty:
             return True
+        if target is None:
+            log.error("不存在概念{0}".format(key))
         return False
 
     def __str__(self):

@@ -91,12 +91,11 @@ class TestTopicCase(object):
             'code': 0,
             'message': ''
         })
-        # @NOTE: intent == None
         assert(str(dm.context) == '''
             Context:
                 Concept(city=None)
                 Concept(date=None)
-                Concept(intent=None)
+                Concept(intent=weather.query)
                 Concept(location=None)'''
         )
         assert(str(dm.stack) == '''

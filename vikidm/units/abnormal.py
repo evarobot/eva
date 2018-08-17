@@ -8,6 +8,20 @@ log = logging.getLogger(__name__)
 
 
 class AbnormalHandler(BizUnit):
+    """ An abnormal controller.
+
+    It always associate with an specific handle angent, dependent on abnormal
+    type.
+
+    Controlling logic is simililar with `ClusterAgency`. When Abnormal
+    hanppens, It will be pushed to stack, then the handler agent executed.
+    Finally, set the abnormal unit and it's agency parent(if any) to
+    STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.
+
+    Attributes
+    ----------
+
+    """
     ABNORMAL_ACTION_TIMEOUT = "ABNORMAL_ACTION_TIMEOUT"
     ABNORMAL_ACTION_FAILED = "ABNORMAL_ACTION_FAILED"
     ABNORMAL_INPUT_TIMEOUT = "ABNORMAL_INPUT_TIMEOUT"
@@ -22,12 +36,16 @@ class AbnormalHandler(BizUnit):
         self.parent = None
         self.target_concepts = []
         self.trigger_concepts = []
-        self._handler_finished = False
         self.handler = self._get_handler(bizunit, type_)
         self.handler.parent = self
+        self._child_activated = False
 
-    def reset_concepts(self):
-        pass
+    def restore_focus_after_child_done(self):
+        """
+        see :meth:`~vikidm.units.agency.Agency.restore_focus_after_child_done`
+        """
+        if not self.is_root() and self.state != BizUnit.STATUS_ABNORMAL:
+            self.set_state(BizUnit.STATUS_TRIGGERED)
 
     def _get_handler(self, bizunit, type_):
         if type_ == self.ABNORMAL_ACTION_FAILED:
@@ -38,34 +56,32 @@ class AbnormalHandler(BizUnit):
             return InputTimeoutAgent(self._dm, bizunit)
 
     def is_root(self):
+        """ If is a root unit.  """
         return False
 
     def _execute(self):
         log.debug("EXECUTE AbnormalHandler({0})".format(self.handler.tag))
-        if self._handler_finished:
-            self._mark_abnormal_unit(self._dm.stack, self._dm.biz_tree, self._dm.stack._items[-2])
-            self.state = BizUnit.STATUS_TREEWAIT
+        if self._child_activated:
+            self._mark_abnormal_unit(
+                self._dm.stack, self._dm.biz_tree, self._dm.stack._items[-2])
             self._dm.stack.pop()
+            self.state = BizUnit.STATUS_TREEWAIT
             return self.state
-
         # push handler unit
         self.handler.set_state(Agent.STATUS_TRIGGERED)
         self.state = BizUnit.STATUS_STACKWAIT
         self._dm.stack.push(self.handler)
-        self._handler_finished = True
+        self._child_activated = True
         return self.state
 
     def _mark_abnormal_unit(self, stack, tree, abnormal_unit):
+        """
+        Mark the abnormal unit and it's Agency parent ABNORMAL.
+        """
         parent = tree.parent(abnormal_unit.identifier)
-
-        def is_abnormal(bizunit):
-            is_agency_parent = bizunit == parent and not parent.is_root()
-            if bizunit == abnormal_unit or is_agency_parent:
-                return True
-            return False
-
         for unit in reversed(stack._items[:-1]):
-            if is_abnormal(unit):
+            if unit == abnormal_unit or\
+                    unit == parent and not parent.is_root():
                 unit.set_state(BizUnit.STATUS_ABNORMAL)
 
 
@@ -74,7 +90,7 @@ class DefaultHandlerAgent(Agent):
         data.update({
             'subject': '',
             'scope': '',
-            'timeout': 0,
+            'timeout': 0,  #
             'entrance': False,
             'trigger_concepts': {},
             'state': '',
@@ -88,16 +104,16 @@ class DefaultHandlerAgent(Agent):
     def _execute(self):
         if self.state == BizUnit.STATUS_TRIGGERED:
             if self.timeout == 0:
-                # 默认的异常处理节点倒计时总是为0
+                # device don't deal with error right now, so confirm
+                # immediately
                 self.set_state(BizUnit.STATUS_ACTION_COMPLETED)
             else:
                 self.set_state(BizUnit.STATUS_WAIT_ACTION_CONFIRM)
-                self._dm._start_timer(self.tag, self.timeout, self._dm._actionwait_timeout)
+                self._dm._start_timer(
+                    self.tag, self.timeout, self._dm._actionwait_timeout)
                 log.debug("START_TIMER BizUnit({0})".format(self.tag))
-        return self.event_id
-
-    def reset_concepts(self):
-        pass
+        # subclass could custom returned answer.
+        return {'event_id': self.event_id, 'target': []}
 
 
 class ActionFailedAgent(DefaultHandlerAgent):

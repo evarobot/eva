@@ -77,7 +77,7 @@ class TestMixAgency(object):
         )
 
         # 2
-        context = dm.get_candicate_units()
+        context = dm.get_visible_units()
         priority_nodes = [agent[0] for agent in context["agents"]]
         assert(priority_nodes == [
             u'travel.service', u'default@weather.query', u'city',
@@ -88,7 +88,7 @@ class TestMixAgency(object):
         dm.process_concepts("sid002", [
             Concept("intent", "travel.service"),
         ])
-        context = dm.get_candicate_units()
+        context = dm.get_visible_units()
         priority_nodes = [agent[0] for agent in context["agents"]]
         assert(priority_nodes == [
             'travel.service', 'travel_consume.query', 'travel_left.query',
@@ -178,7 +178,7 @@ class TestMixAgency(object):
                 Concept(intent=weather.query)
                 Concept(location=None)'''
         )
-        context = dm.get_candicate_units()
+        context = dm.get_visible_units()
         priority_nodes = [agent[0] for agent in context["agents"]]
         assert(priority_nodes == [
             'result', 'default@weather.query', 'city', 'date',
