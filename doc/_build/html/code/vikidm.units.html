@@ -25,8 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="top" title="numpydoc v0.9.dev0 Manual" href="../index.html" >
-    <link rel="up" title="vikidm package" href="vikidm.html" >
-    <link rel="next" title="vikidm.util package" href="vikidm.util.html" > 
+    <link rel="up" title="vikidm package" href="vikidm.html" > 
   </head>
   <body>
 
@@ -61,10 +60,6 @@
         <a href="../py-modindex.html" title="Python Module Index"
            >modules</a>
       </li>
-      <li class="active">
-        <a href="vikidm.util.html" title="vikidm.util package"
-           accesskey="N">next</a>
-      </li>
     </ul>
               
 	    </div>
@@ -94,9 +89,6 @@
 </li>
 </ul>
 
-  <h4>Next topic</h4>
-  <p class="topless"><a href="vikidm.util.html"
-                        title="next chapter">vikidm.util package</a></p>
   <h3>This Page</h3>
   <div>
     <a href="../_sources/code/vikidm.units.txt"
@@ -120,6 +112,13 @@
 <dt id="vikidm.units.abnormal.AbnormalHandler">
 <em class="property">class </em><code class="descclassname">vikidm.units.abnormal.</code><code class="descname">AbnormalHandler</code><span class="sig-paren">(</span><em>dm</em>, <em>bizunit</em>, <em>type_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/abnormal.html#AbnormalHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.abnormal.AbnormalHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#vikidm.units.bizunit.BizUnit" title="vikidm.units.bizunit.BizUnit"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.bizunit.BizUnit</span></code></a></p>
+<p>An abnormal controller.</p>
+<p>It always associate with an specific handle angent, dependent on abnormal
+type.</p>
+<p>Controlling logic is simililar with <cite>ClusterAgency</cite>. When Abnormal
+hanppens, It will be pushed to stack, then the handler agent executed.
+Finally, set the abnormal unit and it&#8217;s agency parent(if any) to
+STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -137,8 +136,6 @@
 <dt><code class="xref py py-obj docutils literal"><span class="pre">tag</span></code></dt>
 <dd><p class="first last">Return the value of <cite>_tag</cite>.</p>
 </dd>
-<dt><strong>trigger_child</strong></dt>
-<dd></dd>
 </dl>
 </td>
 </tr>
@@ -151,52 +148,11 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="74%" />
-<col width="26%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.abnormal.AbnormalHandler.is_root" title="vikidm.units.abnormal.AbnormalHandler.is_root"><code class="xref py py-obj docutils literal"><span class="pre">is_root</span></code></a>()</td>
+<td>If is a root unit.</td>
 </tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_root</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>reset_concepts</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>trigger</strong></td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.units.abnormal.AbnormalHandler.restore_focus_after_child_done" title="vikidm.units.abnormal.AbnormalHandler.restore_focus_after_child_done"><code class="xref py py-obj docutils literal"><span class="pre">restore_focus_after_child_done</span></code></a>()</td>
+<td>see <a class="reference internal" href="#vikidm.units.agency.Agency.restore_focus_after_child_done" title="vikidm.units.agency.Agency.restore_focus_after_child_done"><code class="xref py py-meth docutils literal"><span class="pre">restore_focus_after_child_done()</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -218,12 +174,14 @@
 <dl class="method">
 <dt id="vikidm.units.abnormal.AbnormalHandler.is_root">
 <code class="descname">is_root</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/abnormal.html#AbnormalHandler.is_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.abnormal.AbnormalHandler.is_root" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>If is a root unit.</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="vikidm.units.abnormal.AbnormalHandler.reset_concepts">
-<code class="descname">reset_concepts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/abnormal.html#AbnormalHandler.reset_concepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.abnormal.AbnormalHandler.reset_concepts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="vikidm.units.abnormal.AbnormalHandler.restore_focus_after_child_done">
+<code class="descname">restore_focus_after_child_done</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/abnormal.html#AbnormalHandler.restore_focus_after_child_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.abnormal.AbnormalHandler.restore_focus_after_child_done" title="Permalink to this definition">¶</a></dt>
+<dd><p>see <a class="reference internal" href="#vikidm.units.agency.Agency.restore_focus_after_child_done" title="vikidm.units.agency.Agency.restore_focus_after_child_done"><code class="xref py py-meth docutils literal"><span class="pre">restore_focus_after_child_done()</span></code></a></p>
+</dd></dl>
 
 </dd></dl>
 
@@ -264,8 +222,6 @@
 <dd></dd>
 <dt><strong>timeout</strong></dt>
 <dd></dd>
-<dt><strong>trigger_child</strong></dt>
-<dd></dd>
 <dt><strong>trigger_concepts</strong></dt>
 <dd></dd>
 </dl>
@@ -284,62 +240,14 @@
 </table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="74%" />
-<col width="26%" />
+<col width="67%" />
+<col width="33%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>activate</strong></td>
+<tr class="row-odd"><td><strong>set_state</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>confirm</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>get_agent</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>reset_concepts</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>round_back</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>satisfied</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>trigger</strong></td>
+<tr class="row-even"><td><strong>target_completed</strong></td>
 <td>&nbsp;</td>
 </tr>
 </tbody>
@@ -383,8 +291,6 @@
 <dd></dd>
 <dt><strong>timeout</strong></dt>
 <dd></dd>
-<dt><strong>trigger_child</strong></dt>
-<dd></dd>
 <dt><strong>trigger_concepts</strong></dt>
 <dd></dd>
 </dl>
@@ -403,62 +309,14 @@
 </table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="74%" />
-<col width="26%" />
+<col width="67%" />
+<col width="33%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>activate</strong></td>
+<tr class="row-odd"><td><strong>set_state</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>confirm</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>get_agent</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>reset_concepts</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>round_back</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>satisfied</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>trigger</strong></td>
+<tr class="row-even"><td><strong>target_completed</strong></td>
 <td>&nbsp;</td>
 </tr>
 </tbody>
@@ -502,8 +360,6 @@
 <dd></dd>
 <dt><strong>timeout</strong></dt>
 <dd></dd>
-<dt><strong>trigger_child</strong></dt>
-<dd></dd>
 <dt><strong>trigger_concepts</strong></dt>
 <dd></dd>
 </dl>
@@ -522,71 +378,18 @@
 </table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="74%" />
-<col width="26%" />
+<col width="67%" />
+<col width="33%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>activate</strong></td>
+<tr class="row-odd"><td><strong>set_state</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>confirm</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>get_agent</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>reset_concepts</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>round_back</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>satisfied</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>trigger</strong></td>
+<tr class="row-even"><td><strong>target_completed</strong></td>
 <td>&nbsp;</td>
 </tr>
 </tbody>
 </table>
-<dl class="method">
-<dt id="vikidm.units.abnormal.DefaultHandlerAgent.reset_concepts">
-<code class="descname">reset_concepts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/abnormal.html#DefaultHandlerAgent.reset_concepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.abnormal.DefaultHandlerAgent.reset_concepts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="class">
@@ -626,8 +429,6 @@
 <dd></dd>
 <dt><strong>timeout</strong></dt>
 <dd></dd>
-<dt><strong>trigger_child</strong></dt>
-<dd></dd>
 <dt><strong>trigger_concepts</strong></dt>
 <dd></dd>
 </dl>
@@ -646,62 +447,14 @@
 </table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="74%" />
-<col width="26%" />
+<col width="67%" />
+<col width="33%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>activate</strong></td>
+<tr class="row-odd"><td><strong>set_state</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>confirm</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>get_agent</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>reset_concepts</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>round_back</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>satisfied</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>trigger</strong></td>
+<tr class="row-even"><td><strong>target_completed</strong></td>
 <td>&nbsp;</td>
 </tr>
 </tbody>
@@ -715,31 +468,21 @@
 <dt id="vikidm.units.agency.Agency">
 <em class="property">class </em><code class="descclassname">vikidm.units.agency.</code><code class="descname">Agency</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#Agency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.Agency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#vikidm.units.bizunit.BizUnit" title="vikidm.units.bizunit.BizUnit"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.bizunit.BizUnit</span></code></a></p>
+<p>Instance of Agency subclass usually represent a local logic controller.</p>
+<p>Agency instance always have children nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><code class="xref py py-obj docutils literal"><span class="pre">bpointer</span></code></dt>
-<dd><p class="first last">Return the value of <cite>_bpointer</cite>.</p>
+<dt><strong>api_concept_keys</strong> <span class="classifier-delimiter">:</span> <span class="classifier">[str], Concepts update with APIs by module like</span></dt>
+<dd><p class="first last">recommendation system.</p>
 </dd>
-<dt><strong>children</strong></dt>
+<dt><strong>children</strong> <span class="classifier-delimiter">:</span> <span class="classifier">[], Children BizUnit nodes.</span></dt>
 <dd></dd>
-<dt><strong>entrance</strong></dt>
-<dd></dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">fpointer</span></code></dt>
-<dd><p class="first last">Return the value of <cite>_fpointer</cite>.</p>
+<dt><a class="reference internal" href="#vikidm.units.agency.Agency.trigger_child" title="vikidm.units.agency.Agency.trigger_child"><code class="xref py py-obj docutils literal"><span class="pre">trigger_child</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">BizUnit, child that activate it.</span></dt>
+<dd><p class="first last">The child trigged the Agency instance.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">identifier</span></code></dt>
-<dd><p class="first last">Return the value of <cite>_identifier</cite>.</p>
-</dd>
-<dt><strong>state</strong></dt>
-<dd></dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">tag</span></code></dt>
-<dd><p class="first last">Return the value of <cite>_tag</cite>.</p>
-</dd>
-<dt><strong>trigger_child</strong></dt>
-<dd></dd>
 </dl>
 </td>
 </tr>
@@ -752,51 +495,24 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.agency.Agency.get_agency" title="vikidm.units.agency.Agency.get_agency"><code class="xref py py-obj docutils literal"><span class="pre">get_agency</span></code></a>(dm,&nbsp;tag,&nbsp;data)</td>
+<td>A factory method, return required instance of Agency subclass.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.units.agency.Agency.reset_concepts" title="vikidm.units.agency.Agency.reset_concepts"><code class="xref py py-obj docutils literal"><span class="pre">reset_concepts</span></code></a>()</td>
+<td>Reset concepts of descendant nodes, intent concept and API concepts.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.agency.Agency.restore_focus_after_child_done" title="vikidm.units.agency.Agency.restore_focus_after_child_done"><code class="xref py py-obj docutils literal"><span class="pre">restore_focus_after_child_done</span></code></a>()</td>
+<td>Become focus again afater child node finishing executing.</td>
+</tr>
 </tbody>
 </table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="74%" />
-<col width="26%" />
+<col width="57%" />
+<col width="43%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>get_agency</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>reset_concepts</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>trigger</strong></td>
+<tr class="row-odd"><td><strong>set_state</strong></td>
 <td>&nbsp;</td>
 </tr>
 </tbody>
@@ -839,12 +555,21 @@
 <dl class="classmethod">
 <dt id="vikidm.units.agency.Agency.get_agency">
 <em class="property">classmethod </em><code class="descname">get_agency</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#Agency.get_agency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.Agency.get_agency" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A factory method, return required instance of Agency subclass.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="vikidm.units.agency.Agency.reset_concepts">
 <code class="descname">reset_concepts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#Agency.reset_concepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.Agency.reset_concepts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reset concepts of descendant nodes, intent concept and API concepts.</p>
+<p>Invoked when itself and parent is not in the stack.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.units.agency.Agency.restore_focus_after_child_done">
+<code class="descname">restore_focus_after_child_done</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#Agency.restore_focus_after_child_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.Agency.restore_focus_after_child_done" title="Permalink to this definition">¶</a></dt>
+<dd><p>Become focus again afater child node finishing executing.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="vikidm.units.agency.Agency.set_state">
@@ -856,12 +581,19 @@
 <code class="descname">state</code><a class="headerlink" href="#vikidm.units.agency.Agency.state" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="vikidm.units.agency.Agency.trigger_child">
+<code class="descname">trigger_child</code><a class="headerlink" href="#vikidm.units.agency.Agency.trigger_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>The child trigged the Agency instance.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="vikidm.units.agency.ClusterAgency">
 <em class="property">class </em><code class="descclassname">vikidm.units.agency.</code><code class="descname">ClusterAgency</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#ClusterAgency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.ClusterAgency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#vikidm.units.agency.Agency" title="vikidm.units.agency.Agency"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.agency.Agency</span></code></a></p>
+<p>A local controller always with one child of type <cite>TriggerAgent</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -899,51 +631,24 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_agency</span></code>(dm,&nbsp;tag,&nbsp;data)</td>
+<td>A factory method, return required instance of Agency subclass.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">reset_concepts</span></code>()</td>
+<td>Reset concepts of descendant nodes, intent concept and API concepts.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">restore_focus_after_child_done</span></code>()</td>
+<td>Become focus again afater child node finishing executing.</td>
+</tr>
 </tbody>
 </table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="74%" />
-<col width="26%" />
+<col width="57%" />
+<col width="43%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>get_agency</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>reset_concepts</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>trigger</strong></td>
+<tr class="row-odd"><td><strong>set_state</strong></td>
 <td>&nbsp;</td>
 </tr>
 </tbody>
@@ -959,6 +664,7 @@
 <dt id="vikidm.units.agency.MixAgency">
 <em class="property">class </em><code class="descclassname">vikidm.units.agency.</code><code class="descname">MixAgency</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#MixAgency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.MixAgency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#vikidm.units.agency.Agency" title="vikidm.units.agency.Agency"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.agency.Agency</span></code></a></p>
+<p>An local controller for scope control purpose.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -982,8 +688,9 @@
 <dt><code class="xref py py-obj docutils literal"><span class="pre">tag</span></code></dt>
 <dd><p class="first last">Return the value of <cite>_tag</cite>.</p>
 </dd>
-<dt><strong>trigger_child</strong></dt>
-<dd></dd>
+<dt><code class="xref py py-obj docutils literal"><span class="pre">trigger_child</span></code></dt>
+<dd><p class="first last">The child trigged the Agency instance.</p>
+</dd>
 </dl>
 </td>
 </tr>
@@ -996,80 +703,42 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_agency</span></code>(dm,&nbsp;tag,&nbsp;data)</td>
+<td>A factory method, return required instance of Agency subclass.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">reset_concepts</span></code>()</td>
+<td>Reset concepts of descendant nodes, intent concept and API concepts.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.agency.MixAgency.restore_focus_after_child_done" title="vikidm.units.agency.MixAgency.restore_focus_after_child_done"><code class="xref py py-obj docutils literal"><span class="pre">restore_focus_after_child_done</span></code></a>()</td>
+<td>see <a class="reference internal" href="#vikidm.units.agency.Agency.restore_focus_after_child_done" title="vikidm.units.agency.Agency.restore_focus_after_child_done"><code class="xref py py-meth docutils literal"><span class="pre">restore_focus_after_child_done()</span></code></a></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.units.agency.MixAgency.restore_topic_and_focus" title="vikidm.units.agency.MixAgency.restore_topic_and_focus"><code class="xref py py-obj docutils literal"><span class="pre">restore_topic_and_focus</span></code></a>()</td>
+<td>see <a class="reference internal" href="#vikidm.units.bizunit.BizUnit.restore_topic_and_focus" title="vikidm.units.bizunit.BizUnit.restore_topic_and_focus"><code class="xref py py-meth docutils literal"><span class="pre">restore_topic_and_focus()</span></code></a></td>
+</tr>
 </tbody>
 </table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="74%" />
-<col width="26%" />
+<col width="57%" />
+<col width="43%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>get_agency</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>reset_concepts</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>restore_context</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>round_back</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>trigger</strong></td>
+<tr class="row-odd"><td><strong>set_state</strong></td>
 <td>&nbsp;</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="vikidm.units.agency.MixAgency.executable">
-<code class="descname">executable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#MixAgency.executable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.MixAgency.executable" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="vikidm.units.agency.MixAgency.restore_focus_after_child_done">
+<code class="descname">restore_focus_after_child_done</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#MixAgency.restore_focus_after_child_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.MixAgency.restore_focus_after_child_done" title="Permalink to this definition">¶</a></dt>
+<dd><p>see <a class="reference internal" href="#vikidm.units.agency.Agency.restore_focus_after_child_done" title="vikidm.units.agency.Agency.restore_focus_after_child_done"><code class="xref py py-meth docutils literal"><span class="pre">restore_focus_after_child_done()</span></code></a></p>
+</dd></dl>
 
 <dl class="method">
-<dt id="vikidm.units.agency.MixAgency.re_enter_after_child_done">
-<code class="descname">re_enter_after_child_done</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#MixAgency.re_enter_after_child_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.MixAgency.re_enter_after_child_done" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vikidm.units.agency.MixAgency.restore_context">
-<code class="descname">restore_context</code><span class="sig-paren">(</span><em>context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#MixAgency.restore_context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.MixAgency.restore_context" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vikidm.units.agency.MixAgency.round_back">
-<code class="descname">round_back</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#MixAgency.round_back"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.MixAgency.round_back" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="vikidm.units.agency.MixAgency.restore_topic_and_focus">
+<code class="descname">restore_topic_and_focus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#MixAgency.restore_topic_and_focus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.MixAgency.restore_topic_and_focus" title="Permalink to this definition">¶</a></dt>
+<dd><p>see <a class="reference internal" href="#vikidm.units.bizunit.BizUnit.restore_topic_and_focus" title="vikidm.units.bizunit.BizUnit.restore_topic_and_focus"><code class="xref py py-meth docutils literal"><span class="pre">restore_topic_and_focus()</span></code></a></p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1077,33 +746,17 @@
 <dt id="vikidm.units.agency.TargetAgency">
 <em class="property">class </em><code class="descclassname">vikidm.units.agency.</code><code class="descname">TargetAgency</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#TargetAgency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.TargetAgency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#vikidm.units.agency.Agency" title="vikidm.units.agency.Agency"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.agency.Agency</span></code></a></p>
+<p>A local controller with children of type <cite>TargetAgent</cite> and <cite>TriggerAgent</cite>.</p>
+<p>The <cite>TargetAgent</cite> children will require user inputs to fill target
+concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><code class="xref py py-obj docutils literal"><span class="pre">bpointer</span></code></dt>
-<dd><p class="first last">Return the value of <cite>_bpointer</cite>.</p>
+<dt><a class="reference internal" href="#vikidm.units.agency.TargetAgency.target_concepts" title="vikidm.units.agency.TargetAgency.target_concepts"><code class="xref py py-obj docutils literal"><span class="pre">target_concepts</span></code></a> <span class="classifier-delimiter">:</span> <span class="classifier">[Concept]</span></dt>
+<dd><p class="first last">Concepts to filled by <cite>TargetAgent</cite> children.</p>
 </dd>
-<dt><strong>children</strong></dt>
-<dd></dd>
-<dt><strong>entrance</strong></dt>
-<dd></dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">fpointer</span></code></dt>
-<dd><p class="first last">Return the value of <cite>_fpointer</cite>.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">identifier</span></code></dt>
-<dd><p class="first last">Return the value of <cite>_identifier</cite>.</p>
-</dd>
-<dt><strong>state</strong></dt>
-<dd></dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">tag</span></code></dt>
-<dd><p class="first last">Return the value of <cite>_tag</cite>.</p>
-</dd>
-<dt><strong>target_concepts</strong></dt>
-<dd></dd>
-<dt><strong>trigger_child</strong></dt>
-<dd></dd>
 </dl>
 </td>
 </tr>
@@ -1116,85 +769,48 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_agency</span></code>(dm,&nbsp;tag,&nbsp;data)</td>
+<td>A factory method, return required instance of Agency subclass.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">reset_concepts</span></code>()</td>
+<td>Reset concepts of descendant nodes, intent concept and API concepts.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.agency.TargetAgency.restore_focus_after_child_done" title="vikidm.units.agency.TargetAgency.restore_focus_after_child_done"><code class="xref py py-obj docutils literal"><span class="pre">restore_focus_after_child_done</span></code></a>()</td>
+<td>see <a class="reference internal" href="#vikidm.units.agency.Agency.restore_focus_after_child_done" title="vikidm.units.agency.Agency.restore_focus_after_child_done"><code class="xref py py-meth docutils literal"><span class="pre">restore_focus_after_child_done()</span></code></a></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.units.agency.TargetAgency.restore_topic_and_focus" title="vikidm.units.agency.TargetAgency.restore_topic_and_focus"><code class="xref py py-obj docutils literal"><span class="pre">restore_topic_and_focus</span></code></a>()</td>
+<td>see <a class="reference internal" href="#vikidm.units.bizunit.BizUnit.restore_topic_and_focus" title="vikidm.units.bizunit.BizUnit.restore_topic_and_focus"><code class="xref py py-meth docutils literal"><span class="pre">restore_topic_and_focus()</span></code></a></td>
+</tr>
 </tbody>
 </table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="74%" />
-<col width="26%" />
+<col width="57%" />
+<col width="43%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>get_agency</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>reset_concepts</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>restore_context</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>round_back</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>trigger</strong></td>
+<tr class="row-odd"><td><strong>set_state</strong></td>
 <td>&nbsp;</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="vikidm.units.agency.TargetAgency.executable">
-<code class="descname">executable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#TargetAgency.executable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.TargetAgency.executable" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="vikidm.units.agency.TargetAgency.restore_focus_after_child_done">
+<code class="descname">restore_focus_after_child_done</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#TargetAgency.restore_focus_after_child_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.TargetAgency.restore_focus_after_child_done" title="Permalink to this definition">¶</a></dt>
+<dd><p>see <a class="reference internal" href="#vikidm.units.agency.Agency.restore_focus_after_child_done" title="vikidm.units.agency.Agency.restore_focus_after_child_done"><code class="xref py py-meth docutils literal"><span class="pre">restore_focus_after_child_done()</span></code></a></p>
+</dd></dl>
 
 <dl class="method">
-<dt id="vikidm.units.agency.TargetAgency.re_enter_after_child_done">
-<code class="descname">re_enter_after_child_done</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#TargetAgency.re_enter_after_child_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.TargetAgency.re_enter_after_child_done" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vikidm.units.agency.TargetAgency.restore_context">
-<code class="descname">restore_context</code><span class="sig-paren">(</span><em>context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#TargetAgency.restore_context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.TargetAgency.restore_context" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vikidm.units.agency.TargetAgency.round_back">
-<code class="descname">round_back</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#TargetAgency.round_back"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.TargetAgency.round_back" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="vikidm.units.agency.TargetAgency.restore_topic_and_focus">
+<code class="descname">restore_topic_and_focus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#TargetAgency.restore_topic_and_focus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.TargetAgency.restore_topic_and_focus" title="Permalink to this definition">¶</a></dt>
+<dd><p>see <a class="reference internal" href="#vikidm.units.bizunit.BizUnit.restore_topic_and_focus" title="vikidm.units.bizunit.BizUnit.restore_topic_and_focus"><code class="xref py py-meth docutils literal"><span class="pre">restore_topic_and_focus()</span></code></a></p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="vikidm.units.agency.TargetAgency.target_concepts">
 <code class="descname">target_concepts</code><a class="headerlink" href="#vikidm.units.agency.TargetAgency.target_concepts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Concepts to filled by <cite>TargetAgent</cite> children.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1205,42 +821,29 @@
 <dt id="vikidm.units.agent.Agent">
 <em class="property">class </em><code class="descclassname">vikidm.units.agent.</code><code class="descname">Agent</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#Agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.Agent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#vikidm.units.bizunit.BizUnit" title="vikidm.units.bizunit.BizUnit"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.bizunit.BizUnit</span></code></a></p>
+<p>Any response of DM always related to an Agent.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><code class="xref py py-obj docutils literal"><span class="pre">bpointer</span></code></dt>
-<dd><p class="first last">Return the value of <cite>_bpointer</cite>.</p>
+<dt><strong>subject</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Deprecated.</span></dt>
+<dd></dd>
+<dt><strong>scope</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Deprecated.</span></dt>
+<dd></dd>
+<dt><strong>event_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Correspond to an resource and event with specific</span></dt>
+<dd><p class="first last">arguments.</p>
 </dd>
-<dt><strong>entrance</strong></dt>
+<dt><strong>timeout</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, Action time out.</span></dt>
 <dd></dd>
-<dt><strong>event_id</strong></dt>
-<dd></dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">fpointer</span></code></dt>
-<dd><p class="first last">Return the value of <cite>_fpointer</cite>.</p>
+<dt><strong>entrance</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, If the agent could trigger an ancestor node of</span></dt>
+<dd><p class="first last">type MixAgency.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">identifier</span></code></dt>
-<dd><p class="first last">Return the value of <cite>_identifier</cite>.</p>
-</dd>
-<dt><strong>intent</strong></dt>
+<dt><strong>state</strong> <span class="classifier-delimiter">:</span> <span class="classifier">The state of agent.</span></dt>
 <dd></dd>
-<dt><strong>scope</strong></dt>
+<dt><strong>trigger_concepts</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict, Concepts that could trigger the agent.</span></dt>
 <dd></dd>
-<dt><strong>state</strong></dt>
-<dd></dd>
-<dt><strong>subject</strong></dt>
-<dd></dd>
-<dt><code class="xref py py-obj docutils literal"><span class="pre">tag</span></code></dt>
-<dd><p class="first last">Return the value of <cite>_tag</cite>.</p>
-</dd>
-<dt><strong>target_concepts</strong></dt>
-<dd></dd>
-<dt><strong>timeout</strong></dt>
-<dd></dd>
-<dt><strong>trigger_child</strong></dt>
-<dd></dd>
-<dt><strong>trigger_concepts</strong></dt>
+<dt><strong>target_concepts</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list, Concepts that the agent will fill.</span></dt>
 <dd></dd>
 </dl>
 </td>
@@ -1254,80 +857,34 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.agent.Agent.get_agent" title="vikidm.units.agent.Agent.get_agent"><code class="xref py py-obj docutils literal"><span class="pre">get_agent</span></code></a>(dm,&nbsp;tag,&nbsp;data)</td>
+<td>Create and return a instance of subclass of Agent.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.units.agent.Agent.on_confirm" title="vikidm.units.agent.Agent.on_confirm"><code class="xref py py-obj docutils literal"><span class="pre">on_confirm</span></code></a>()</td>
+<td>Deal with action confirm message from device.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.agent.Agent.reset_concepts" title="vikidm.units.agent.Agent.reset_concepts"><code class="xref py py-obj docutils literal"><span class="pre">reset_concepts</span></code></a>()</td>
+<td>Reset concepts when parent node(an Agency) is not in the stack.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.units.agent.Agent.satisfied" title="vikidm.units.agent.Agent.satisfied"><code class="xref py py-obj docutils literal"><span class="pre">satisfied</span></code></a>()</td>
+<td>Return if the trigger concepts is satisfied.</td>
+</tr>
 </tbody>
 </table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="74%" />
-<col width="26%" />
+<col width="67%" />
+<col width="33%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>activate</strong></td>
+<tr class="row-odd"><td><strong>set_state</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>confirm</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>get_agent</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>reset_concepts</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>round_back</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>satisfied</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>trigger</strong></td>
+<tr class="row-even"><td><strong>target_completed</strong></td>
 <td>&nbsp;</td>
 </tr>
 </tbody>
 </table>
-<dl class="method">
-<dt id="vikidm.units.agent.Agent.activate">
-<code class="descname">activate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#Agent.activate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.Agent.activate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vikidm.units.agent.Agent.confirm">
-<code class="descname">confirm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#Agent.confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.Agent.confirm" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="attribute">
 <dt id="vikidm.units.agent.Agent.entrance">
 <code class="descname">entrance</code><a class="headerlink" href="#vikidm.units.agent.Agent.entrance" title="Permalink to this definition">¶</a></dt>
@@ -1341,7 +898,24 @@
 <dl class="classmethod">
 <dt id="vikidm.units.agent.Agent.get_agent">
 <em class="property">classmethod </em><code class="descname">get_agent</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#Agent.get_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.Agent.get_agent" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Create and return a instance of subclass of Agent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>dm</strong> <span class="classifier-delimiter">:</span> <span class="classifier">DialogEngine</span></dt>
+<dd></dd>
+<dt><strong>tag</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Readable identifier of bizunit.</span></dt>
+<dd></dd>
+<dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="vikidm.units.agent.Agent.intent">
@@ -1349,19 +923,22 @@
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="vikidm.units.agent.Agent.reset_concepts">
-<code class="descname">reset_concepts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#Agent.reset_concepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.Agent.reset_concepts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="vikidm.units.agent.Agent.on_confirm">
+<code class="descname">on_confirm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#Agent.on_confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.Agent.on_confirm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deal with action confirm message from device.</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="vikidm.units.agent.Agent.round_back">
-<code class="descname">round_back</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#Agent.round_back"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.Agent.round_back" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="vikidm.units.agent.Agent.reset_concepts">
+<code class="descname">reset_concepts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#Agent.reset_concepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.Agent.reset_concepts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset concepts when parent node(an Agency) is not in the stack.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="vikidm.units.agent.Agent.satisfied">
 <code class="descname">satisfied</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#Agent.satisfied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.Agent.satisfied" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return if the trigger concepts is satisfied.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="vikidm.units.agent.Agent.scope">
@@ -1442,8 +1019,6 @@
 <dd></dd>
 <dt><strong>timeout</strong></dt>
 <dd></dd>
-<dt><strong>trigger_child</strong></dt>
-<dd></dd>
 <dt><strong>trigger_concepts</strong></dt>
 <dd></dd>
 </dl>
@@ -1458,60 +1033,27 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_agent</span></code>(dm,&nbsp;tag,&nbsp;data)</td>
+<td>Create and return a instance of subclass of Agent.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">reset_concepts</span></code>()</td>
+<td>Reset concepts when parent node(an Agency) is not in the stack.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">satisfied</span></code>()</td>
+<td>Return if the trigger concepts is satisfied.</td>
+</tr>
 </tbody>
 </table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="74%" />
-<col width="26%" />
+<col width="73%" />
+<col width="27%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>activate</strong></td>
+<tr class="row-odd"><td><strong>on_confirm</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>confirm</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>get_agent</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>mark_target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>reset_concepts</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>round_back</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>satisfied</strong></td>
+<tr class="row-even"><td><strong>restore_topic_and_focus</strong></td>
 <td>&nbsp;</td>
 </tr>
 <tr class="row-odd"><td><strong>set_state</strong></td>
@@ -1520,24 +1062,16 @@
 <tr class="row-even"><td><strong>target_completed</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-odd"><td><strong>trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="vikidm.units.agent.TargetAgent.confirm">
-<code class="descname">confirm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#TargetAgent.confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.TargetAgent.confirm" title="Permalink to this definition">¶</a></dt>
+<dt id="vikidm.units.agent.TargetAgent.on_confirm">
+<code class="descname">on_confirm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#TargetAgent.on_confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.TargetAgent.on_confirm" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="vikidm.units.agent.TargetAgent.mark_target_completed">
-<code class="descname">mark_target_completed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#TargetAgent.mark_target_completed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.TargetAgent.mark_target_completed" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vikidm.units.agent.TargetAgent.round_back">
-<code class="descname">round_back</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#TargetAgent.round_back"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.TargetAgent.round_back" title="Permalink to this definition">¶</a></dt>
+<dt id="vikidm.units.agent.TargetAgent.restore_topic_and_focus">
+<code class="descname">restore_topic_and_focus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#TargetAgent.restore_topic_and_focus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.TargetAgent.restore_topic_and_focus" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1584,8 +1118,6 @@
 <dd></dd>
 <dt><strong>timeout</strong></dt>
 <dd></dd>
-<dt><strong>trigger_child</strong></dt>
-<dd></dd>
 <dt><strong>trigger_concepts</strong></dt>
 <dd></dd>
 </dl>
@@ -1600,73 +1132,45 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_agent</span></code>(dm,&nbsp;tag,&nbsp;data)</td>
+<td>Create and return a instance of subclass of Agent.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">on_confirm</span></code>()</td>
+<td>Deal with action confirm message from device.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">satisfied</span></code>()</td>
+<td>Return if the trigger concepts is satisfied.</td>
+</tr>
 </tbody>
 </table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="74%" />
-<col width="26%" />
+<col width="73%" />
+<col width="27%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>activate</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>confirm</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>get_agent</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
 <tr class="row-odd"><td><strong>reset_concepts</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td><strong>round_back</strong></td>
+<tr class="row-even"><td><strong>restore_topic_and_focus</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-odd"><td><strong>satisfied</strong></td>
+<tr class="row-odd"><td><strong>set_state</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>trigger</strong></td>
+<tr class="row-even"><td><strong>target_completed</strong></td>
 <td>&nbsp;</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="vikidm.units.agent.TriggerAgent.round_back">
-<code class="descname">round_back</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#TriggerAgent.round_back"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.TriggerAgent.round_back" title="Permalink to this definition">¶</a></dt>
+<dt id="vikidm.units.agent.TriggerAgent.reset_concepts">
+<code class="descname">reset_concepts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#TriggerAgent.reset_concepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.TriggerAgent.reset_concepts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.units.agent.TriggerAgent.restore_topic_and_focus">
+<code class="descname">restore_topic_and_focus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#TriggerAgent.restore_topic_and_focus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.TriggerAgent.restore_topic_and_focus" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1678,6 +1182,7 @@
 <dt id="vikidm.units.bizunit.BizUnit">
 <em class="property">class </em><code class="descclassname">vikidm.units.bizunit.</code><code class="descname">BizUnit</code><span class="sig-paren">(</span><em>dm</em>, <em>identifier</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">treelib.node.Node</span></code></p>
+<p>Base class of all business dealing unit.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1695,8 +1200,6 @@
 <dt><code class="xref py py-obj docutils literal"><span class="pre">tag</span></code></dt>
 <dd><p class="first last">Return the value of <cite>_tag</cite>.</p>
 </dd>
-<dt><strong>trigger_child</strong></dt>
-<dd></dd>
 </dl>
 </td>
 </tr>
@@ -1709,46 +1212,26 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="74%" />
-<col width="26%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>ancestor_in_stack</strong></td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.bizunit.BizUnit.execute" title="vikidm.units.bizunit.BizUnit.execute"><code class="xref py py-obj docutils literal"><span class="pre">execute</span></code></a>()</td>
+<td>Execute the main routine of bizunit.</td>
 </tr>
-<tr class="row-even"><td><strong>executable</strong></td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.units.bizunit.BizUnit.hierarchy_trigger" title="vikidm.units.bizunit.BizUnit.hierarchy_trigger"><code class="xref py py-obj docutils literal"><span class="pre">hierarchy_trigger</span></code></a>()</td>
+<td>Activate and return the top ancestor node in the stack.</td>
 </tr>
-<tr class="row-odd"><td><strong>execute</strong></td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.bizunit.BizUnit.is_abnormal" title="vikidm.units.bizunit.BizUnit.is_abnormal"><code class="xref py py-obj docutils literal"><span class="pre">is_abnormal</span></code></a>()</td>
+<td>If the unit in the ABNORMAL state.</td>
 </tr>
-<tr class="row-even"><td><strong>hierarchy_trigger</strong></td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.units.bizunit.BizUnit.is_completed" title="vikidm.units.bizunit.BizUnit.is_completed"><code class="xref py py-obj docutils literal"><span class="pre">is_completed</span></code></a>()</td>
+<td>If the node finish executing, should pop out from stack.</td>
 </tr>
-<tr class="row-odd"><td><strong>is_ancestor_of</strong></td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.bizunit.BizUnit.restore_topic_and_focus" title="vikidm.units.bizunit.BizUnit.restore_topic_and_focus"><code class="xref py py-obj docutils literal"><span class="pre">restore_topic_and_focus</span></code></a>()</td>
+<td>Invoked when the agent become focus <strong>again</strong>, and it&#8217;s not in the same hierarchy path with previous focus.</td>
 </tr>
-<tr class="row-even"><td><strong>is_family</strong></td>
-<td>&nbsp;</td>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.units.bizunit.BizUnit.set_state" title="vikidm.units.bizunit.BizUnit.set_state"><code class="xref py py-obj docutils literal"><span class="pre">set_state</span></code></a>(value)</td>
+<td>Set unit state.</td>
 </tr>
-<tr class="row-odd"><td><strong>notify_switch_topic</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>pop_from_stack</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>re_enter_after_child_done</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>trigger</strong></td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.bizunit.BizUnit.transferable" title="vikidm.units.bizunit.BizUnit.transferable"><code class="xref py py-obj docutils literal"><span class="pre">transferable</span></code></a>()</td>
+<td>If the node is in a trasferable state.</td>
 </tr>
 </tbody>
 </table>
@@ -1808,63 +1291,98 @@
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="vikidm.units.bizunit.BizUnit.ancestor_in_stack">
-<code class="descname">ancestor_in_stack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.ancestor_in_stack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.ancestor_in_stack" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vikidm.units.bizunit.BizUnit.executable">
-<code class="descname">executable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.executable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.executable" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="vikidm.units.bizunit.BizUnit.execute">
 <code class="descname">execute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.execute" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Execute the main routine of bizunit.</p>
+<p>Instance of Agent will always return a vlaue.
+Instance of Agency will always return <cite>{}</cite>.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="vikidm.units.bizunit.BizUnit.hierarchy_trigger">
 <code class="descname">hierarchy_trigger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.hierarchy_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.hierarchy_trigger" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Activate and return the top ancestor node in the stack.</p>
+<p>It will push <cite>trigger_child</cite> node to stack.</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="vikidm.units.bizunit.BizUnit.is_ancestor_of">
-<code class="descname">is_ancestor_of</code><span class="sig-paren">(</span><em>bizunit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.is_ancestor_of"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.is_ancestor_of" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="vikidm.units.bizunit.BizUnit.is_abnormal">
+<code class="descname">is_abnormal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.is_abnormal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.is_abnormal" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the unit in the ABNORMAL state.</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="vikidm.units.bizunit.BizUnit.is_family">
-<code class="descname">is_family</code><span class="sig-paren">(</span><em>bizunit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.is_family"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.is_family" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="vikidm.units.bizunit.BizUnit.is_completed">
+<code class="descname">is_completed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.is_completed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.is_completed" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the node finish executing, should pop out from stack.</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="vikidm.units.bizunit.BizUnit.notify_switch_topic">
-<code class="descname">notify_switch_topic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.notify_switch_topic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.notify_switch_topic" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vikidm.units.bizunit.BizUnit.pop_from_stack">
-<code class="descname">pop_from_stack</code><span class="sig-paren">(</span><em>reset=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.pop_from_stack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.pop_from_stack" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vikidm.units.bizunit.BizUnit.re_enter_after_child_done">
-<code class="descname">re_enter_after_child_done</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.re_enter_after_child_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.re_enter_after_child_done" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="vikidm.units.bizunit.BizUnit.restore_topic_and_focus">
+<code class="descname">restore_topic_and_focus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.restore_topic_and_focus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.restore_topic_and_focus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoked when the agent become focus <strong>again</strong>, and it&#8217;s not in the
+same hierarchy path with previous focus.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="vikidm.units.bizunit.BizUnit.set_state">
 <code class="descname">set_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.set_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.set_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set unit state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.units.bizunit.BizUnit.transferable">
+<code class="descname">transferable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.transferable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.transferable" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the node is in a trasferable state.</p>
+<p>The main routine of DM will call it&#8217;s <cite>execute</cite> function if it&#8217;s in
+a transferable focus state.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vikidm.units.bizunit.Topic">
+<em class="property">class </em><code class="descclassname">vikidm.units.bizunit.</code><code class="descname">Topic</code><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#Topic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.Topic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="70%" />
+<col width="30%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>ancestor_in_stack</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>is_ancestor_of</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>is_family</strong></td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>notify_switch_topic</strong></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="vikidm.units.bizunit.Topic.ancestor_in_stack">
+<code class="descname">ancestor_in_stack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#Topic.ancestor_in_stack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.Topic.ancestor_in_stack" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="vikidm.units.bizunit.BizUnit.trigger">
-<code class="descname">trigger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.trigger" title="Permalink to this definition">¶</a></dt>
+<dt id="vikidm.units.bizunit.Topic.is_ancestor_of">
+<code class="descname">is_ancestor_of</code><span class="sig-paren">(</span><em>bizunit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#Topic.is_ancestor_of"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.Topic.is_ancestor_of" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="vikidm.units.bizunit.BizUnit.trigger_child">
-<code class="descname">trigger_child</code><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.trigger_child" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="vikidm.units.bizunit.Topic.is_family">
+<code class="descname">is_family</code><span class="sig-paren">(</span><em>bizunit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#Topic.is_family"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.Topic.is_family" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vikidm.units.bizunit.Topic.notify_switch_topic">
+<code class="descname">notify_switch_topic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#Topic.notify_switch_topic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.Topic.notify_switch_topic" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1896,7 +1414,7 @@
         &copy; Copyright 2017, numpydoc maintainers.
       </li>
       <li>
-      Last updated on Jul 31, 2018.
+      Last updated on Aug 17, 2018.
       </li>
       <li>
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.

@@ -91,7 +91,9 @@
 <li><a class="reference internal" href="#module-vikidm.context">vikidm.context module</a><ul>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-vikidm.dm">vikidm.dm module</a></li>
+<li><a class="reference internal" href="#module-vikidm.dm">vikidm.dm module</a><ul>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-vikidm.errors">vikidm.errors module</a></li>
 <li><a class="reference internal" href="#module-vikidm.robot">vikidm.robot module</a></li>
 <li><a class="reference internal" href="#module-vikidm">Module contents</a></li>
@@ -557,13 +559,26 @@ which is used to manage a set of concepts(Memory).</p>
 <dt id="vikidm.dm.DialogEngine">
 <em class="property">class </em><code class="descclassname">vikidm.dm.</code><code class="descname">DialogEngine</code><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>对话管理单元</p>
+<p>Dialog Manager.</p>
+<p>Any Device correspond to a <cite>DialogEngine</cite> instance, which maintain the
+dialogue status of device and answer request from device.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>is_waiting</strong></dt>
+<dt><strong>SAFE_UPPER_LIMIT</strong> <span class="classifier-delimiter">:</span> <span class="classifier">100, the maximum execution loop between two request, used</span></dt>
+<dd><p class="first last">to recover from endless loop if there is a bug.</p>
+</dd>
+<dt><strong>context</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Context, maintaining the concept status of device.</span></dt>
+<dd></dd>
+<dt><strong>stack</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Stack, maintaining the active interaction history.</span></dt>
+<dd></dd>
+<dt><strong>_timer</strong> <span class="classifier-delimiter">:</span> <span class="classifier">TimerRest, Calling handle function when timeout.</span></dt>
+<dd></dd>
+<dt><strong>_agenda</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ExpectAgenda, Manage the visiblility of bizunit.</span></dt>
+<dd></dd>
+<dt><strong>_session</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Session, Manage dialogue session.</span></dt>
 <dd></dd>
 </dl>
 </td>
@@ -571,35 +586,60 @@ which is used to manage a set of concepts(Memory).</p>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.dm.DialogEngine.execute_focus_agent" title="vikidm.dm.DialogEngine.execute_focus_agent"><code class="xref py py-obj docutils literal"><span class="pre">execute_focus_agent</span></code></a>()</td>
+<td>Main routine of DM.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.dm.DialogEngine.get_visible_units" title="vikidm.dm.DialogEngine.get_visible_units"><code class="xref py py-obj docutils literal"><span class="pre">get_visible_units</span></code></a>()</td>
+<td>Return visible units at the moment.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.dm.DialogEngine.init_from_db" title="vikidm.dm.DialogEngine.init_from_db"><code class="xref py py-obj docutils literal"><span class="pre">init_from_db</span></code></a>(domain_id)</td>
+<td>Initialize DM from database.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.dm.DialogEngine.on_actionwait_timeout" title="vikidm.dm.DialogEngine.on_actionwait_timeout"><code class="xref py py-obj docutils literal"><span class="pre">on_actionwait_timeout</span></code></a>()</td>
+<td>Invoked when device failed to send an action confirm to agents in time.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.dm.DialogEngine.on_delaywait_timeout" title="vikidm.dm.DialogEngine.on_delaywait_timeout"><code class="xref py py-obj docutils literal"><span class="pre">on_delaywait_timeout</span></code></a>()</td>
+<td>Invoked when device failed to send a new input request to agencies.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.dm.DialogEngine.on_inputwait_timeout" title="vikidm.dm.DialogEngine.on_inputwait_timeout"><code class="xref py py-obj docutils literal"><span class="pre">on_inputwait_timeout</span></code></a>()</td>
+<td>Invoked when device failed to send an inputting request to agents in time.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.dm.DialogEngine.process_concepts" title="vikidm.dm.DialogEngine.process_concepts"><code class="xref py py-obj docutils literal"><span class="pre">process_concepts</span></code></a>(sid,&nbsp;concepts)</td>
+<td>Process user inputs.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.dm.DialogEngine.process_confirm" title="vikidm.dm.DialogEngine.process_confirm"><code class="xref py py-obj docutils literal"><span class="pre">process_confirm</span></code></a>(sid,&nbsp;data)</td>
+<td>Process action confirmation from device.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.dm.DialogEngine.start_timer" title="vikidm.dm.DialogEngine.start_timer"><code class="xref py py-obj docutils literal"><span class="pre">start_timer</span></code></a>(bizunit,&nbsp;seconds,&nbsp;function,&nbsp;...)</td>
+<td>Start an timer.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.dm.DialogEngine.update_by_remote" title="vikidm.dm.DialogEngine.update_by_remote"><code class="xref py py-obj docutils literal"><span class="pre">update_by_remote</span></code></a>(concepts)</td>
+<td>Called directly by thirdparty service like recommendation system, to update concepts.</td>
+</tr>
+</tbody>
+</table>
 <table border="1" class="docutils">
 <colgroup>
-<col width="70%" />
-<col width="30%" />
+<col width="58%" />
+<col width="42%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><strong>debug_info</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td><strong>execute_focus_agent</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>get_candicate_units</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>init_from_db</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>process_concepts</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>process_confirm</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td><strong>update_by_remote</strong></td>
-<td>&nbsp;</td>
-</tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="vikidm.dm.DialogEngine.SAFE_UPPER_LIMIT">
+<code class="descname">SAFE_UPPER_LIMIT</code><em class="property"> = 100</em><a class="headerlink" href="#vikidm.dm.DialogEngine.SAFE_UPPER_LIMIT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="vikidm.dm.DialogEngine.debug_info">
 <code class="descname">debug_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.debug_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.debug_info" title="Permalink to this definition">¶</a></dt>
@@ -608,37 +648,193 @@ which is used to manage a set of concepts(Memory).</p>
 <dl class="method">
 <dt id="vikidm.dm.DialogEngine.execute_focus_agent">
 <code class="descname">execute_focus_agent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.execute_focus_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.execute_focus_agent" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Main routine of DM.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>dict.</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
-<dt id="vikidm.dm.DialogEngine.get_candicate_units">
-<code class="descname">get_candicate_units</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.get_candicate_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.get_candicate_units" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="vikidm.dm.DialogEngine.get_visible_units">
+<code class="descname">get_visible_units</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.get_visible_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.get_visible_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return visible units at the moment.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="vikidm.dm.DialogEngine.init_from_db">
 <code class="descname">init_from_db</code><span class="sig-paren">(</span><em>domain_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.init_from_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.init_from_db" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initialize DM from database.</p>
+<p>It will call <cite>evecms.get_dm_biztree</cite>.
+If failed, return <cite>DMError.RPCError</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>domain_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Project id.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>None</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="vikidm.dm.DialogEngine.is_waiting">
 <code class="descname">is_waiting</code><a class="headerlink" href="#vikidm.dm.DialogEngine.is_waiting" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>If DM is in the waiting user&#8217;s input.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.DialogEngine.on_actionwait_timeout">
+<code class="descname">on_actionwait_timeout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.on_actionwait_timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.on_actionwait_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoked when device failed to send an action confirm to agents in time.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.DialogEngine.on_delaywait_timeout">
+<code class="descname">on_delaywait_timeout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.on_delaywait_timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.on_delaywait_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoked when device failed to send a new input request to agencies.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.DialogEngine.on_inputwait_timeout">
+<code class="descname">on_inputwait_timeout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.on_inputwait_timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.on_inputwait_timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoked when device failed to send an inputting request
+to agents in time.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="vikidm.dm.DialogEngine.process_concepts">
 <code class="descname">process_concepts</code><span class="sig-paren">(</span><em>sid</em>, <em>concepts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.process_concepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.process_concepts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Process user inputs.</p>
+<p>Dialogue text or events will be coverted to <cite>Concept</cite> list, as input
+of DialogEngine.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>sid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Dialog session. Every dialog contains a <cite>process_concepts</cite> and</span></dt>
+<dd><p class="first last"><cite>process_confirm</cite> calling pair. <cite>sid</cite> is used to pairing two call.</p>
+</dd>
+<dt><strong>concepts</strong> <span class="classifier-delimiter">:</span> <span class="classifier">[], <cite>Concept</cite> instance list.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>{</strong></dt>
+<dd><dl class="first last docutils">
+<dt>&#8216;event_id&#8217;: &#8220;id of event&#8221;</dt>
+<dd><p class="first last">// Used to extract answer from db or event notifying.</p>
+</dd>
+<dt>&#8216;target&#8217;: [&#8216;concept_key1&#8217;, &#8216;concept_key2&#8217;, ..]</dt>
+<dd><p class="first last">// Tell the recommend system which concept to fill.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>}</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="vikidm.dm.DialogEngine.process_confirm">
 <code class="descname">process_confirm</code><span class="sig-paren">(</span><em>sid</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.process_confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.process_confirm" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Process action confirmation from device.</p>
+<p>After receiving command from DM, device must send a confirmation
+request to DM to notify the result of command execution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>sid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, see <cite>DialogEngine.process_concepts</cite></span></dt>
+<dd></dd>
+<dt><strong>data: dict, `{&#8216;code&#8217;</strong> <span class="classifier-delimiter">:</span> <span class="classifier">0, &#8216;message&#8217;: &#8216;&#8217;}`</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>{</strong></dt>
+<dd><p class="first last">&#8216;code&#8217;: 0,</p>
+</dd>
+<dt><strong>}</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vikidm.dm.DialogEngine.start_timer">
+<code class="descname">start_timer</code><span class="sig-paren">(</span><em>bizunit</em>, <em>seconds</em>, <em>function</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.start_timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.start_timer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start an timer.</p>
+<p>Make sure there is at most one timer active for any DM instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>bizunit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Bizunit, instance that start the timer.</span></dt>
+<dd></dd>
+<dt><strong>seconds</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, time interval of the timer in seconds.</span></dt>
+<dd></dd>
+<dt><strong>function</strong> <span class="classifier-delimiter">:</span> <span class="classifier">funtion, handle function to call.</span></dt>
+<dd></dd>
+<dt><strong>*args</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, args for the handle function.</span></dt>
+<dd></dd>
+<dt><strong>**kwargs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict, kwargs for the handle function.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="vikidm.dm.DialogEngine.update_by_remote">
 <code class="descname">update_by_remote</code><span class="sig-paren">(</span><em>concepts</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#DialogEngine.update_by_remote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.DialogEngine.update_by_remote" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Called directly by thirdparty service like recommendation system,
+to update concepts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>concepts</strong> <span class="classifier-delimiter">:</span> <span class="classifier">[], <cite>Concept</cite> instance list.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -646,22 +842,41 @@ which is used to manage a set of concepts(Memory).</p>
 <dt id="vikidm.dm.ExpectAgenda">
 <em class="property">class </em><code class="descclassname">vikidm.dm.</code><code class="descname">ExpectAgenda</code><span class="sig-paren">(</span><em>stack</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#ExpectAgenda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.ExpectAgenda" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Manage the visibility of bizunits and related intents and slots,
+given specific stack state.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>visible_agents</strong> <span class="classifier-delimiter">:</span> <span class="classifier">OrderdSet, the visible agents, given specific context.</span></dt>
+<dd></dd>
+<dt><strong>visible_slots</strong> <span class="classifier-delimiter">:</span> <span class="classifier">set, the visible slots, given specific context.</span></dt>
+<dd></dd>
+<dt><strong>visible_intents</strong> <span class="classifier-delimiter">:</span> <span class="classifier">set, the visible intents, given specific context.</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Methods</p>
-<table border="1" class="docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
-<col width="73%" />
-<col width="27%" />
+<col width="10%" />
+<col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><strong>compute_candicate_units</strong></td>
-<td>&nbsp;</td>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.dm.ExpectAgenda.compute_visible_units" title="vikidm.dm.ExpectAgenda.compute_visible_units"><code class="xref py py-obj docutils literal"><span class="pre">compute_visible_units</span></code></a>()</td>
+<td>Calculate visible bizunits, intents, slots</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="vikidm.dm.ExpectAgenda.compute_candicate_units">
-<code class="descname">compute_candicate_units</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#ExpectAgenda.compute_candicate_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.ExpectAgenda.compute_candicate_units" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="vikidm.dm.ExpectAgenda.compute_visible_units">
+<code class="descname">compute_visible_units</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/dm.html#ExpectAgenda.compute_visible_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.dm.ExpectAgenda.compute_visible_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate visible bizunits, intents, slots</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1089,7 +1304,7 @@ query database or call thirdparty service.</p>
         &copy; Copyright 2017, numpydoc maintainers.
       </li>
       <li>
-      Last updated on Aug 06, 2018.
+      Last updated on Aug 17, 2018.
       </li>
       <li>
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.

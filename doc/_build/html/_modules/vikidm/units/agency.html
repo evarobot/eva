@@ -88,6 +88,17 @@
 
 
 <div class="viewcode-block" id="Agency"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.Agency">[docs]</a><span class="k">class</span> <span class="nc">Agency</span><span class="p">(</span><span class="n">BizUnit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Instance of Agency subclass usually represent a local logic controller.</span>
+
+<span class="sd">    Agency instance always have children nodes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    api_concept_keys : [str], Concepts update with APIs by module like</span>
+<span class="sd">                                 recommendation system.</span>
+<span class="sd">    children : [], Children BizUnit nodes.</span>
+<span class="sd">    trigger_child : BizUnit, child that activate it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">TYPE_CLUSTER</span> <span class="o">=</span> <span class="s">&quot;TYPE_CLUSTER&quot;</span>  <span class="c"># no delay exit</span>
     <span class="n">TYPE_TARGET</span> <span class="o">=</span> <span class="s">&quot;TYPE_TARGET&quot;</span>
     <span class="n">TYPE_SEQUENCE</span> <span class="o">=</span> <span class="s">&quot;TYPE_SEQUENCE&quot;</span>
@@ -96,16 +107,17 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Agency</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">],</span> <span class="n">tag</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trigger_child</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_handler_finished</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">remote_concept_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_child</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_concept_keys</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf8&#39;</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="Agency.get_agency"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.Agency.get_agency">[docs]</a>    <span class="k">def</span> <span class="nf">get_agency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; A factory method, return required instance of Agency subclass.  &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">Agency</span><span class="o">.</span><span class="n">TYPE_ROOT</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Agency</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">Agency</span><span class="o">.</span><span class="n">TYPE_CLUSTER</span><span class="p">:</span>
@@ -118,10 +130,46 @@
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
             <span class="k">assert</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
 </div>
+<div class="viewcode-block" id="Agency.restore_focus_after_child_done"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.Agency.restore_focus_after_child_done">[docs]</a>    <span class="k">def</span> <span class="nf">restore_focus_after_child_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Become focus again afater child node finishing executing.  &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_root</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_ABNORMAL</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_TRIGGERED</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Agency.reset_concepts"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.Agency.reset_concepts">[docs]</a>    <span class="k">def</span> <span class="nf">reset_concepts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset concepts of descendant nodes, intent concept and API concepts.</span>
+
+<span class="sd">        Invoked when itself and parent is not in the stack.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">is_root</span><span class="p">()</span> <span class="ow">or</span>\
+                <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_TREEWAIT</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+                <span class="n">child</span><span class="o">.</span><span class="n">reset_concepts</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">reset_concept</span><span class="p">(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_concept_keys</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">reset_concept</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;RESET remote concept {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_concept_keys</span> <span class="o">=</span> <span class="p">[]</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trigger_child</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The child trigged the Agency instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_child</span>
+
+    <span class="nd">@trigger_child.setter</span>
+    <span class="k">def</span> <span class="nf">trigger_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_child</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handler_finished</span> <span class="o">=</span> <span class="bp">False</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;state&#39;</span><span class="p">]</span>
 
+<div class="viewcode-block" id="Agency.set_state"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.Agency.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;state&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+</div>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">entrance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;entrance&#39;</span><span class="p">]</span>
@@ -131,22 +179,11 @@
         <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">biz_tree</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="p">):</span>
             <span class="k">yield</span> <span class="n">child</span>
 
-<div class="viewcode-block" id="Agency.set_state"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.Agency.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;state&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 </div>
-<div class="viewcode-block" id="Agency.reset_concepts"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.Agency.reset_concepts">[docs]</a>    <span class="k">def</span> <span class="nf">reset_concepts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">is_root</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_TREEWAIT</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-                <span class="n">child</span><span class="o">.</span><span class="n">reset_concepts</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">reset_concept</span><span class="p">(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote_concept_keys</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">reset_concept</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;RESET remote concept {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">remote_concept_keys</span> <span class="o">=</span> <span class="p">[]</span>
-
-</div></div>
 <div class="viewcode-block" id="ClusterAgency"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.ClusterAgency">[docs]</a><span class="k">class</span> <span class="nc">ClusterAgency</span><span class="p">(</span><span class="n">Agency</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A local controller always with one child of type `TriggerAgent`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ClusterAgency</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 
@@ -157,21 +194,30 @@
     <span class="nd">@trigger_child.setter</span>
     <span class="k">def</span> <span class="nf">trigger_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_child</span> <span class="o">=</span> <span class="n">v</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_handler_finished</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_child_activated</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">def</span> <span class="nf">_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handler_finished</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_child_activated</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_AGENCY_COMPLETED</span><span class="p">)</span>
-            <span class="k">return</span>
+            <span class="k">return</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trigger_child</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_TRIGGERED</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger_child</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trigger_child</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_child_activated</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_STACKWAIT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_handler_finished</span> <span class="o">=</span> <span class="bp">True</span>
 
 </div>
 <div class="viewcode-block" id="TargetAgency"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.TargetAgency">[docs]</a><span class="k">class</span> <span class="nc">TargetAgency</span><span class="p">(</span><span class="n">Agency</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A local controller with children of type `TargetAgent` and `TriggerAgent`.</span>
+
+<span class="sd">    The `TargetAgent` children will require user inputs to fill target</span>
+<span class="sd">    concepts and the `TriggerAgent` give the desired response.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target_concepts : [Concept]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TargetAgency</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">event_id</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
@@ -180,19 +226,21 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">target_concepts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Concepts to filled by `TargetAgent` children.  &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_concepts</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_concepts</span>
         <span class="n">concept_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">child</span><span class="o">.</span><span class="n">target_concepts</span><span class="p">:</span>
                 <span class="n">concept_keys</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_target_concepts</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">Concept</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">concept_keys</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_concepts</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">Concept</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">concept_keys</span><span class="p">])</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_concepts</span>
 
-<div class="viewcode-block" id="TargetAgency.executable"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.TargetAgency.executable">[docs]</a>    <span class="k">def</span> <span class="nf">executable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_condition</span>
-</div>
-<div class="viewcode-block" id="TargetAgency.re_enter_after_child_done"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.TargetAgency.re_enter_after_child_done">[docs]</a>    <span class="k">def</span> <span class="nf">re_enter_after_child_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TargetAgency.restore_focus_after_child_done"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.TargetAgency.restore_focus_after_child_done">[docs]</a>    <span class="k">def</span> <span class="nf">restore_focus_after_child_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        see :meth:`~vikidm.units.agency.Agency.restore_focus_after_child_done`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_ABNORMAL</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_target_node</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_child</span><span class="p">):</span>
@@ -203,79 +251,66 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_result_node</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_child</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_execute_condition</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">active_child</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">restore_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="TargetAgency.round_back"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.TargetAgency.round_back">[docs]</a>    <span class="k">def</span> <span class="nf">round_back</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">restore_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
-        <span class="c"># recountdown</span>
-        <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="ow">in</span> <span class="p">[</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_WAIT_TARGET</span><span class="p">,</span> <span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">])</span>
+<div class="viewcode-block" id="TargetAgency.restore_topic_and_focus"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.TargetAgency.restore_topic_and_focus">[docs]</a>    <span class="k">def</span> <span class="nf">restore_topic_and_focus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; see :meth:`~vikidm.units.bizunit.BizUnit.restore_topic_and_focus`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="ow">in</span> <span class="p">[</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_WAIT_TARGET</span><span class="p">,</span>
+                              <span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_execute_condition</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="TargetAgency.restore_context"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.TargetAgency.restore_context">[docs]</a>    <span class="k">def</span> <span class="nf">restore_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-        <span class="c"># context.update_concept(self._intent.key, self._intent)</span>
-        <span class="k">pass</span>
 </div>
     <span class="k">def</span> <span class="nf">_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;EXECUTE TargetAgency({0})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_WAIT_TARGET</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_execute_condition</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_WAIT_TARGET</span><span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;START_INPUT_TIMER TargetAgency({0})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">_start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ConfigDM</span><span class="o">.</span><span class="n">input_timeout</span><span class="p">,</span>
-                                  <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">_inputwait_timeout</span><span class="p">)</span>
-            <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ConfigDM</span><span class="o">.</span><span class="n">input_timeout</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">on_inputwait_timeout</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{}</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_execute_condition</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;START_DELAY_TIMER TargetAgency({0})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">_start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ConfigDM</span><span class="o">.</span><span class="n">input_timeout</span><span class="p">,</span>
-                                  <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">_delaywait_timeout</span><span class="p">)</span>
-            <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ConfigDM</span><span class="o">.</span><span class="n">input_timeout</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">on_delaywait_timeout</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_intent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s">&quot;intent&quot;</span><span class="p">]</span>  <span class="c"># for restore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">active_child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plan</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_child</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">active_child</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_TRIGGERED</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_child</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_STACKWAIT</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c"># switch back when context cleared</span>
             <span class="c">#  TODO:  TEST</span>
+            <span class="c"># when swtiched back, context could be cleared by some unit share</span>
+            <span class="c"># same concepts,  so none child could be triggered</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_execute_condition</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">stack</span><span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
-            <span class="k">return</span>
+        <span class="k">return</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="nf">_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c"># log.debug(self._dm.context)</span>
-        <span class="n">targets_clean</span> <span class="o">=</span> <span class="nb">all</span><span class="p">([</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">dirty</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_concepts</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_result_node</span><span class="p">(</span><span class="n">child</span><span class="p">):</span>
-                <span class="n">trigger_satisified</span> <span class="o">=</span> <span class="nb">all</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">satisfied</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">child</span><span class="o">.</span><span class="n">trigger_concepts</span><span class="p">])</span>
-                <span class="k">if</span> <span class="n">trigger_satisified</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">child</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_default_node</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="ow">and</span> <span class="n">targets_clean</span><span class="p">:</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;WAIT_INPUT TargetAgency({0})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_result_node</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="ow">and</span> <span class="n">child</span><span class="o">.</span><span class="n">satisfied</span><span class="p">():</span>
                 <span class="k">return</span> <span class="n">child</span>
-
-        <span class="c">#  TODO: Hack code</span>
-        <span class="n">candicates</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_default_node</span><span class="p">(</span><span class="n">child</span><span class="p">):</span>
+                <span class="n">targets_clean</span> <span class="o">=</span> <span class="nb">all</span><span class="p">([</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">dirty</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_concepts</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">targets_clean</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;WAIT_INPUT TargetAgency({0})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">))</span>
+                    <span class="k">return</span> <span class="n">child</span>
+        <span class="c">#  TODO: support priority</span>
         <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_target_node</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">child</span><span class="o">.</span><span class="n">target_completed</span><span class="p">():</span>
                 <span class="c"># return first none complete target child</span>
-                <span class="n">candicates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">candicates</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">target_concepts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s">u&quot;种类&quot;</span><span class="p">,</span> <span class="s">&quot;种类&quot;</span><span class="p">]:</span>
-                <span class="k">return</span> <span class="n">node</span>
-        <span class="k">if</span> <span class="n">candicates</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">candicates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c"># when swtiched back, context could be cleared, and none child could be triggered</span>
-            <span class="k">return</span> <span class="bp">None</span>
+                <span class="k">return</span> <span class="n">child</span>
+        <span class="k">return</span> <span class="bp">None</span>
 
     <span class="k">def</span> <span class="nf">_is_default_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bizunit</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">bizunit</span><span class="o">.</span><span class="n">target_concepts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">bizunit</span><span class="o">.</span><span class="n">trigger_concepts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">bizunit</span><span class="o">.</span><span class="n">target_concepts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span>\
+            <span class="nb">len</span><span class="p">(</span><span class="n">bizunit</span><span class="o">.</span><span class="n">trigger_concepts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
 
     <span class="k">def</span> <span class="nf">_is_result_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bizunit</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">bizunit</span><span class="o">.</span><span class="n">trigger_concepts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
@@ -285,41 +320,43 @@
 
 </div>
 <div class="viewcode-block" id="MixAgency"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.MixAgency">[docs]</a><span class="k">class</span> <span class="nc">MixAgency</span><span class="p">(</span><span class="n">Agency</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An local controller for scope control purpose.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MixAgency</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MixAgency.executable"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.MixAgency.executable">[docs]</a>    <span class="k">def</span> <span class="nf">executable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_condition</span>
-</div>
-<div class="viewcode-block" id="MixAgency.re_enter_after_child_done"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.MixAgency.re_enter_after_child_done">[docs]</a>    <span class="k">def</span> <span class="nf">re_enter_after_child_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MixAgency.restore_focus_after_child_done"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.MixAgency.restore_focus_after_child_done">[docs]</a>    <span class="k">def</span> <span class="nf">restore_focus_after_child_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        see :meth:`~vikidm.units.agency.Agency.restore_focus_after_child_done`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_ABNORMAL</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_execute_condition</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="MixAgency.round_back"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.MixAgency.round_back">[docs]</a>    <span class="k">def</span> <span class="nf">round_back</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">restore_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+<div class="viewcode-block" id="MixAgency.restore_topic_and_focus"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.MixAgency.restore_topic_and_focus">[docs]</a>    <span class="k">def</span> <span class="nf">restore_topic_and_focus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; see :meth:`~vikidm.units.bizunit.BizUnit.restore_topic_and_focus`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_execute_condition</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="MixAgency.restore_context"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.agency.MixAgency.restore_context">[docs]</a>    <span class="k">def</span> <span class="nf">restore_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-        <span class="k">pass</span>
-        <span class="c"># context.update_concept(self._intent.key, self._intent)</span>
 </div>
     <span class="k">def</span> <span class="nf">_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;EXECUTE MixAgency({0})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_execute_condition</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_DELAY_EXIST</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">_start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ConfigDM</span><span class="o">.</span><span class="n">input_timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">_delaywait_timeout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">start_timer</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">ConfigDM</span><span class="o">.</span><span class="n">input_timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">on_delaywait_timeout</span><span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;START_DELAY_TIMER MixAgency({0})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">))</span>
-            <span class="k">return</span>
+            <span class="k">return</span> <span class="p">{}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_intent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s">&quot;intent&quot;</span><span class="p">]</span>  <span class="c"># for restore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trigger_child</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_TRIGGERED</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger_child</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">trigger_child</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_STACKWAIT</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">BizUnit</span><span class="o">.</span><span class="n">STATUS_STACKWAIT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
 </pre></div>
 
           </div>
@@ -342,7 +379,7 @@
         &copy; Copyright 2017, numpydoc maintainers.
       </li>
       <li>
-      Last updated on Aug 06, 2018.
+      Last updated on Aug 17, 2018.
       </li>
       <li>
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.

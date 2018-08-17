@@ -100,8 +100,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">domain_id</span> <span class="o">=</span> <span class="n">domain_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">domain_name</span> <span class="o">=</span> <span class="n">Domain</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">with_id</span><span class="p">(</span><span class="n">domain_id</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">robot_id</span> <span class="o">=</span> <span class="n">robot_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dialog</span> <span class="o">=</span> <span class="n">DialogEngine</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dialog</span><span class="o">.</span><span class="n">init_from_db</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span> <span class="o">=</span> <span class="n">DialogEngine</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">init_from_db</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nlu</span> <span class="o">=</span> <span class="n">NLURobot</span><span class="o">.</span><span class="n">get_robot</span><span class="p">(</span><span class="n">domain_id</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;CREATE ROBOT: [{0}] of domain [{1}]&quot;</span>
                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">robot_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_name</span><span class="p">))</span>
@@ -127,7 +127,7 @@
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;调用错误&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">ret2</span><span class="p">[</span><span class="s">&#39;slots&#39;</span><span class="p">]:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dialog</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
                 <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
                     <span class="n">slots</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">slots</span>
@@ -169,7 +169,7 @@
 </div>
     <span class="k">def</span> <span class="nf">_process_concepts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent</span><span class="p">,</span> <span class="n">concepts</span><span class="p">):</span>
         <span class="n">sid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
-        <span class="n">dm_ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dialog</span><span class="o">.</span><span class="n">process_concepts</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">concepts</span><span class="p">)</span>
+        <span class="n">dm_ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">process_concepts</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">concepts</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dm_ret</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
@@ -245,7 +245,7 @@
 <span class="sd">        }</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dialog</span><span class="o">.</span><span class="n">process_confirm</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">d_confirm</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">process_confirm</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">d_confirm</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="DMRobot.update_concepts_by_backend"><a class="viewcode-back" href="../../code/vikidm.html#vikidm.robot.DMRobot.update_concepts_by_backend">[docs]</a>    <span class="k">def</span> <span class="nf">update_concepts_by_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_concepts</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Update by business service.</span>
@@ -264,8 +264,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">concepts</span> <span class="o">=</span> <span class="p">[</span><span class="n">Concept</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">d_concepts</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dialog</span><span class="o">.</span><span class="n">update_by_remote</span><span class="p">(</span><span class="n">concepts</span><span class="p">)</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dialog</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">update_by_remote</span><span class="p">(</span><span class="n">concepts</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dm</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s">&quot;code&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="p">}</span>
@@ -329,7 +329,7 @@
         &copy; Copyright 2017, numpydoc maintainers.
       </li>
       <li>
-      Last updated on Aug 06, 2018.
+      Last updated on Aug 17, 2018.
       </li>
       <li>
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.

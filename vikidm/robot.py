@@ -21,8 +21,8 @@ class DMRobot(object):
         self.domain_id = domain_id
         self.domain_name = Domain.objects.with_id(domain_id).name
         self.robot_id = robot_id
-        self._dialog = DialogEngine()
-        self._dialog.init_from_db(self.domain_id)
+        self._dm = DialogEngine()
+        self._dm.init_from_db(self.domain_id)
         self.nlu = NLURobot.get_robot(domain_id)
         log.info("CREATE ROBOT: [{0}] of domain [{1}]"
                  .format(robot_id, self.domain_name))
@@ -48,7 +48,7 @@ class DMRobot(object):
             log.error("调用错误")
         else:
             for slot_name in ret2['slots']:
-                value = self._dialog.context[slot_name].value
+                value = self._dm.context[slot_name].value
                 if value:
                     slots[slot_name] = value
         return slots
@@ -90,7 +90,7 @@ class DMRobot(object):
 
     def _process_concepts(self, intent, concepts):
         sid = int(round(time.time() * 1000))
-        dm_ret = self._dialog.process_concepts(sid, concepts)
+        dm_ret = self._dm.process_concepts(sid, concepts)
         if dm_ret is None:
             return {
                 'code': -1,
@@ -166,7 +166,7 @@ class DMRobot(object):
         }
 
         """
-        return self._dialog.process_confirm(sid, d_confirm)
+        return self._dm.process_confirm(sid, d_confirm)
 
     def update_concepts_by_backend(self, d_concepts):
         """ Update by business service.
@@ -185,8 +185,8 @@ class DMRobot(object):
         """
         concepts = [Concept(key, value)
                     for key, value in d_concepts.iteritems()]
-        self._dialog.update_by_remote(concepts)
-        log.info(self._dialog.context)
+        self._dm.update_by_remote(concepts)
+        log.info(self._dm.context)
         return {
             "code": 0,
         }
