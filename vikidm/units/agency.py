@@ -85,13 +85,6 @@ class Agency(BizUnit):
         self._handler_finished = False
 
     @property
-    def state(self):
-        return self.data['state']
-
-    def set_state(self, value):
-        self.data['state'] = value
-
-    @property
     def entrance(self):
         return self.data['entrance']
 

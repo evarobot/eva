@@ -25,8 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/js/copybutton.js"></script>
     <link rel="top" title="numpydoc v0.9.dev0 Manual" href="../index.html" >
-    <link rel="up" title="vikidm package" href="vikidm.html" >
-    <link rel="prev" title="vikidm.controller.api package" href="vikidm.controller.api.html" > 
+    <link rel="up" title="vikidm package" href="vikidm.html" > 
   </head>
   <body>
 
@@ -61,10 +60,6 @@
         <a href="../py-modindex.html" title="Python Module Index"
            >modules</a>
       </li>
-      <li class="active">
-        <a href="vikidm.controller.api.html" title="vikidm.controller.api package"
-           accesskey="P">previous</a>
-      </li>
     </ul>
               
 	    </div>
@@ -89,9 +84,6 @@
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="vikidm.controller.api.html"
-                        title="previous chapter">vikidm.controller.api package</a></p>
   <h3>This Page</h3>
   <div>
     <a href="../_sources/code/vikidm.libs.txt"
@@ -127,14 +119,12 @@
 <dl class="exception">
 <dt id="vikidm.libs.handler.HttpError">
 <em class="property">exception </em><code class="descclassname">vikidm.libs.handler.</code><code class="descname">HttpError</code><span class="sig-paren">(</span><em>code</em>, <em>errname</em>, <em>errmsg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#HttpError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.HttpError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="class">
 <dt id="vikidm.libs.handler.RobotAPIHandler">
 <em class="property">class </em><code class="descclassname">vikidm.libs.handler.</code><code class="descname">RobotAPIHandler</code><span class="sig-paren">(</span><em>application</em>, <em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#RobotAPIHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.RobotAPIHandler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.libs.handler.VersionedHandler" title="vikidm.libs.handler.VersionedHandler"><code class="xref py py-class docutils literal"><span class="pre">vikidm.libs.handler.VersionedHandler</span></code></a></p>
-<p>发给机器人的API基类</p>
+<dd><p>发给机器人的API基类</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -215,27 +205,27 @@
 </table>
 <dl class="method">
 <dt id="vikidm.libs.handler.RobotAPIHandler.get_current_user">
-<code class="descname">get_current_user</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#RobotAPIHandler.get_current_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.RobotAPIHandler.get_current_user" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_current_user</code><span class="sig-paren">(</span><em>handler</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#RobotAPIHandler.get_current_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.RobotAPIHandler.get_current_user" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="vikidm.libs.handler.RobotAPIHandler.get_version">
-<code class="descname">get_version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#RobotAPIHandler.get_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.RobotAPIHandler.get_version" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_version</code><span class="sig-paren">(</span><em>handler</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#RobotAPIHandler.get_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.RobotAPIHandler.get_version" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="vikidm.libs.handler.RobotAPIHandler.options">
-<code class="descname">options</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#RobotAPIHandler.options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.RobotAPIHandler.options" title="Permalink to this definition">¶</a></dt>
+<code class="descname">options</code><span class="sig-paren">(</span><em>handler</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#RobotAPIHandler.options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.RobotAPIHandler.options" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="vikidm.libs.handler.RobotAPIHandler.prepare">
-<code class="descname">prepare</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#RobotAPIHandler.prepare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.RobotAPIHandler.prepare" title="Permalink to this definition">¶</a></dt>
+<code class="descname">prepare</code><span class="sig-paren">(</span><em>handler</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#RobotAPIHandler.prepare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.RobotAPIHandler.prepare" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="vikidm.libs.handler.RobotAPIHandler.set_default_headers">
-<code class="descname">set_default_headers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#RobotAPIHandler.set_default_headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.RobotAPIHandler.set_default_headers" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_default_headers</code><span class="sig-paren">(</span><em>handler</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#RobotAPIHandler.set_default_headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.RobotAPIHandler.set_default_headers" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -243,8 +233,7 @@
 <dl class="class">
 <dt id="vikidm.libs.handler.Versioned">
 <em class="property">class </em><code class="descclassname">vikidm.libs.handler.</code><code class="descname">Versioned</code><a class="reference internal" href="../_modules/vikidm/libs/handler.html#Versioned"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.Versioned" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Decorator for different api version.</p>
+<dd><p>Decorator for different api version.</p>
 <p>Examples:</p>
 <blockquote>
 <div><p>from viki_qa.libs.handler import Versioned</p>
@@ -335,8 +324,7 @@ def post_func(...):</p>
 <dl class="class">
 <dt id="vikidm.libs.handler.VersionedHandler">
 <em class="property">class </em><code class="descclassname">vikidm.libs.handler.</code><code class="descname">VersionedHandler</code><span class="sig-paren">(</span><em>application</em>, <em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#VersionedHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.VersionedHandler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">tornado.web.RequestHandler</span></code></p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -407,12 +395,12 @@ def post_func(...):</p>
 </table>
 <dl class="method">
 <dt id="vikidm.libs.handler.VersionedHandler.get_version">
-<code class="descname">get_version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#VersionedHandler.get_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.VersionedHandler.get_version" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_version</code><span class="sig-paren">(</span><em>handler</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#VersionedHandler.get_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.VersionedHandler.get_version" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="vikidm.libs.handler.VersionedHandler.write_json">
-<code class="descname">write_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#VersionedHandler.write_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.VersionedHandler.write_json" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write_json</code><span class="sig-paren">(</span><em>handler</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/handler.html#VersionedHandler.write_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.VersionedHandler.write_json" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -420,8 +408,7 @@ def post_func(...):</p>
 <dl class="class">
 <dt id="vikidm.libs.handler.VersionedHandlerMeta">
 <em class="property">class </em><code class="descclassname">vikidm.libs.handler.</code><code class="descname">VersionedHandlerMeta</code><a class="reference internal" href="../_modules/vikidm/libs/handler.html#VersionedHandlerMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.handler.VersionedHandlerMeta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">type</span></code></p>
-<p class="rubric">Methods</p>
+<dd><p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
@@ -487,8 +474,7 @@ decorator, you have to create the <cite>tornado.web.Application</cite> like this
 <dl class="class">
 <dt id="vikidm.libs.route.Route">
 <em class="property">class </em><code class="descclassname">vikidm.libs.route.</code><code class="descname">Route</code><span class="sig-paren">(</span><em>route</em>, <em>initialize={}</em>, <em>name=None</em>, <em>host='.*$'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/libs/route.html#Route"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.libs.route.Route" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>The <cite>Route</cite> decorator.</p>
+<dd><p>The <cite>Route</cite> decorator.</p>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -539,7 +525,7 @@ decorator, you have to create the <cite>tornado.web.Application</cite> like this
         &copy; Copyright 2017, numpydoc maintainers.
       </li>
       <li>
-      Last updated on Jul 31, 2018.
+      Last updated on Aug 19, 2018.
       </li>
       <li>
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.

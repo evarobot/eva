@@ -12,10 +12,8 @@ from vikidm.context import Context
 from vikidm.biztree import BizTree
 from vikidm.units import (
     Agent,
-    Agency,
     BizUnit,
     TargetAgent,
-    TriggerAgent,
     TargetAgency,
     ClusterAgency,
     MixAgency,
@@ -365,12 +363,8 @@ class DialogEngine(object):
         for bizunit in self._agenda.visible_agents:
             if not isinstance(bizunit, Agent):
                 continue
-            if isinstance(bizunit, TriggerAgent) and not bizunit.satisfied():
+            if not bizunit.satisfied():
                 continue
-            if isinstance(bizunit, TargetAgent) and\
-                   not (bizunit.satisfied() and bizunit.target_completed()):
-                    continue
-
             log.debug("Init Trigger: {0}".format(bizunit))
             new_focus = bizunit.hierarchy_trigger()
             # 清理trigger到栈顶间的节点，假设的仍然是中间节点都是亲属关系。

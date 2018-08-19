@@ -65,11 +65,11 @@ class AbnormalHandler(BizUnit):
             self._mark_abnormal_unit(
                 self._dm.stack, self._dm.biz_tree, self._dm.stack._items[-2])
             self._dm.stack.pop()
-            self.state = BizUnit.STATUS_TREEWAIT
+            self.set_state(BizUnit.STATUS_TREEWAIT)
             return self.state
         # push handler unit
         self.handler.set_state(Agent.STATUS_TRIGGERED)
-        self.state = BizUnit.STATUS_STACKWAIT
+        self.set_state(BizUnit.STATUS_STACKWAIT)
         self._dm.stack.push(self.handler)
         self._child_activated = True
         return self.state
