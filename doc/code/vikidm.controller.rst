@@ -14,4 +14,3 @@ Module contents
 .. automodule:: vikidm.controller
     :members:
     :undoc-members:
-    :show-inheritance:

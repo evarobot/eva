@@ -156,9 +156,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 </div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;state&#39;</span><span class="p">]</span>
+
 <div class="viewcode-block" id="BizUnit.set_state"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.bizunit.BizUnit.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Set unit state. &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;state&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 </div>
 <div class="viewcode-block" id="BizUnit.hierarchy_trigger"><a class="viewcode-back" href="../../../code/vikidm.units.html#vikidm.units.bizunit.BizUnit.hierarchy_trigger">[docs]</a>    <span class="k">def</span> <span class="nf">hierarchy_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Activate and return the top ancestor node in the stack.</span>
@@ -246,7 +250,7 @@
         &copy; Copyright 2017, numpydoc maintainers.
       </li>
       <li>
-      Last updated on Aug 17, 2018.
+      Last updated on Aug 19, 2018.
       </li>
       <li>
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.

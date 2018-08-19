@@ -111,8 +111,7 @@
 <dl class="class">
 <dt id="vikidm.units.abnormal.AbnormalHandler">
 <em class="property">class </em><code class="descclassname">vikidm.units.abnormal.</code><code class="descname">AbnormalHandler</code><span class="sig-paren">(</span><em>dm</em>, <em>bizunit</em>, <em>type_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/abnormal.html#AbnormalHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.abnormal.AbnormalHandler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.units.bizunit.BizUnit" title="vikidm.units.bizunit.BizUnit"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.bizunit.BizUnit</span></code></a></p>
-<p>An abnormal controller.</p>
+<dd><p>An abnormal controller.</p>
 <p>It always associate with an specific handle angent, dependent on abnormal
 type.</p>
 <p>Controlling logic is simililar with <cite>ClusterAgency</cite>. When Abnormal
@@ -133,6 +132,8 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <dt><code class="xref py py-obj docutils literal"><span class="pre">identifier</span></code></dt>
 <dd><p class="first last">Return the value of <cite>_identifier</cite>.</p>
 </dd>
+<dt><strong>state</strong></dt>
+<dd></dd>
 <dt><code class="xref py py-obj docutils literal"><span class="pre">tag</span></code></dt>
 <dd><p class="first last">Return the value of <cite>_tag</cite>.</p>
 </dd>
@@ -188,8 +189,7 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <dl class="class">
 <dt id="vikidm.units.abnormal.ActionFailedAgent">
 <em class="property">class </em><code class="descclassname">vikidm.units.abnormal.</code><code class="descname">ActionFailedAgent</code><span class="sig-paren">(</span><em>dm</em>, <em>bizunit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/abnormal.html#ActionFailedAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.abnormal.ActionFailedAgent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.units.abnormal.DefaultHandlerAgent" title="vikidm.units.abnormal.DefaultHandlerAgent"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.abnormal.DefaultHandlerAgent</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -236,20 +236,6 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="67%" />
-<col width="33%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
 </tbody>
 </table>
 </dd></dl>
@@ -257,8 +243,7 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <dl class="class">
 <dt id="vikidm.units.abnormal.ActionTimeoutAgent">
 <em class="property">class </em><code class="descclassname">vikidm.units.abnormal.</code><code class="descname">ActionTimeoutAgent</code><span class="sig-paren">(</span><em>dm</em>, <em>bizunit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/abnormal.html#ActionTimeoutAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.abnormal.ActionTimeoutAgent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.units.abnormal.DefaultHandlerAgent" title="vikidm.units.abnormal.DefaultHandlerAgent"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.abnormal.DefaultHandlerAgent</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -305,20 +290,6 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="67%" />
-<col width="33%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
 </tbody>
 </table>
 </dd></dl>
@@ -326,8 +297,7 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <dl class="class">
 <dt id="vikidm.units.abnormal.DefaultHandlerAgent">
 <em class="property">class </em><code class="descclassname">vikidm.units.abnormal.</code><code class="descname">DefaultHandlerAgent</code><span class="sig-paren">(</span><em>dm</em>, <em>bizunit</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/abnormal.html#DefaultHandlerAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.abnormal.DefaultHandlerAgent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.units.agent.Agent" title="vikidm.units.agent.Agent"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.agent.Agent</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -374,20 +344,6 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="67%" />
-<col width="33%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
 </tbody>
 </table>
 </dd></dl>
@@ -395,8 +351,7 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <dl class="class">
 <dt id="vikidm.units.abnormal.InputTimeoutAgent">
 <em class="property">class </em><code class="descclassname">vikidm.units.abnormal.</code><code class="descname">InputTimeoutAgent</code><span class="sig-paren">(</span><em>dm</em>, <em>bizunit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/abnormal.html#InputTimeoutAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.abnormal.InputTimeoutAgent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.units.abnormal.DefaultHandlerAgent" title="vikidm.units.abnormal.DefaultHandlerAgent"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.abnormal.DefaultHandlerAgent</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -443,20 +398,6 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="67%" />
-<col width="33%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
 </tbody>
 </table>
 </dd></dl>
@@ -467,8 +408,7 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <dl class="class">
 <dt id="vikidm.units.agency.Agency">
 <em class="property">class </em><code class="descclassname">vikidm.units.agency.</code><code class="descname">Agency</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#Agency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.Agency" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.units.bizunit.BizUnit" title="vikidm.units.bizunit.BizUnit"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.bizunit.BizUnit</span></code></a></p>
-<p>Instance of Agency subclass usually represent a local logic controller.</p>
+<dd><p>Instance of Agency subclass usually represent a local logic controller.</p>
 <p>Agency instance always have children nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -503,17 +443,6 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.agency.Agency.restore_focus_after_child_done" title="vikidm.units.agency.Agency.restore_focus_after_child_done"><code class="xref py py-obj docutils literal"><span class="pre">restore_focus_after_child_done</span></code></a>()</td>
 <td>Become focus again afater child node finishing executing.</td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="57%" />
-<col width="43%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -571,16 +500,6 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <dd><p>Become focus again afater child node finishing executing.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="vikidm.units.agency.Agency.set_state">
-<code class="descname">set_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#Agency.set_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.Agency.set_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="vikidm.units.agency.Agency.state">
-<code class="descname">state</code><a class="headerlink" href="#vikidm.units.agency.Agency.state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="attribute">
 <dt id="vikidm.units.agency.Agency.trigger_child">
 <code class="descname">trigger_child</code><a class="headerlink" href="#vikidm.units.agency.Agency.trigger_child" title="Permalink to this definition">¶</a></dt>
@@ -592,8 +511,7 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <dl class="class">
 <dt id="vikidm.units.agency.ClusterAgency">
 <em class="property">class </em><code class="descclassname">vikidm.units.agency.</code><code class="descname">ClusterAgency</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#ClusterAgency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.ClusterAgency" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.units.agency.Agency" title="vikidm.units.agency.Agency"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.agency.Agency</span></code></a></p>
-<p>A local controller always with one child of type <cite>TriggerAgent</cite>.</p>
+<dd><p>A local controller always with one child of type <cite>TriggerAgent</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -642,17 +560,6 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 </tr>
 </tbody>
 </table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="57%" />
-<col width="43%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-</tbody>
-</table>
 <dl class="attribute">
 <dt id="vikidm.units.agency.ClusterAgency.trigger_child">
 <code class="descname">trigger_child</code><a class="headerlink" href="#vikidm.units.agency.ClusterAgency.trigger_child" title="Permalink to this definition">¶</a></dt>
@@ -663,8 +570,7 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <dl class="class">
 <dt id="vikidm.units.agency.MixAgency">
 <em class="property">class </em><code class="descclassname">vikidm.units.agency.</code><code class="descname">MixAgency</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#MixAgency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.MixAgency" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.units.agency.Agency" title="vikidm.units.agency.Agency"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.agency.Agency</span></code></a></p>
-<p>An local controller for scope control purpose.</p>
+<dd><p>An local controller for scope control purpose.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -717,17 +623,6 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 </tr>
 </tbody>
 </table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="57%" />
-<col width="43%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-</tbody>
-</table>
 <dl class="method">
 <dt id="vikidm.units.agency.MixAgency.restore_focus_after_child_done">
 <code class="descname">restore_focus_after_child_done</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#MixAgency.restore_focus_after_child_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.MixAgency.restore_focus_after_child_done" title="Permalink to this definition">¶</a></dt>
@@ -745,8 +640,7 @@ STATUS_ABNORMAL state.  The main routine will pop STATUS_ABNORMAL unit.</p>
 <dl class="class">
 <dt id="vikidm.units.agency.TargetAgency">
 <em class="property">class </em><code class="descclassname">vikidm.units.agency.</code><code class="descname">TargetAgency</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#TargetAgency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.TargetAgency" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.units.agency.Agency" title="vikidm.units.agency.Agency"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.agency.Agency</span></code></a></p>
-<p>A local controller with children of type <cite>TargetAgent</cite> and <cite>TriggerAgent</cite>.</p>
+<dd><p>A local controller with children of type <cite>TargetAgent</cite> and <cite>TriggerAgent</cite>.</p>
 <p>The <cite>TargetAgent</cite> children will require user inputs to fill target
 concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -783,17 +677,6 @@ concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 </tr>
 </tbody>
 </table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="57%" />
-<col width="43%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-</tbody>
-</table>
 <dl class="method">
 <dt id="vikidm.units.agency.TargetAgency.restore_focus_after_child_done">
 <code class="descname">restore_focus_after_child_done</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agency.html#TargetAgency.restore_focus_after_child_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agency.TargetAgency.restore_focus_after_child_done" title="Permalink to this definition">¶</a></dt>
@@ -820,8 +703,7 @@ concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 <dl class="class">
 <dt id="vikidm.units.agent.Agent">
 <em class="property">class </em><code class="descclassname">vikidm.units.agent.</code><code class="descname">Agent</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#Agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.Agent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.units.bizunit.BizUnit" title="vikidm.units.bizunit.BizUnit"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.bizunit.BizUnit</span></code></a></p>
-<p>Any response of DM always related to an Agent.</p>
+<dd><p>Any response of DM always related to an Agent.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -868,20 +750,6 @@ concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#vikidm.units.agent.Agent.satisfied" title="vikidm.units.agent.Agent.satisfied"><code class="xref py py-obj docutils literal"><span class="pre">satisfied</span></code></a>()</td>
 <td>Return if the trigger concepts is satisfied.</td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="67%" />
-<col width="33%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -945,24 +813,9 @@ concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 <code class="descname">scope</code><a class="headerlink" href="#vikidm.units.agent.Agent.scope" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="vikidm.units.agent.Agent.set_state">
-<code class="descname">set_state</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#Agent.set_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.Agent.set_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="vikidm.units.agent.Agent.state">
-<code class="descname">state</code><a class="headerlink" href="#vikidm.units.agent.Agent.state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="attribute">
 <dt id="vikidm.units.agent.Agent.subject">
 <code class="descname">subject</code><a class="headerlink" href="#vikidm.units.agent.Agent.subject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="vikidm.units.agent.Agent.target_completed">
-<code class="descname">target_completed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#Agent.target_completed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.Agent.target_completed" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -985,8 +838,7 @@ concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 <dl class="class">
 <dt id="vikidm.units.agent.TargetAgent">
 <em class="property">class </em><code class="descclassname">vikidm.units.agent.</code><code class="descname">TargetAgent</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#TargetAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.TargetAgent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.units.agent.Agent" title="vikidm.units.agent.Agent"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.agent.Agent</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -1039,8 +891,11 @@ concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">reset_concepts</span></code>()</td>
 <td>Reset concepts when parent node(an Agency) is not in the stack.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">satisfied</span></code>()</td>
-<td>Return if the trigger concepts is satisfied.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#vikidm.units.agent.TargetAgent.satisfied" title="vikidm.units.agent.TargetAgent.satisfied"><code class="xref py py-obj docutils literal"><span class="pre">satisfied</span></code></a>()</td>
+<td>Return if the trigger concepts is satisfied and all target concepts filled.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#vikidm.units.agent.TargetAgent.target_completed" title="vikidm.units.agent.TargetAgent.target_completed"><code class="xref py py-obj docutils literal"><span class="pre">target_completed</span></code></a>()</td>
+<td>If all target concepts filled.</td>
 </tr>
 </tbody>
 </table>
@@ -1056,12 +911,6 @@ concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 <tr class="row-even"><td><strong>restore_topic_and_focus</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-odd"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
 </tbody>
 </table>
 <dl class="method">
@@ -1075,17 +924,24 @@ concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="vikidm.units.agent.TargetAgent.satisfied">
+<code class="descname">satisfied</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#TargetAgent.satisfied"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.TargetAgent.satisfied" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return if the trigger concepts is satisfied and
+all target concepts filled.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="vikidm.units.agent.TargetAgent.target_completed">
 <code class="descname">target_completed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#TargetAgent.target_completed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.TargetAgent.target_completed" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>If all target concepts filled.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="vikidm.units.agent.TriggerAgent">
 <em class="property">class </em><code class="descclassname">vikidm.units.agent.</code><code class="descname">TriggerAgent</code><span class="sig-paren">(</span><em>dm</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/agent.html#TriggerAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.agent.TriggerAgent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#vikidm.units.agent.Agent" title="vikidm.units.agent.Agent"><code class="xref py py-class docutils literal"><span class="pre">vikidm.units.agent.Agent</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -1155,12 +1011,6 @@ concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 <tr class="row-even"><td><strong>restore_topic_and_focus</strong></td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-odd"><td><strong>set_state</strong></td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td><strong>target_completed</strong></td>
-<td>&nbsp;</td>
-</tr>
 </tbody>
 </table>
 <dl class="method">
@@ -1181,8 +1031,7 @@ concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 <dl class="class">
 <dt id="vikidm.units.bizunit.BizUnit">
 <em class="property">class </em><code class="descclassname">vikidm.units.bizunit.</code><code class="descname">BizUnit</code><span class="sig-paren">(</span><em>dm</em>, <em>identifier</em>, <em>tag</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">treelib.node.Node</span></code></p>
-<p>Base class of all business dealing unit.</p>
+<dd><p>Base class of all business dealing unit.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1197,6 +1046,8 @@ concepts and the <cite>TriggerAgent</cite> give the desired response.</p>
 <dt><code class="xref py py-obj docutils literal"><span class="pre">identifier</span></code></dt>
 <dd><p class="first last">Return the value of <cite>_identifier</cite>.</p>
 </dd>
+<dt><strong>state</strong></dt>
+<dd></dd>
 <dt><code class="xref py py-obj docutils literal"><span class="pre">tag</span></code></dt>
 <dd><p class="first last">Return the value of <cite>_tag</cite>.</p>
 </dd>
@@ -1330,6 +1181,11 @@ same hierarchy path with previous focus.</p>
 <dd><p>Set unit state.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="vikidm.units.bizunit.BizUnit.state">
+<code class="descname">state</code><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="vikidm.units.bizunit.BizUnit.transferable">
 <code class="descname">transferable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#BizUnit.transferable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.BizUnit.transferable" title="Permalink to this definition">¶</a></dt>
@@ -1343,8 +1199,7 @@ a transferable focus state.</p>
 <dl class="class">
 <dt id="vikidm.units.bizunit.Topic">
 <em class="property">class </em><code class="descclassname">vikidm.units.bizunit.</code><code class="descname">Topic</code><a class="reference internal" href="../_modules/vikidm/units/bizunit.html#Topic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vikidm.units.bizunit.Topic" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
+<dd><p class="rubric">Methods</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="70%" />
@@ -1414,7 +1269,7 @@ a transferable focus state.</p>
         &copy; Copyright 2017, numpydoc maintainers.
       </li>
       <li>
-      Last updated on Aug 17, 2018.
+      Last updated on Aug 19, 2018.
       </li>
       <li>
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.

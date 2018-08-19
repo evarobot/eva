@@ -77,9 +77,13 @@ class BizUnit(treelib.Node):
         """
         raise NotImplementedError
 
+    @property
+    def state(self):
+        return self.data['state']
+
     def set_state(self, value):
         """ Set unit state. """
-        self.state = value
+        self.data['state'] = value
 
     def hierarchy_trigger(self):
         """ Activate and return the top ancestor node in the stack.
@@ -143,5 +147,5 @@ class Topic(object):
         return unit.is_ancestor_of(bizunit)
 
     def notify_switch_topic(self):
-        #self.reset_concepts()
+        # self.reset_concepts()
         pass

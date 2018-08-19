@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
+
 import json
 import logging
 from vikicommon.util import escape_unicode
@@ -62,9 +63,6 @@ class Agent(BizUnit):
     def _deserialize_target_concepts(self, data):
         for key in data['target_concepts']:
             yield Concept(key)
-
-    def target_completed(self):
-        return False
 
     @classmethod
     def get_agent(self, dm, tag, data):
@@ -164,13 +162,6 @@ class Agent(BizUnit):
     def target_concepts(self):
         return self._target_concepts
 
-    @property
-    def state(self):
-        return self.data['state']
-
-    def set_state(self, value):
-        self.data['state'] = value
-
     def __str__(self):
         return json.dumps(escape_unicode(self.data))
 
@@ -181,8 +172,18 @@ class TargetAgent(Agent):
         assert(self._trigger_concepts and self._target_concepts)
 
     def target_completed(self):
+        """
+        If all target concepts filled.
+        """
         return all([self._dm.context.dirty(c.key)
                     for c in self.target_concepts])
+
+    def satisfied(self):
+        """
+        Return if the trigger concepts is satisfied and
+        all target concepts filled.
+        """
+        return super(TargetAgent, self).satisfied() and self.target_completed()
 
     def restore_topic_and_focus(self):
         assert(self.state in [BizUnit.STATUS_WAIT_ACTION_CONFIRM,

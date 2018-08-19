@@ -91,10 +91,8 @@
 <span class="kn">from</span> <span class="nn">vikidm.biztree</span> <span class="kn">import</span> <span class="n">BizTree</span>
 <span class="kn">from</span> <span class="nn">vikidm.units</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Agent</span><span class="p">,</span>
-    <span class="n">Agency</span><span class="p">,</span>
     <span class="n">BizUnit</span><span class="p">,</span>
     <span class="n">TargetAgent</span><span class="p">,</span>
-    <span class="n">TriggerAgent</span><span class="p">,</span>
     <span class="n">TargetAgency</span><span class="p">,</span>
     <span class="n">ClusterAgency</span><span class="p">,</span>
     <span class="n">MixAgency</span><span class="p">,</span>
@@ -444,12 +442,8 @@
         <span class="k">for</span> <span class="n">bizunit</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agenda</span><span class="o">.</span><span class="n">visible_agents</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bizunit</span><span class="p">,</span> <span class="n">Agent</span><span class="p">):</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bizunit</span><span class="p">,</span> <span class="n">TriggerAgent</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">bizunit</span><span class="o">.</span><span class="n">satisfied</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">bizunit</span><span class="o">.</span><span class="n">satisfied</span><span class="p">():</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bizunit</span><span class="p">,</span> <span class="n">TargetAgent</span><span class="p">)</span> <span class="ow">and</span>\
-                   <span class="ow">not</span> <span class="p">(</span><span class="n">bizunit</span><span class="o">.</span><span class="n">satisfied</span><span class="p">()</span> <span class="ow">and</span> <span class="n">bizunit</span><span class="o">.</span><span class="n">target_completed</span><span class="p">()):</span>
-                    <span class="k">continue</span>
-
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Init Trigger: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bizunit</span><span class="p">))</span>
             <span class="n">new_focus</span> <span class="o">=</span> <span class="n">bizunit</span><span class="o">.</span><span class="n">hierarchy_trigger</span><span class="p">()</span>
             <span class="c"># 清理trigger到栈顶间的节点，假设的仍然是中间节点都是亲属关系。</span>
@@ -676,7 +670,7 @@
         &copy; Copyright 2017, numpydoc maintainers.
       </li>
       <li>
-      Last updated on Aug 17, 2018.
+      Last updated on Aug 19, 2018.
       </li>
       <li>
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.1.
