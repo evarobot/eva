@@ -45,7 +45,6 @@ class BizTree(treelib.Tree):
         json_tree : json, json tree data
 
         """
-
         self.add_subtree_from_json(json_tree, None, dm)
 
         def visit_tree(unit):
@@ -57,6 +56,7 @@ class BizTree(treelib.Tree):
     def _parse_node(self, dict_node, parent, dm):
         data = dict_node['data']
         tag = dict_node['data']['tag']
+        log.debug("parse node: [%s]" % data['tag'])
         if data["type"] in [Agency.TYPE_MIX, Agency.TYPE_TARGET,
                             Agency.TYPE_CLUSTER]:
             tr_node = Agency.get_agency(dm, tag, data)

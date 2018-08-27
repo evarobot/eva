@@ -42,7 +42,7 @@ class TestDM(object):
 
     def test_mix(self):
         dm_robot = self._create_robot()
-        dm = dm_robot._dialog
+        dm = dm_robot._dm
         dm.debug_timeunit = 0.2
         ret = dm_robot.process_question(u"不存在的问题")
         time.sleep((ConfigDM.input_timeout + 2) * dm.debug_timeunit)
@@ -51,6 +51,9 @@ class TestDM(object):
             Stack:
                 root(STATUS_STACKWAIT)''')
         ret = dm_robot.process_question(u"有什么旅游服务")
+        # 数据读取有问题！
+        import pdb
+        pdb.set_trace()
         assert(ret["nlu"]["intent"] == "travel.query")
         assert(ret["event_id"] == "travel.query:None")
         dm_robot.process_confirm(ret['sid'], {
@@ -97,6 +100,5 @@ class TestDM(object):
         dm_robot.process_confirm(ret['sid'], {
             'code': 0,
         })
-
 
         clear_intent_question(str(domain.pk))
