@@ -32,7 +32,7 @@ class DMRobot(object):
         Convert question to intent, slots, concepts with NLU.
         """
         question = question.strip(' \n')
-        ret = self.nlu.predict(self, question)
+        ret = self.nlu.predict(self.get_context(), question)
         concepts = [Concept("intent", ret["intent"])]
         for slot_name, value_name in ret["slots"].iteritems():
             concepts.append(Concept(slot_name, value_name))
@@ -81,14 +81,14 @@ class DMRobot(object):
                     "slots": {}
                 }
             }
-        ret = self._process_concepts(intent, slots, concepts)
+        ret = self._process_concepts(concepts)
         if intent == 'casual_talk':
             ret["action"] = {"tts": CasualTalk.get_tuling_answer(question)}
         ret["nlu"]["intent"] = intent
         ret["nlu"]["slots"] = slots
         return ret
 
-    def _process_concepts(self, intent, concepts):
+    def _process_concepts(self, concepts):
         sid = int(round(time.time() * 1000))
         dm_ret = self._dm.process_concepts(sid, concepts)
         if dm_ret is None:
@@ -108,6 +108,22 @@ class DMRobot(object):
                 "ask": dm_ret.get('target', ""),
             }
         }
+
+    def get_context(self):
+        """ Return context for NLU module.
+
+        Returns
+        -------
+        {
+            "visible_slots": list,
+
+            "visible_intents": list,
+
+            "agents": list
+        }
+
+        """
+        return self._dm.get_visible_units()
 
     def process_concepts(self, d_concepts):
         """ Process concepts input from device
