@@ -146,16 +146,16 @@ class ExpectAgenda(object):
         candicates.extend(self._visible_tree_agents)
 
         self.visible_intents = set()
-        concepts = []
+        slots = []
         for agent in candicates:
-            concepts.extend(agent.target_concepts)
-            concepts.extend(agent.trigger_concepts)
-            for concept in agent.trigger_concepts:
-                if concept.key == "intent":
-                    self.visible_intents.add(concept.value)
+            slots.extend(agent.target_slots)
+            slots.extend(agent.trigger_slots)
+            for slot in agent.trigger_slots:
+                if slot.key == "intent":
+                    self.visible_intents.add(slot.value)
 
-        #  TODO: valid_concepts
-        self.visible_slots = set([c.key for c in concepts])
+        #  TODO: valid_slots
+        self.visible_slots = set([c.key for c in slots])
         self.visible_slots.remove("intent")
         self.visible_agents = OrderedSet(candicates)
 
@@ -185,7 +185,8 @@ class ExpectAgenda(object):
                 agents.append(unit)
             elif isinstance(unit, MixAgency):
                 for child in unit.children:
-                    # @BUG ?
+                    # entrancable children of MixAgency node in the tree and
+                    # children of active MixAgency node.
                     if child.entrance or unit in self._stack.items:
                         visit_tree(child)
             else:
@@ -215,7 +216,7 @@ class DialogEngine(object):
     ----------
     SAFE_UPPER_LIMIT : 100, the maximum execution loop between two request, used
                       to recover from endless loop if there is a bug.
-    context : Context, maintaining the concept status of device.
+    context : Context, maintaining the slot status of device.
     stack : Stack, maintaining the active interaction history.
     _timer : TimerRest, Calling handle function when timeout.
     _agenda : ExpectAgenda, Manage the visiblility of bizunit.
@@ -269,9 +270,9 @@ class DialogEngine(object):
     def _init_context(self):
         for bizunit in self.biz_tree.all_nodes_itr():
             if isinstance(bizunit, Agent):
-                for concept in bizunit.trigger_concepts:
-                    concept = copy.deepcopy(concept)
-                    self.context.add_concept(concept)
+                for slot in bizunit.trigger_slots:
+                    slot = copy.deepcopy(slot)
+                    self.context.add_slot(slot)
 
     def execute_focus_agent(self):
         """
@@ -299,7 +300,7 @@ class DialogEngine(object):
     def _pop_focus_unit(self, to_pop_unit):
         self.stack.pop()
         to_pop_unit.set_state(BizUnit.STATUS_TREEWAIT)
-        to_pop_unit.reset_concepts()
+        to_pop_unit.reset_slots()
         log.debug("POP_STACK: {0}({1})".format(
             to_pop_unit.__class__.__name__, to_pop_unit.tag))
 
@@ -313,17 +314,17 @@ class DialogEngine(object):
             focus_unit.restore_focus_after_child_done()
         log.debug("STATUS: \n{0}\n{1}".format(self.stack, self.context))
 
-    def process_concepts(self, sid, concepts):
+    def process_slots(self, sid, slots):
         """ Process user inputs.
 
-        Dialogue text or events will be coverted to `Concept` list, as input
+        Dialogue text or events will be coverted to `Slot` list, as input
         of DialogEngine.
 
         Parameters
         ----------
-        sid : Dialog session. Every dialog contains a `process_concepts` and
+        sid : Dialog session. Every dialog contains a `process_slots` and
              `process_confirm` calling pair. `sid` is used to pairing two call.
-        concepts : [], `Concept` instance list.
+        slots : [], `Slot` instance list.
 
         Returns
         -------
@@ -331,14 +332,14 @@ class DialogEngine(object):
             'event_id': "id of event"
                         // Used to extract answer from db or event notifying.
 
-            'target': ['concept_key1', 'concept_key2', ..]
-                    // Tell the recommend system which concept to fill.
+            'target': ['slot_key1', 'slot_key2', ..]
+                    // Tell the recommend system which slot to fill.
         }
 
         """
         self.debug_loop = 0
         log.info("-------- {0} ----- {1} -------------------".format(
-            sid, concepts))
+            sid, slots))
         if self._session.new_session(sid) or self.is_waiting:
             if self._session.new_session(sid):
                 # Could be a remote error
@@ -347,7 +348,7 @@ class DialogEngine(object):
             log.debug("CANCEL_TIMER {0}({1})".format(
                 self._timer.owner.__class__.__name__, self._timer.owner.tag))
         self._session.begin_session(sid)
-        self._update_concepts(concepts)
+        self._update_slots(slots)
         self._mark_completed_bizunits()
         self._trigger_bizunit()
         ret = self.execute_focus_agent()
@@ -381,29 +382,29 @@ class DialogEngine(object):
             log.debug(self.stack)
             break
 
-    def _update_concepts(self, concepts):
+    def _update_slots(self, slots):
         # OPTIMIZE:  `get_visible_units` control the range of activation,
         # maybe checking here is not necessary.
         self._agenda.compute_visible_units()
-        visible_concepts = []
+        visible_slots = []
         for agent in self._agenda.visible_agents:
-            visible_concepts.extend(agent.target_concepts)
-            visible_concepts.extend(agent.trigger_concepts)
-        visible_slots = set([c.key for c in visible_concepts])
-        for concept in concepts:
-            if concept.key in visible_slots:
-                is_valid_intent = concept.key == "intent" and\
-                    concept.value in self._agenda.visible_intents
-                if is_valid_intent or concept.key != "intent":
-                    self.context.update_concept(concept.key, concept)
+            visible_slots.extend(agent.target_slots)
+            visible_slots.extend(agent.trigger_slots)
+        visible_slots = set([c.key for c in visible_slots])
+        for slot in slots:
+            if slot.key in visible_slots:
+                is_valid_intent = slot.key == "intent" and\
+                    slot.value in self._agenda.visible_intents
+                if is_valid_intent or slot.key != "intent":
+                    self.context.update_slot(slot.key, slot)
             else:
-                log.info("Invalid Concept: [{0}]".format(concept.key))
+                log.info("Invalid Slot: [{0}]".format(slot.key))
 
     def _mark_completed_bizunits(self):
         for bizunit in self.biz_tree.all_nodes_itr():
             if isinstance(bizunit, TargetAgent):
                 completed = all([self.context.dirty(c.key)
-                                 for c in bizunit.target_concepts])
+                                 for c in bizunit.target_slots])
                 if completed:
                     bizunit.set_state(BizUnit.STATUS_TARGET_COMPLETED)
 
@@ -415,7 +416,7 @@ class DialogEngine(object):
 
         Parameters
         ----------
-        sid : str, see `DialogEngine.process_concepts`
+        sid : str, see `DialogEngine.process_slots`
 
         data: dict, `{'code' : 0, 'message': ''}`
 
@@ -491,20 +492,20 @@ class DialogEngine(object):
         self._debug_timer_count -= 1
         self._timer.cancel()
 
-    def update_by_remote(self, concepts):
+    def update_by_remote(self, slots):
         """ Called directly by thirdparty service like recommendation system,
-        to update concepts.
+        to update slots.
 
         Parameters
         ----------
-        concepts : [], `Concept` instance list.
+        slots : [], `Slot` instance list.
 
         """
         focus_unit = self.stack.top()
         assert(isinstance(focus_unit.parent, TargetAgency))
         # @BUG Device may update DM before recommendation system.
-        focus_unit.parent.api_concept_keys = [c.key for c in concepts]
-        self._update_concepts(concepts)
+        focus_unit.parent.api_slot_keys = [c.key for c in slots]
+        self._update_slots(slots)
 
     def get_visible_units(self):
         """ Return visible units at the moment. """

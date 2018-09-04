@@ -2,7 +2,7 @@
 # encoding: utf-8
 import time
 
-from vikidm.context import Concept
+from vikidm.context import Slot
 from .prepare import construct_dm, INPUT_TIMEOUT
 
 
@@ -22,8 +22,8 @@ class TestTiemoutCase(object):
     '''
     def test_process_confirm_case_agent_timeout(self):
         dm = construct_dm()
-        dm.process_concepts("sid001", [
-            Concept('intent', 'name.query')
+        dm.process_slots("sid001", [
+            Slot('intent', 'name.query')
         ])
         assert(dm.is_waiting)
         time.sleep(INPUT_TIMEOUT * dm.debug_timeunit)
@@ -32,8 +32,8 @@ class TestTiemoutCase(object):
 
     def test_target_default_triggered_timeout(self):
         dm = construct_dm()
-        dm.process_concepts("sid001", [
-            Concept("intent", "weather.query")
+        dm.process_slots("sid001", [
+            Slot("intent", "weather.query")
         ])
         dm.process_confirm('sid001', {
             'code': 0,

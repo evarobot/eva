@@ -3,7 +3,7 @@
 
 from vikidm.units.bizunit import BizUnit
 from vikidm.config import ConfigDM
-from vikidm.context import Concept
+from vikidm.context import Slot
 import logging
 log = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ class Agency(BizUnit):
 
     Attributes
     ----------
-    api_concept_keys : [str], Concepts update with APIs by module like
+    api_slot_keys : [str], Slots update with APIs by module like
                                  recommendation system.
     children : [], Children BizUnit nodes.
     trigger_child : BizUnit, child that activate it.
@@ -31,7 +31,7 @@ class Agency(BizUnit):
         self._type = data['type']
         self._handler_finished = False
         self._trigger_child = None
-        self.api_concept_keys = []
+        self.api_slot_keys = []
 
     def __str__(self):
         return self.tag.encode('utf8')
@@ -56,21 +56,21 @@ class Agency(BizUnit):
         if not self.is_root() and self.state != BizUnit.STATUS_ABNORMAL:
             self.set_state(BizUnit.STATUS_TRIGGERED)
 
-    def reset_concepts(self):
+    def reset_slots(self):
         """
-        Reset concepts of descendant nodes, intent concept and API concepts.
+        Reset slots of descendant nodes, intent slot and API slots.
 
         Invoked when itself and parent is not in the stack.
         """
         if self.parent.is_root() or\
                 self.parent.state == BizUnit.STATUS_TREEWAIT:
             for child in self.children:
-                child.reset_concepts()
-        self._dm.context.reset_concept("intent")
-        for key in self.api_concept_keys:
-            self._dm.context.reset_concept(key)
-            log.info("RESET remote concept {0}".format(key))
-        self.api_concept_keys = []
+                child.reset_slots()
+        self._dm.context.reset_slot("intent")
+        for key in self.api_slot_keys:
+            self._dm.context.reset_slot(key)
+            log.info("RESET remote slot {0}".format(key))
+        self.api_slot_keys = []
 
     @property
     def trigger_child(self):
@@ -126,30 +126,30 @@ class TargetAgency(Agency):
     A local controller with children of type `TargetAgent` and `TriggerAgent`.
 
     The `TargetAgent` children will require user inputs to fill target
-    concepts and the `TriggerAgent` give the desired response.
+    slots and the `TriggerAgent` give the desired response.
 
     Attributes
     ----------
-    target_concepts : [Concept]
+    target_slots : [Slot]
     """
     def __init__(self, dm, tag, data):
         super(TargetAgency, self).__init__(dm, tag, data)
         self.event_id = ""
         self._timer = None
-        self._target_concepts = None
+        self._target_slots = None
 
     @property
-    def target_concepts(self):
-        """ Concepts to filled by `TargetAgent` children.  """
-        if self._target_concepts:
-            return self._target_concepts
-        concept_keys = set()
+    def target_slots(self):
+        """ Slots to filled by `TargetAgent` children.  """
+        if self._target_slots:
+            return self._target_slots
+        slot_keys = set()
         for child in self.children:
-            for c in child.target_concepts:
-                concept_keys.add(c.key)
-        self._target_concepts = set(
-            [Concept(key, None) for key in concept_keys])
-        return self._target_concepts
+            for c in child.target_slots:
+                slot_keys.add(c.key)
+        self._target_slots = set(
+            [Slot(key, None) for key in slot_keys])
+        return self._target_slots
 
     def restore_focus_after_child_done(self):
         """
@@ -198,7 +198,7 @@ class TargetAgency(Agency):
         else:
             #  TODO:  TEST
             # when swtiched back, context could be cleared by some unit share
-            # same concepts,  so none child could be triggered
+            # same slots,  so none child could be triggered
             self.set_state(BizUnit.STATUS_DELAY_EXIST)
             self._execute_condition.add(BizUnit.STATUS_DELAY_EXIST)
             log.info(self._dm.stack)
@@ -211,7 +211,7 @@ class TargetAgency(Agency):
                 return child
             elif self._is_default_node(child):
                 targets_clean = all([not self._dm.context.dirty(c.key)
-                                    for c in self.target_concepts])
+                                    for c in self.target_slots])
                 if targets_clean:
                     log.debug("WAIT_INPUT TargetAgency({0})".format(self.tag))
                     return child
@@ -223,14 +223,14 @@ class TargetAgency(Agency):
         return None
 
     def _is_default_node(self, bizunit):
-        return len(bizunit.target_concepts) == 0 and\
-            len(bizunit.trigger_concepts) == 1
+        return len(bizunit.target_slots) == 0 and\
+            len(bizunit.trigger_slots) == 1
 
     def _is_result_node(self, bizunit):
-        return len(bizunit.trigger_concepts) > 1
+        return len(bizunit.trigger_slots) > 1
 
     def _is_target_node(self, bizunit):
-        return len(bizunit.target_concepts) != 0
+        return len(bizunit.target_slots) != 0
 
 
 class MixAgency(Agency):

@@ -6,10 +6,10 @@
         "id": "FAILED|name.query",
         "subject": "主题",
         "scope": "可见域",
-        "trigger_concepts": [
+        "trigger_slots": [
             "state@axm=FAILED|name.query"
         ],
-        "target_concepts": [],
+        "target_slots": [],
         "timeout": "5"
     },
     "children": []

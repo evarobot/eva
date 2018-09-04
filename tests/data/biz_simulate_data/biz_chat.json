@@ -6,10 +6,10 @@
         "id": "casual_talk",
         "subject": "主题",
         "scope": "可见域",
-        "trigger_concepts": [
+        "trigger_slots": [
             "intent=casual_talk"
         ],
-        "target_concepts": [],
+        "target_slots": [],
         "timeout": "5",
         "type": "SIMPLE"
     },

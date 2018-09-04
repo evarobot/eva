@@ -12,7 +12,7 @@ from evecms.models import Domain
 log = logging.getLogger(__name__)
 
 
-@Route('/dm/robot/concepts/')
+@Route('/dm/robot/slots/')
 class DMHandler(RobotAPIHandler):
     """
     Methods
@@ -24,7 +24,7 @@ class DMHandler(RobotAPIHandler):
     def post(self):
         """
 
-        URL: /dm/robot/concepts/
+        URL: /dm/robot/slots/
 
         Parameters
         ----------
@@ -33,7 +33,7 @@ class DMHandler(RobotAPIHandler):
 
           "project": 项目名,
 
-           "concepts": {
+           "slots": {
               "XXX": "YYY"
             }
         }
@@ -82,7 +82,7 @@ class DMHandler(RobotAPIHandler):
         return self.write_json(ret)
 
 
-@Route('/dm/backend/concepts/')
+@Route('/dm/backend/slots/')
 class BackendConceptsHandler(RobotAPIHandler):
     """
     Methods
@@ -93,7 +93,7 @@ class BackendConceptsHandler(RobotAPIHandler):
     def post(self):
         """
 
-        URL: /dm/backend/concepts/
+        URL: /dm/backend/slots/
 
         Parameters
         ----------
@@ -102,7 +102,7 @@ class BackendConceptsHandler(RobotAPIHandler):
 
           "project": 项目名,
 
-           "concepts": {
+           "slots": {
               "XXX": "YYY"
             }
         }
@@ -147,7 +147,7 @@ class BackendConceptsHandler(RobotAPIHandler):
         log.info("[REQUEST: {0}]".format(self.data))
         domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
         robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
-        ret = robot.update_concepts_by_backend(self.data['concepts'])
+        ret = robot.update_slots_by_backend(self.data['slots'])
         return self.write_json(ret)
 
 

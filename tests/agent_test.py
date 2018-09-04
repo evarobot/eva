@@ -4,7 +4,7 @@ import os
 import time
 
 from vikidm.dm import DialogEngine, Stack
-from vikidm.context import Concept
+from vikidm.context import Slot
 from vikidm.biztree import Agent
 from .prepare import data_path, mock_cms_rpc, construct_dm, INPUT_TIMEOUT
 
@@ -32,21 +32,21 @@ def test_init_biz_from_db():
     # tree testing
     assert(len(dm.biz_tree.children('root')) == 1)
     assert(len(dm.biz_tree.children('where.query')) == 2)
-    assert(dm.biz_tree.get_node('zhou_hei_ya').trigger_concepts[0] in
-           ["Concept(intent=where.query)"])
+    assert(dm.biz_tree.get_node('zhou_hei_ya').trigger_slots[0] in
+           ["Slot(intent=where.query)"])
     for bizunit in dm.biz_tree.all_nodes_itr():
         if isinstance(bizunit, Agent):
-            for concept in bizunit.trigger_concepts:
-                assert(concept.value is not None)
+            for slot in bizunit.trigger_slots:
+                assert(slot.value is not None)
 
     # context testing
-    concepts = dm.context._all_concepts.values()
-    assert(str(concepts[0]) == "Concept(intent=None)")
-    assert(str(concepts[1]) == "Concept(location=None)")
+    slots = dm.context._all_slots.values()
+    assert(str(slots[0]) == "Slot(intent=None)")
+    assert(str(slots[1]) == "Slot(location=None)")
     assert(len(dm.stack) == 1)
     assert(dm.stack.top().tag == 'root')
-    for concept in dm.context._all_concepts.values():
-        assert(concept.value is None)
+    for slot in dm.context._all_slots.values():
+        assert(slot.value is None)
 
 
 class TestAgentCase(object):
@@ -66,8 +66,8 @@ class TestAgentCase(object):
 
     def test_name_input(self):
         dm = construct_dm()
-        dm.process_concepts("sid001", [
-            Concept('intent', 'name.query')
+        dm.process_slots("sid001", [
+            Slot('intent', 'name.query')
         ])
         assert(str(dm.stack) == '''
             Stack:
@@ -75,10 +75,10 @@ class TestAgentCase(object):
                 name.query(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=None)
-                Concept(date=None)
-                Concept(intent=name.query)
-                Concept(location=None)'''
+                Slot(city=None)
+                Slot(date=None)
+                Slot(intent=name.query)
+                Slot(location=None)'''
         )
         assert(dm._session.valid_session("sid001"))
         assert(dm.debug_loop == 1)
@@ -89,8 +89,8 @@ class TestAgentCase(object):
 
     def test_success_confirm(self):
         dm = construct_dm()
-        dm.process_concepts("sid001", [
-            Concept('intent', 'name.query')
+        dm.process_slots("sid001", [
+            Slot('intent', 'name.query')
         ])
         dm.process_confirm('sid001', {
             'code': 0,
@@ -103,8 +103,8 @@ class TestAgentCase(object):
 
     def test_failed_confirm(self):
         dm = construct_dm()
-        dm.process_concepts("sid001", [
-            Concept('intent', 'name.query')
+        dm.process_slots("sid001", [
+            Slot('intent', 'name.query')
         ])
         dm.process_confirm('sid001', {
             'code': -1,

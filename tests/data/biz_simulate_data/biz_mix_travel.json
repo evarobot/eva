@@ -16,10 +16,10 @@
             "entrance": true,
             "subject": "",
             "scope": "",
-            "trigger_concepts": [
+            "trigger_slots": [
                 "intent=travel.service"
             ],
-            "target_concepts": [],
+            "target_slots": [],
             "timeout": 5,
             "type": "TYPE_SIMPLE"
         },
@@ -33,10 +33,10 @@
             "entrance": false,
             "subject": "",
             "scope": "",
-            "trigger_concepts": [
+            "trigger_slots": [
                 "intent=consume.query"
             ],
-            "target_concepts": [],
+            "target_slots": [],
             "timeout": 5,
             "type": "TYPE_SIMPLE"
         },
@@ -50,10 +50,10 @@
             "entrance": false,
             "subject": "",
             "scope": "",
-            "trigger_concepts": [
+            "trigger_slots": [
                 "intent=left.query"
             ],
-            "target_concepts": [],
+            "target_slots": [],
             "timeout": 5,
             "type": "TYPE_SIMPLE"
         },
@@ -89,10 +89,10 @@
                     "event_id": "default@weather.query",
                     "subject": "",
                     "scope": "",
-                    "trigger_concepts": [
+                    "trigger_slots": [
                         "intent=weather.query"
                     ],
-                    "target_concepts": [],
+                    "target_slots": [],
                     "timeout": 5,
                     "type": "TYPE_TRIGGER_RESPONSE"
                 },
@@ -107,10 +107,10 @@
                     "event_id": "city",
                     "subject": "",
                     "scope": "",
-                    "trigger_concepts": [
+                    "trigger_slots": [
                         "intent=weather.query"
                     ],
-                    "target_concepts": [
+                    "target_slots": [
                         "city"
                     ],
                     "timeout": 5,
@@ -127,10 +127,10 @@
                     "event_id": "date",
                     "subject": "",
                     "scope": "",
-                    "trigger_concepts": [
+                    "trigger_slots": [
                         "intent=weather.query"
                     ],
-                    "target_concepts": [
+                    "target_slots": [
                         "date"
                     ],
                     "timeout": 5,
@@ -147,12 +147,12 @@
                     "event_id": "result",
                     "subject": "",
                     "scope": "",
-                    "trigger_concepts": [
+                    "trigger_slots": [
                         "intent=weather.query",
                         "date=@date",
                         "city=@city"
                     ],
-                    "target_concepts": [],
+                    "target_slots": [],
                     "timeout": 5,
                     "type": "TYPE_TRIGGER_RESPONSE"
                 },
@@ -177,11 +177,11 @@
                     "entrance": true,
                     "subject": "",
                     "scope": "",
-                    "trigger_concepts": [
+                    "trigger_slots": [
                         "intent=spots.query",
                         "city=@city"
                     ],
-                    "target_concepts": [],
+                    "target_slots": [],
                     "timeout": 5,
                     "type": "TYPE_CLUSTER_RESPONSE"
                 },

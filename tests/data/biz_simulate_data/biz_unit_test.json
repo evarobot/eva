@@ -15,11 +15,11 @@
                 "event_id": "nike",
                 "subject": "",
                 "scope": "",
-                "trigger_concepts": [
+                "trigger_slots": [
                     "intent=where.query",
                     "location=nike"
                 ],
-                "target_concepts": [
+                "target_slots": [
                 ],
                 "timeout": 5,
                 "type": "TYPE_CLUSTER_RESPONSE"
@@ -35,11 +35,11 @@
                 "event_id": "zhou_hei_ya",
                 "subject": "",
                 "scope": "",
-                "trigger_concepts": [
+                "trigger_slots": [
                     "intent=where.query",
                     "location=adidas"
                 ],
-                "target_concepts": [
+                "target_slots": [
                 ],
                 "timeout": 5,
                 "type": "TYPE_CLUSTER_RESPONSE"
