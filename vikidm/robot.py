@@ -2,7 +2,7 @@
 # encoding: utf-8
 import logging
 import time
-from vikidm.context import Concept
+from vikidm.context import Slot
 from vikidm.chat import CasualTalk
 from vikidm.dm import DialogEngine
 from evecms.models import Domain
@@ -19,7 +19,7 @@ class DMRobot(object):
 
     def __init__(self, robot_id, domain_id):
         self.domain_id = domain_id
-        self.domain_name = Domain.objects.with_id(domain_id).name
+        self.domain_name = Domain.query.get(domain_id).name
         self.robot_id = robot_id
         self._dm = DialogEngine()
         self._dm.init_from_db(self.domain_id)
@@ -29,18 +29,18 @@ class DMRobot(object):
 
     def _parse_question(self, question):
         """
-        Convert question to intent, slots, concepts with NLU.
+        Convert question to intent, slots, slots with NLU.
         """
         question = question.strip(' \n')
         ret = self.nlu.predict(self.get_context(), question)
-        concepts = [Concept("intent", ret["intent"])]
+        slots = [Slot("intent", ret["intent"])]
         for slot_name, value_name in ret["slots"].iteritems():
-            concepts.append(Concept(slot_name, value_name))
-        return ret["intent"], ret["slots"], concepts
+            slots.append(Slot(slot_name, value_name))
+        return ret["intent"], ret["slots"], slots
 
-    def _get_context_concepts(self, intent):
+    def _get_context_slots(self, intent):
         """
-        Return slots correspond to all dirty concepts in Context.
+        Return slots correspond to all dirty slots in Context.
         """
         slots = {}
         ret2 = cms_rpc.get_intent_slots_without_value(self.domain_id, intent)
@@ -56,7 +56,7 @@ class DMRobot(object):
     def process_question(self, question):
         """ Process question from device.
 
-        It will parse question to (`Intent`, Slots, Concepts) with NLU and
+        It will parse question to (`Intent`, Slots, Slots) with NLU and
         query database or call thirdparty service.
 
         Parameters
@@ -69,7 +69,7 @@ class DMRobot(object):
 
         """
         # if rpc, pass robot id
-        intent, slots, concepts = self._parse_question(question)
+        intent, d_slots, slots = self._parse_question(question)
         if intent in [None, "nonsense"]:
             return {
                 "code": 0,
@@ -81,29 +81,33 @@ class DMRobot(object):
                     "slots": {}
                 }
             }
-        ret = self._process_concepts(concepts)
+        ret = self._process_slots(slots)
         if intent == 'casual_talk':
-            ret["action"] = {"tts": CasualTalk.get_tuling_answer(question)}
-        ret["nlu"]["intent"] = intent
-        ret["nlu"]["slots"] = slots
+            # ret["action"] = {"tts": CasualTalk.get_tuling_answer(question)}
+            ret["action"] = {}
+        ret["nlu"] = {
+            "intent": intent,
+            "slots": d_slots
+        }
         return ret
 
-    def _process_concepts(self, concepts):
+    def _process_slots(self, slots):
         sid = int(round(time.time() * 1000))
-        dm_ret = self._dm.process_concepts(sid, concepts)
-        if dm_ret is None:
+        dm_ret = self._dm.process_slots(sid, slots)
+        if not dm_ret:
             return {
                 'code': -1,
                 'message': '对话管理无响应',
                 "sid": sid,
             }
-        action = cms_rpc.event_id_to_answer(self.domain_id,
-                                            dm_ret["event_id"])
+        ret = cms_rpc.event_id_to_answer(self.domain_id, dm_ret["event_id"])
+        if ret["code"] != 0:
+            return ret
         return {
             "code": 0,
             "sid": sid,
             "event_id": dm_ret["event_id"],
-            "action": action,
+            "action": ret["answer"],
             "nlu": {
                 "ask": dm_ret.get('target', ""),
             }
@@ -125,26 +129,26 @@ class DMRobot(object):
         """
         return self._dm.get_visible_units()
 
-    def process_concepts(self, d_concepts):
-        """ Process concepts input from device
+    def process_slots(self, d_slots):
+        """ Process slots input from device
 
         Parameters
         ----------
-        d_concepts : dict, concepts with diction format.
+        d_slots : dict, slots with diction format.
 
         Returns
         -------
         dict.
 
         """
-        concepts = [Concept(key, value)
-                    for key, value in d_concepts.iteritems()]
-        return self._process_concepts(concepts)
+        slots = [Slot(key, value)
+                    for key, value in d_slots.iteritems()]
+        return self._process_slots(slots)
 
     def process_event(self, event_id):
         """ Process event from device.
 
-        System will convert event to `Concepts`
+        System will convert event to `Slots`
 
         Parameters
         ----------
@@ -184,12 +188,12 @@ class DMRobot(object):
         """
         return self._dm.process_confirm(sid, d_confirm)
 
-    def update_concepts_by_backend(self, d_concepts):
+    def update_slots_by_backend(self, d_slots):
         """ Update by business service.
 
         Parameters
         ----------
-        d_concepts : dict, dict of concepts.
+        d_slots : dict, dict of slots.
 
         Returns
         -------
@@ -199,9 +203,9 @@ class DMRobot(object):
         }
 
         """
-        concepts = [Concept(key, value)
-                    for key, value in d_concepts.iteritems()]
-        self._dm.update_by_remote(concepts)
+        slots = [Slot(key, value)
+                    for key, value in d_slots.iteritems()]
+        self._dm.update_by_remote(slots)
         log.info(self._dm.context)
         return {
             "code": 0,

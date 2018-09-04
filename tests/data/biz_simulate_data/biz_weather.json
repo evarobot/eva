@@ -15,10 +15,10 @@
 				"event_id": "default@weather.query",
 				"subject": "",
 				"scope": "",
-				"trigger_concepts": [
+				"trigger_slots": [
 					"intent=weather.query"
 				],
-				"target_concepts": [
+				"target_slots": [
 				],
 				"timeout": 5,
 				"type": "TYPE_TRIGGER_RESPONSE"
@@ -34,10 +34,10 @@
 				"event_id": "city",
 				"subject": "",
 				"scope": "",
-				"trigger_concepts": [
+				"trigger_slots": [
 					"intent=weather.query"
 				],
-				"target_concepts": [
+				"target_slots": [
 					"city"
 				],
 				"timeout": 5,
@@ -54,10 +54,10 @@
 				"event_id": "date",
 				"subject": "",
 				"scope": "",
-				"trigger_concepts": [
+				"trigger_slots": [
 					"intent=weather.query"
 				],
-				"target_concepts": [
+				"target_slots": [
 					"date"
 				],
 				"timeout": 5,
@@ -74,12 +74,12 @@
 				"event_id": "result",
 				"subject": "",
 				"scope": "",
-				"trigger_concepts": [
+				"trigger_slots": [
 					"intent=weather.query",
 					"date=@date",
 					"city=@city"
 				],
-				"target_concepts": [],
+				"target_slots": [],
 				"timeout": 5,
 				"type": "TYPE_TRIGGER_RESPONSE"
 			},

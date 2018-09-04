@@ -15,11 +15,11 @@
                 "event_id": "intent=where.query:location=耐克",
                 "subject": "",
                 "scope": "",
-                "trigger_concepts": [
+                "trigger_slots": [
                     "intent=where.query",
                     "location=nike"
                 ],
-                "target_concepts": [
+                "target_slots": [
                 ],
                 "timeout": 5,
                 "type": "TYPE_CLUSTER_RESPONSE"
@@ -35,11 +35,11 @@
                 "id": "intent=where.query:location=海底捞",
                 "subject": "",
                 "scope": "",
-                "trigger_concepts": [
+                "trigger_slots": [
                     "intent=where.query",
                     "location=海底捞"
                 ],
-                "target_concepts": [
+                "target_slots": [
                 ],
                 "timeout": "5",
                 "type": "TYPE_CLUSTER_RESPONSE"

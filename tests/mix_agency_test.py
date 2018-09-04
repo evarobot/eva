@@ -2,7 +2,7 @@
 # encoding: utf-8
 import os
 import time
-from vikidm.context import Concept
+from vikidm.context import Slot
 from vikidm.dm import DialogEngine
 from .prepare import data_path, mock_cms_rpc
 
@@ -47,8 +47,8 @@ class TestMixAgency(object):
 
     def test_multi_entrance(self):
         dm = self._construct_dm()
-        dm.process_concepts("sid002", [
-            Concept("intent", "weather.query"),
+        dm.process_slots("sid002", [
+            Slot("intent", "weather.query"),
         ])
         assert(str(dm.stack) == '''
             Stack:
@@ -61,8 +61,8 @@ class TestMixAgency(object):
 
     def test_mix_trigger(self):
         dm = self._construct_dm()
-        dm.process_concepts("sid001", [
-            Concept("intent", "consume.query"),
+        dm.process_slots("sid001", [
+            Slot("intent", "consume.query"),
         ])
         assert(dm.is_waiting == False)
         assert(str(dm.stack) == '''
@@ -70,10 +70,10 @@ class TestMixAgency(object):
                 root(STATUS_STACKWAIT)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=None)
-                Concept(date=None)
-                Concept(intent=None)
-                Concept(location=None)'''
+                Slot(city=None)
+                Slot(date=None)
+                Slot(intent=None)
+                Slot(location=None)'''
         )
 
         # 2
@@ -85,8 +85,8 @@ class TestMixAgency(object):
             u'nike', u'zhou_hei_ya', u'name.query'
         ])
         assert(set(context["visible_slots"]) == set(["date", "city", "location"]))
-        dm.process_concepts("sid002", [
-            Concept("intent", "travel.service"),
+        dm.process_slots("sid002", [
+            Slot("intent", "travel.service"),
         ])
         context = dm.get_visible_units()
         priority_nodes = [agent[0] for agent in context["agents"]]
@@ -104,10 +104,10 @@ class TestMixAgency(object):
                 travel.service(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=None)
-                Concept(date=None)
-                Concept(intent=travel.service)
-                Concept(location=None)'''
+                Slot(city=None)
+                Slot(date=None)
+                Slot(intent=travel.service)
+                Slot(location=None)'''
         )
         dm.process_confirm('sid002', {
             'code': 0,
@@ -118,13 +118,13 @@ class TestMixAgency(object):
                 Mix(Mix(weather.query))(STATUS_DELAY_EXIST)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=None)
-                Concept(date=None)
-                Concept(intent=None)
-                Concept(location=None)'''
+                Slot(city=None)
+                Slot(date=None)
+                Slot(intent=None)
+                Slot(location=None)'''
         )
-        dm.process_concepts("sid003", [
-            Concept("intent", "consume.query"),
+        dm.process_slots("sid003", [
+            Slot("intent", "consume.query"),
         ])
         # test ExpectAgenda
         assert(str(dm._agenda) == '''
@@ -149,20 +149,20 @@ class TestMixAgency(object):
                 travel_consume.query(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=None)
-                Concept(date=None)
-                Concept(intent=consume.query)
-                Concept(location=None)'''
+                Slot(city=None)
+                Slot(date=None)
+                Slot(intent=consume.query)
+                Slot(location=None)'''
         )
         assert(dm.is_waiting == True)
         # 3
         dm.process_confirm('sid003', {
             'code': 0,
         })
-        dm.process_concepts('sid004', [
-            Concept("intent", "weather.query"),
-            Concept("date", "明天"),
-            Concept("city", "深圳")
+        dm.process_slots('sid004', [
+            Slot("intent", "weather.query"),
+            Slot("date", "明天"),
+            Slot("city", "深圳")
         ])
         assert(str(dm.stack) == '''
             Stack:
@@ -173,10 +173,10 @@ class TestMixAgency(object):
                 result(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=深圳)
-                Concept(date=明天)
-                Concept(intent=weather.query)
-                Concept(location=None)'''
+                Slot(city=深圳)
+                Slot(date=明天)
+                Slot(intent=weather.query)
+                Slot(location=None)'''
         )
         context = dm.get_visible_units()
         priority_nodes = [agent[0] for agent in context["agents"]]
@@ -191,25 +191,25 @@ class TestMixAgency(object):
 
     def mix_trigger(self):
         dm = self._construct_dm()
-        dm.process_concepts("sid001", [
-            Concept("intent", "consume.query"),
+        dm.process_slots("sid001", [
+            Slot("intent", "consume.query"),
         ])
-        dm.process_concepts("sid002", [
-            Concept("intent", "travel.service"),
+        dm.process_slots("sid002", [
+            Slot("intent", "travel.service"),
         ])
         dm.process_confirm('sid002', {
             'code': 0,
         })
-        dm.process_concepts("sid003", [
-            Concept("intent", "consume.query"),
+        dm.process_slots("sid003", [
+            Slot("intent", "consume.query"),
         ])
         dm.process_confirm('sid003', {
             'code': 0,
         })
-        dm.process_concepts('sid004', [
-            Concept("intent", "weather.query"),
-            Concept("date", "明天"),
-            Concept("city", "深圳")
+        dm.process_slots('sid004', [
+            Slot("intent", "weather.query"),
+            Slot("date", "明天"),
+            Slot("city", "深圳")
         ])
         return dm
 
@@ -232,13 +232,13 @@ class TestMixAgency(object):
                 Mix(weather.query)(STATUS_DELAY_EXIST)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=深圳)
-                Concept(date=明天)
-                Concept(intent=None)
-                Concept(location=None)'''
+                Slot(city=深圳)
+                Slot(date=明天)
+                Slot(intent=None)
+                Slot(location=None)'''
         )
-        dm.process_concepts("sid005", [
-            Concept("intent", "spots.query"),
+        dm.process_slots("sid005", [
+            Slot("intent", "spots.query"),
         ])
         assert(str(dm.stack) == '''
             Stack:

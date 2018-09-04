@@ -147,5 +147,5 @@ class Topic(object):
         return unit.is_ancestor_of(bizunit)
 
     def notify_switch_topic(self):
-        # self.reset_concepts()
+        # self.reset_slots()
         pass

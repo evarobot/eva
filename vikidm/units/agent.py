@@ -5,7 +5,7 @@ import json
 import logging
 from vikicommon.util import escape_unicode
 from vikidm.units.bizunit import BizUnit
-from vikidm.context import Concept
+from vikidm.context import Slot
 from vikidm.config import ConfigDM
 from .agency import MixAgency
 
@@ -26,8 +26,8 @@ class Agent(BizUnit):
     entrance : boolean, If the agent could trigger an ancestor node of
                type MixAgency.
     state : The state of agent.
-    trigger_concepts : dict, Concepts that could trigger the agent.
-    target_concepts : list, Concepts that the agent will fill.
+    trigger_slots : dict, Slots that could trigger the agent.
+    target_slots : list, Slots that the agent will fill.
 
     """
 
@@ -40,29 +40,29 @@ class Agent(BizUnit):
                 'timeout': float(data['timeout']),
                 'entrance': data['entrance'],
                 'state': BizUnit.STATUS_TREEWAIT,
-                'trigger_concepts': data['trigger_concepts'],
-                'target_concepts': data['target_concepts']
+                'trigger_slots': data['trigger_slots'],
+                'target_slots': data['target_slots']
             }
         except KeyError as e:
             log.error(data)
             raise e
-        self._trigger_concepts = list(
-            self._deserialize_trigger_concepts(filtered_data))
-        self._target_concepts = list(
-            self._deserialize_target_concepts(filtered_data))
+        self._trigger_slots = list(
+            self._deserialize_trigger_slots(filtered_data))
+        self._target_slots = list(
+            self._deserialize_target_slots(filtered_data))
         self.children = []
         super(Agent, self).__init__(dm, data["id"], tag, filtered_data)
 
-    def _deserialize_trigger_concepts(self, data):
-        for kv in data['trigger_concepts']:
+    def _deserialize_trigger_slots(self, data):
+        for kv in data['trigger_slots']:
             split_index = kv.find('=')
             key = kv[0: split_index]
             value = kv[split_index + 1:]
-            yield Concept(key, value)
+            yield Slot(key, value)
 
-    def _deserialize_target_concepts(self, data):
-        for key in data['target_concepts']:
-            yield Concept(key)
+    def _deserialize_target_slots(self, data):
+        for key in data['target_slots']:
+            yield Slot(key)
 
     @classmethod
     def get_agent(self, dm, tag, data):
@@ -75,9 +75,9 @@ class Agent(BizUnit):
         data : dict.
 
         """
-        if data["target_concepts"] != []:
+        if data["target_slots"] != []:
             return TargetAgent(dm, tag, data)
-        elif data["trigger_concepts"] != []:
+        elif data["trigger_slots"] != []:
             return TriggerAgent(dm, tag, data)
         assert(False)
 
@@ -87,33 +87,35 @@ class Agent(BizUnit):
         """
         self.set_state(BizUnit.STATUS_ACTION_COMPLETED)
 
-    def reset_concepts(self):
+    def reset_slots(self):
         """
-        Reset concepts when parent node(an Agency) is not in the stack.
+        Reset slots when parent node(an Agency) is not in the stack.
         """
         if self.parent.is_root() or\
                 self.parent.state == BizUnit.STATUS_TREEWAIT:
-            for concept in self.trigger_concepts + self.target_concepts:
-                if concept.life_type == Concept.LIFE_STACK:
-                    self._dm.context.reset_concept(concept.key)
-                    log.debug("RESET_CONCEPT [{0}]".format(concept.key))
+            for slot in self.trigger_slots + self.target_slots:
+                if slot.life_type == Slot.LIFE_STACK:
+                    self._dm.context.reset_slot(slot.key)
+                    log.debug("RESET_CONCEPT [{0}]".format(slot.key))
 
     def satisfied(self):
         """
-        Return if the trigger concepts is satisfied.
+        Return if the trigger slots is satisfied.
         """
         return all(
-            [self._dm.context.satisfied(c)for c in self.trigger_concepts])
+            [self._dm.context.satisfied(c)for c in self.trigger_slots])
 
     @property
     def intent(self):
         if hasattr(self, "_intent"):
             return self._intent
-        for concept in self.trigger_concepts:
-            if concept.key == "intent":
-                self._intent = concept.value
+        for slot in self.trigger_slots:
+            if slot.key == "intent":
+                self._intent = slot.value
                 return self._intent
-        if self.trigger_concepts:
+        import pdb
+        pdb.set_trace()
+        if self.trigger_slots:
             assert(False)
         #  TODO:  <14-08-18, yourname> #
         assert(False)
@@ -155,12 +157,12 @@ class Agent(BizUnit):
         return self.data['entrance']
 
     @property
-    def trigger_concepts(self):
-        return self._trigger_concepts
+    def trigger_slots(self):
+        return self._trigger_slots
 
     @property
-    def target_concepts(self):
-        return self._target_concepts
+    def target_slots(self):
+        return self._target_slots
 
     def __str__(self):
         return json.dumps(escape_unicode(self.data))
@@ -169,19 +171,19 @@ class Agent(BizUnit):
 class TargetAgent(Agent):
     def __init__(self, dm, tag, data):
         super(TargetAgent, self).__init__(dm, tag, data)
-        assert(self._trigger_concepts and self._target_concepts)
+        assert(self._trigger_slots and self._target_slots)
 
     def target_completed(self):
         """
-        If all target concepts filled.
+        If all target slots filled.
         """
         return all([self._dm.context.dirty(c.key)
-                    for c in self.target_concepts])
+                    for c in self.target_slots])
 
     def satisfied(self):
         """
-        Return if the trigger concepts is satisfied and
-        all target concepts filled.
+        Return if the trigger slots is satisfied and
+        all target slots filled.
         """
         return super(TargetAgent, self).satisfied() and self.target_completed()
 
@@ -211,10 +213,10 @@ class TargetAgent(Agent):
                 self, ConfigDM.input_timeout, self._dm.on_inputwait_timeout)
             log.debug("START_INPUT_TIMER TargetAgent({0})".format(self.tag))
             self._execute_condition.remove(BizUnit.STATUS_WAIT_TARGET)
-        assert(len(self.target_concepts) <= 1)
+        assert(len(self.target_slots) <= 1)
         return {
             'event_id': self.event_id,
-            'target': [self.target_concepts[0].key]
+            'target': [self.target_slots[0].key]
         }
 
     def on_confirm(self):
@@ -227,7 +229,7 @@ class TargetAgent(Agent):
 class TriggerAgent(Agent):
     def __init__(self, dm, tag, data):
         super(TriggerAgent, self).__init__(dm, tag, data)
-        assert(self._trigger_concepts)
+        assert(self._trigger_slots)
 
     def restore_topic_and_focus(self):
         assert(self.state == BizUnit.STATUS_WAIT_ACTION_CONFIRM)
@@ -243,7 +245,7 @@ class TriggerAgent(Agent):
             log.debug("START_ACTION_TIMER TriggerAgent({0})".format(self.tag))
         return {'event_id': self.event_id, 'target': []}
 
-    def reset_concepts(self):
-        super(TriggerAgent, self).reset_concepts()
+    def reset_slots(self):
+        super(TriggerAgent, self).reset_slots()
         if isinstance(self.parent, MixAgency):
-            self._dm.context.reset_concept("intent")
+            self._dm.context.reset_slot("intent")

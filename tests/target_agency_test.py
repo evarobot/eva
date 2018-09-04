@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import time
-from vikidm.context import Concept
+from vikidm.context import Slot
 from .prepare import construct_dm, INPUT_TIMEOUT
 
 
@@ -22,7 +22,7 @@ class TestTargetAgencyCase(object):
 
     def test_default_triggered(self):
         dm = construct_dm()
-        dm.process_concepts("sid001", [Concept("intent", "weather.query")])
+        dm.process_slots("sid001", [Slot("intent", "weather.query")])
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
@@ -30,10 +30,10 @@ class TestTargetAgencyCase(object):
                 default@weather.query(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=None)
-                Concept(date=None)
-                Concept(intent=weather.query)
-                Concept(location=None)'''
+                Slot(city=None)
+                Slot(date=None)
+                Slot(intent=weather.query)
+                Slot(location=None)'''
         )
         assert(dm.debug_loop == 2)
         assert(dm.is_waiting == True)
@@ -42,7 +42,7 @@ class TestTargetAgencyCase(object):
     def test_default_then_result(self):
         # default triggered
         dm = construct_dm()
-        dm.process_concepts("sid001", [Concept("intent", "weather.query")])
+        dm.process_slots("sid001", [Slot("intent", "weather.query")])
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
@@ -58,17 +58,17 @@ class TestTargetAgencyCase(object):
                 weather.query(STATUS_WAIT_TARGET)''')
 
         # result triggered
-        dm.process_concepts("sid002", [
-            Concept('intent', 'weather.query'),
-            Concept('city', '深圳'),
-            Concept('date', '今天')
+        dm.process_slots("sid002", [
+            Slot('intent', 'weather.query'),
+            Slot('city', '深圳'),
+            Slot('date', '今天')
         ])
         assert(str(dm.context) == '''
             Context:
-                Concept(city=深圳)
-                Concept(date=今天)
-                Concept(intent=weather.query)
-                Concept(location=None)'''
+                Slot(city=深圳)
+                Slot(date=今天)
+                Slot(intent=weather.query)
+                Slot(location=None)'''
         )
         assert(str(dm.stack) == '''
             Stack:
@@ -86,9 +86,9 @@ class TestTargetAgencyCase(object):
         assert(dm.is_waiting == True)
 
         # context preserve
-        dm.process_concepts("sid003", [
-            Concept('intent', 'weather.query'),
-            Concept('city', '北京'),
+        dm.process_slots("sid003", [
+            Slot('intent', 'weather.query'),
+            Slot('city', '北京'),
         ])
         assert(str(dm.stack) == '''
             Stack:
@@ -97,10 +97,10 @@ class TestTargetAgencyCase(object):
                 result(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=北京)
-                Concept(date=今天)
-                Concept(intent=weather.query)
-                Concept(location=None)'''
+                Slot(city=北京)
+                Slot(date=今天)
+                Slot(intent=weather.query)
+                Slot(location=None)'''
         )
         dm.process_confirm('sid003', {
             'code': 0,
@@ -119,26 +119,26 @@ class TestTargetAgencyCase(object):
                 root(STATUS_STACKWAIT)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=None)
-                Concept(date=None)
-                Concept(intent=None)
-                Concept(location=None)'''
+                Slot(city=None)
+                Slot(date=None)
+                Slot(intent=None)
+                Slot(location=None)'''
         )
         assert(dm.is_waiting == False)
 
     def test_target_complete(self):
         # incomplete input
         dm = construct_dm()
-        dm.process_concepts("sid001", [
-            Concept("intent", "weather.query"),
-            Concept("city", "深圳")
+        dm.process_slots("sid001", [
+            Slot("intent", "weather.query"),
+            Slot("city", "深圳")
         ])
         assert(str(dm.context) == '''
             Context:
-                Concept(city=深圳)
-                Concept(date=None)
-                Concept(intent=weather.query)
-                Concept(location=None)'''
+                Slot(city=深圳)
+                Slot(date=None)
+                Slot(intent=weather.query)
+                Slot(location=None)'''
         )
         assert(str(dm.stack) == '''
             Stack:
@@ -158,9 +158,9 @@ class TestTargetAgencyCase(object):
         assert(dm.is_waiting == True)
 
         # target complete
-        dm.process_concepts("sid002", [
-            Concept("date", "今天"),
-            Concept("intent", "weather.query")
+        dm.process_slots("sid002", [
+            Slot("date", "今天"),
+            Slot("intent", "weather.query")
         ])
         assert(str(dm.stack) == '''
             Stack:
@@ -169,9 +169,9 @@ class TestTargetAgencyCase(object):
                 result(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=深圳)
-                Concept(date=今天)
-                Concept(intent=weather.query)
-                Concept(location=None)''')
+                Slot(city=深圳)
+                Slot(date=今天)
+                Slot(intent=weather.query)
+                Slot(location=None)''')
         assert(dm.is_waiting == True)
         dm._cancel_timer()

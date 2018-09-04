@@ -28,14 +28,14 @@ class AbnormalHandler(BizUnit):
 
     def __init__(self, dm, bizunit, type_):
         data = {
-            'trigger_concepts': []
+            'trigger_slots': []
         }
         super(AbnormalHandler, self).__init__(dm, 'AbnormalHandler',
                                               'AbnormalHandler', data)
         self.set_state(BizUnit.STATUS_TRIGGERED)
         self.parent = None
-        self.target_concepts = []
-        self.trigger_concepts = []
+        self.target_slots = []
+        self.trigger_slots = []
         self.handler = self._get_handler(bizunit, type_)
         self.handler.parent = self
         self._child_activated = False
@@ -92,13 +92,13 @@ class DefaultHandlerAgent(Agent):
             'scope': '',
             'timeout': 0,  #
             'entrance': False,
-            'trigger_concepts': {},
+            'trigger_slots': {},
             'state': '',
             'id': 'default_handler',
-            'target_concepts': [],
+            'target_slots': [],
         })
-        self._trigger_concepts = []
-        self._target_concepts = []
+        self._trigger_slots = []
+        self._target_slots = []
         super(DefaultHandlerAgent, self).__init__(dm, data["id"], data)
 
     def _execute(self):

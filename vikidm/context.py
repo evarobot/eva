@@ -5,7 +5,7 @@ from json import JSONEncoder
 log = logging.getLogger(__name__)
 
 
-class Concept(JSONEncoder):
+class Slot(JSONEncoder):
     """
     概念类，包含键值对。
     """
@@ -38,7 +38,7 @@ class Concept(JSONEncoder):
         return self.value is not None
 
     def __unicode__(self):
-        return u"Concept({0}={1})".format(self.key, self.value)
+        return u"Slot({0}={1})".format(self.key, self.value)
 
     def __str__(self):
         return unicode(self).encode('utf8')
@@ -61,96 +61,96 @@ class Concept(JSONEncoder):
 
 class Context(object):
     """ System have one context instance,
-    which is used to manage a set of concepts(Memory).
+    which is used to manage a set of slots(Memory).
 
     Attributes
     ----------
-    _all_concepts : dict, {"key1": concept1, "key2": concept2}
+    _all_slots : dict, {"key1": slot1, "key2": slot2}
 
     """
 
     def __init__(self):
-        self._all_concepts = {}
+        self._all_slots = {}
 
-    def add_concept(self, concept):
-        """ Add one concept instance to memory.
-
-        Parameters
-        ----------
-        concept : Concept, Concept instance
-
-        """
-        concept.value = None
-        self._all_concepts[concept.key] = concept
-
-    def update_concept(self, key, concept):
-        """ Update specific concept.
+    def add_slot(self, slot):
+        """ Add one slot instance to memory.
 
         Parameters
         ----------
-
-        key : str, key of target concept.
-        concept : Concept, Concept instance.
+        slot : Slot, Slot instance
 
         """
-        assert(key == concept.key)
-        if key not in self._all_concepts:
+        slot.value = None
+        self._all_slots[slot.key] = slot
+
+    def update_slot(self, key, slot):
+        """ Update specific slot.
+
+        Parameters
+        ----------
+
+        key : str, key of target slot.
+        slot : Slot, Slot instance.
+
+        """
+        assert(key == slot.key)
+        if key not in self._all_slots:
             log.error("不存在概念{0}".format(key))
             return
-        self._all_concepts[key] = concept
+        self._all_slots[key] = slot
 
-    def reset_concept(self, key):
-        """ Set specific concept with `None` value.
+    def reset_slot(self, key):
+        """ Set specific slot with `None` value.
 
         Parameters
         ----------
-        key : str, used to identify concept.
+        key : str, used to identify slot.
 
         """
-        concept = self._all_concepts.get(key, None)
-        if concept:
-            concept.value = None
+        slot = self._all_slots.get(key, None)
+        if slot:
+            slot.value = None
             return
         log.error("不存在概念{0}".format(key))
 
-    def get_concept(self, key):
-        """ Get specific concept by string key.
+    def get_slot(self, key):
+        """ Get specific slot by string key.
 
         Parameters
         ----------
-        key : str, used to identify concept.
+        key : str, used to identify slot.
 
         """
-        return self._all_concepts[key]
+        return self._all_slots[key]
 
     def __getitem__(self, key):
-        return self._all_concepts[key]
+        return self._all_slots[key]
 
-    def satisfied(self, concept):
-        """ Check if memory have a concept equal to target concept.
+    def satisfied(self, slot):
+        """ Check if memory have a slot equal to target slot.
 
         Parameters
         ----------
-        concept: Concept, target comparing concept.
+        slot: Slot, target comparing slot.
 
         """
-        target = self._all_concepts.get(concept.key, None)
+        target = self._all_slots.get(slot.key, None)
         if target is None:
             return False
-        if target.dirty and concept.value.startswith("@") or\
-                target == concept:
+        if target.dirty and slot.value.startswith("@") or\
+                target == slot:
             return True
         return False
 
     def dirty(self, key):
-        """ Check if value of specific concept is asigned.
+        """ Check if value of specific slot is asigned.
 
         Parameters
         ----------
-        key : str, key of specific concept.
+        key : str, key of specific slot.
 
         """
-        target = self._all_concepts.get(key, None)
+        target = self._all_slots.get(key, None)
         if target and target.dirty:
             return True
         if target is None:
@@ -158,11 +158,11 @@ class Context(object):
         return False
 
     def __str__(self):
-        concepts = []
-        for key in sorted(self._all_concepts.iterkeys()):
-            concepts.append(self._all_concepts[key])
+        slots = []
+        for key in sorted(self._all_slots.iterkeys()):
+            slots.append(self._all_slots[key])
         return "\n                ".join(["\n            Context:"] +
-                                         [str(c) for c in concepts])
+                                         [str(c) for c in slots])
 
     def __repr__(self):
         return self.__str__()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
-from vikidm.context import Concept
+from vikidm.context import Slot
 from .prepare import construct_dm
 
 
@@ -21,9 +21,9 @@ class TestClusterAgencyCase(object):
 
     def test_location_input(self):
         dm = construct_dm()
-        dm.process_concepts("sid001", [
-            Concept("intent", "where.query"),
-            Concept("location", "nike")
+        dm.process_slots("sid001", [
+            Slot("intent", "where.query"),
+            Slot("location", "nike")
         ])
         assert(str(dm.stack) == '''
             Stack:
@@ -33,10 +33,10 @@ class TestClusterAgencyCase(object):
 
         assert(str(dm.context) == '''
             Context:
-                Concept(city=None)
-                Concept(date=None)
-                Concept(intent=where.query)
-                Concept(location=nike)'''
+                Slot(city=None)
+                Slot(date=None)
+                Slot(intent=where.query)
+                Slot(location=nike)'''
         )
         assert(dm.debug_loop == 2)
         assert(dm.is_waiting == True)
@@ -44,9 +44,9 @@ class TestClusterAgencyCase(object):
 
     def test_success_confirm(self):
         dm = construct_dm()
-        dm.process_concepts("sid001", [
-            Concept("intent", "where.query"),
-            Concept("location", "nike")
+        dm.process_slots("sid001", [
+            Slot("intent", "where.query"),
+            Slot("location", "nike")
         ])
         dm.process_confirm('sid001', {
             'code': 0,
@@ -58,18 +58,18 @@ class TestClusterAgencyCase(object):
                 root(STATUS_STACKWAIT)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=None)
-                Concept(date=None)
-                Concept(intent=None)
-                Concept(location=None)'''
+                Slot(city=None)
+                Slot(date=None)
+                Slot(intent=None)
+                Slot(location=None)'''
         )
         assert(dm.is_waiting == False)
 
     def test_failed_confirm(self):
         dm = construct_dm()
-        dm.process_concepts("sid001", [
-            Concept("intent", "where.query"),
-            Concept("location", "nike")
+        dm.process_slots("sid001", [
+            Slot("intent", "where.query"),
+            Slot("location", "nike")
         ])
         dm.process_confirm('sid001', {
             'code': -1,
@@ -80,9 +80,9 @@ class TestClusterAgencyCase(object):
                 root(STATUS_STACKWAIT)''')
         assert(str(dm.context) == '''
             Context:
-                Concept(city=None)
-                Concept(date=None)
-                Concept(intent=None)
-                Concept(location=None)'''
+                Slot(city=None)
+                Slot(date=None)
+                Slot(intent=None)
+                Slot(location=None)'''
         )
         assert(dm.debug_loop == 6)
