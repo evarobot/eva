@@ -1,4 +1,9 @@
 # VikiDM
+## 说明
+对话管理模块，包含上下文等信息，维护了语义系统的状态机。
+
+
+
 ## 测试
 ```
 /dm/robot/question
@@ -50,7 +55,7 @@
     {
       "code": 0,  // 非0都是错误
         "message": "",
-        "event_id": "weather.query: date=今天&city=明天",    // 事件ID
+        "event_id": "weather.query?date=今天&city=明天",    // 事件ID
         "sid": "xxxx", // session id
         "nlu": {
             "intent": "",
