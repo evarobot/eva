@@ -6,7 +6,7 @@ from vikidm.context import Slot
 from vikidm.chat import CasualTalk
 from vikidm.dm import DialogEngine
 from evecms.models import Domain
-from vikidm.util import cms_rpc
+from vikidm.util import cms_rpc, nlu_predict
 from vikinlu.robot import NLURobot
 log = logging.getLogger(__name__)
 
@@ -23,7 +23,6 @@ class DMRobot(object):
         self.robot_id = robot_id
         self._dm = DialogEngine()
         self._dm.init_from_db(self.domain_id)
-        self.nlu = NLURobot.get_robot(domain_id)
         log.info("CREATE ROBOT: [{0}] of domain [{1}]"
                  .format(robot_id, self.domain_name))
 
@@ -32,7 +31,8 @@ class DMRobot(object):
         Convert question to intent, slots, slots with NLU.
         """
         question = question.strip(' \n')
-        ret = self.nlu.predict(self.get_context(), question)
+        context = self.get_context()
+        ret = nlu_predict(self.domain_id, context, question)
         slots = [Slot("intent", ret["intent"])]
         for slot_name, value_name in ret["slots"].iteritems():
             slots.append(Slot(slot_name, value_name))
