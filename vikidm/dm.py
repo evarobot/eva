@@ -266,6 +266,7 @@ class DialogEngine(object):
         node = self.biz_tree.get_node(self.biz_tree.root)
         node.set_state(BizUnit.STATUS_STACKWAIT)
         self.stack.push(node)
+        self._agenda.compute_visible_units()
 
     def _init_context(self):
         for bizunit in self.biz_tree.all_nodes_itr():
@@ -344,7 +345,7 @@ class DialogEngine(object):
             if self._session.new_session(sid):
                 # Could be a remote error
                 log.debug("NEW_SESSION, ABANDON OLD CONFIRM WAITING")
-            self._cancel_timer()
+            self.cancel_timer()
             log.debug("CANCEL_TIMER {0}({1})".format(
                 self._timer.owner.__class__.__name__, self._timer.owner.tag))
         self._session.begin_session(sid)
@@ -356,6 +357,8 @@ class DialogEngine(object):
             self._session.end_session()
         log.info(self.stack)
         log.info(self.context)
+        #  @OPTIMIZE return then compute visible units
+        self._agenda.compute_visible_units()
         return ret
 
     def _trigger_bizunit(self):
@@ -385,7 +388,6 @@ class DialogEngine(object):
     def _update_slots(self, slots):
         # OPTIMIZE:  `get_visible_units` control the range of activation,
         # maybe checking here is not necessary.
-        self._agenda.compute_visible_units()
         visible_slots = []
         for agent in self._agenda.visible_agents:
             visible_slots.extend(agent.target_slots)
@@ -446,7 +448,7 @@ class DialogEngine(object):
 
     def _handle_failed_confirm(self):
         self._handle_abnormal(AbnormalHandler.ABNORMAL_ACTION_FAILED)
-        self._cancel_timer()
+        self.cancel_timer()
         log.debug("CANCEL_TIMER {0}({1})".format(
             self._timer.owner.__class__.__name__, self._timer.owner.tag))
 
@@ -454,7 +456,7 @@ class DialogEngine(object):
         focus_unit = self.stack.top()
         assert(isinstance(focus_unit, Agent))
         log.debug("CONFIRM: {0}".format(focus_unit.tag))
-        self._cancel_timer()
+        self.cancel_timer()
         log.debug("CANCEL_TIMER {0}({1})".format(
             self._timer.owner.__class__.__name__, self._timer.owner.tag))
         focus_unit.on_confirm()
@@ -488,7 +490,7 @@ class DialogEngine(object):
         self._debug_timer_count += 1
         self._timer.start()
 
-    def _cancel_timer(self):
+    def cancel_timer(self):
         self._debug_timer_count -= 1
         self._timer.cancel()
 
@@ -506,10 +508,11 @@ class DialogEngine(object):
         # @BUG Device may update DM before recommendation system.
         focus_unit.parent.api_slot_keys = [c.key for c in slots]
         self._update_slots(slots)
+        self._agenda.compute_visible_units()
 
     def get_visible_units(self):
         """ Return visible units at the moment. """
-        self._agenda.compute_visible_units()
+        # self._agenda.compute_visible_units()
         agents = []
         for agent in self._agenda.visible_agents:
             parent = agent.parent
@@ -535,6 +538,7 @@ class DialogEngine(object):
         log.debug("ACTION_TIMEOUT {2}({0}) {1}".format(
             self._timer.owner.tag, delta, focus_unit.__class__.__name__))
         self._handle_abnormal(AbnormalHandler.ABNORMAL_ACTION_TIMEOUT)
+        self._agenda.compute_visible_units()
 
     def on_inputwait_timeout(self):
         """
@@ -547,6 +551,7 @@ class DialogEngine(object):
         log.debug("INPUT_TIMEOUT {2}({0}) {1}".format(
             self._timer.owner.tag, delta, focus_unit.__class__.__name__))
         self._handle_abnormal(AbnormalHandler.ABNORMAL_INPUT_TIMEOUT)
+        self._agenda.compute_visible_units()
 
     def on_delaywait_timeout(self):
         """
@@ -559,6 +564,7 @@ class DialogEngine(object):
             self._timer.owner.tag, delta, focus_unit.__class__.__name__))
         focus_unit.set_state(BizUnit.STATUS_AGENCY_COMPLETED)
         self.execute_focus_agent()
+        self._agenda.compute_visible_units()
 
     def debug_info(self):
         msg = '''

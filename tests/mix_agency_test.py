@@ -57,7 +57,7 @@ class TestMixAgency(object):
                 Mix(weather.query)(STATUS_STACKWAIT)
                 weather.query(STATUS_STACKWAIT)
                 default@weather.query(STATUS_WAIT_ACTION_CONFIRM)''')
-        dm._cancel_timer()
+        dm.cancel_timer()
 
     def test_mix_trigger(self):
         dm = self._construct_dm()
@@ -187,7 +187,7 @@ class TestMixAgency(object):
             'nike', 'zhou_hei_ya', 'name.query'
         ])
         assert(dm.debug_loop == 4)
-        dm._cancel_timer()
+        dm.cancel_timer()
 
     def mix_trigger(self):
         dm = self._construct_dm()
