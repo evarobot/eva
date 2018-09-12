@@ -40,7 +40,7 @@ class TestClusterAgencyCase(object):
         )
         assert(dm.debug_loop == 2)
         assert(dm.is_waiting == True)
-        dm._cancel_timer()
+        dm.cancel_timer()
 
     def test_success_confirm(self):
         dm = construct_dm()

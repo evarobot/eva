@@ -37,7 +37,7 @@ class TestTargetAgencyCase(object):
         )
         assert(dm.debug_loop == 2)
         assert(dm.is_waiting == True)
-        dm._cancel_timer()
+        dm.cancel_timer()
 
     def test_default_then_result(self):
         # default triggered
@@ -174,4 +174,4 @@ class TestTargetAgencyCase(object):
                 Slot(intent=weather.query)
                 Slot(location=None)''')
         assert(dm.is_waiting == True)
-        dm._cancel_timer()
+        dm.cancel_timer()

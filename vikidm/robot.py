@@ -31,6 +31,10 @@ class DMRobot(object):
         Convert question to intent, slots, slots with NLU.
         """
         question = question.strip(' \n')
+        if self._dm.is_waiting:
+            # Make sure the context is consistent during intent predicting.
+            # This request will cancel the timer anyway.
+            self._dm.cancel_timer()
         context = self.get_context()
         ret = nlu_predict(self.domain_id, context, question)
         slots = [Slot("intent", ret["intent"])]
