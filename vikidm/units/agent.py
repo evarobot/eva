@@ -113,12 +113,6 @@ class Agent(BizUnit):
             if slot.key == "intent":
                 self._intent = slot.value
                 return self._intent
-        import pdb
-        pdb.set_trace()
-        if self.trigger_slots:
-            assert(False)
-        #  TODO:  <14-08-18, yourname> #
-        assert(False)
 
     @property
     def subject(self):
