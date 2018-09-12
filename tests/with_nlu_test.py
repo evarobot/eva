@@ -5,14 +5,11 @@ import time
 from vikicommon.log import init_logger
 from vikidm.config import ConfigLog, ConfigDM
 
-from evecms.services.service import connect_db
-from evecmsweb.app import setup_app
+from evecms.app import setup_app
 from evecms.models import Domain
 from vikidm.util import PROJECT_DIR, nlu_train
 from vikidm.robot import DMRobot
-from vikinlu.model import clear_intent_question
 
-connect_db()
 data_path = os.path.join(PROJECT_DIR, "tests", "data")
 
 
@@ -120,4 +117,4 @@ class TestDM(object):
             'code': 0,
         })
 
-clear_intent_question("C")
+#clear_intent_question("C")
