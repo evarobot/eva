@@ -179,15 +179,23 @@ class TargetAgency(Agency):
         log.debug("EXECUTE TargetAgency({0})".format(self.tag))
         if self.state == BizUnit.STATUS_WAIT_TARGET:
             self._execute_condition.remove(BizUnit.STATUS_WAIT_TARGET)
-            log.debug("START_INPUT_TIMER TargetAgency({0})".format(self.tag))
-            self._dm.start_timer(self, ConfigDM.input_timeout,
-                                 self._dm.on_inputwait_timeout)
+            if self._dm.countdown_unit != self:
+                self._dm.reset_countdown_round()
+                log.debug(
+                    "START_INPUT_COUNTDOWN TargetAgency({0})".format(self.tag))
+            elif self._dm.round_out():
+                self._dm.countdown_round += 1
+                self._dm.on_inputwait_round_out()
             return {}
         elif self.state == BizUnit.STATUS_DELAY_EXIST:
             self._execute_condition.remove(BizUnit.STATUS_DELAY_EXIST)
-            log.debug("START_DELAY_TIMER TargetAgency({0})".format(self.tag))
-            self._dm.start_timer(self, ConfigDM.input_timeout,
-                                 self._dm.on_delaywait_timeout)
+            if self._dm.countdown_unit != self:
+                self._dm.reset_countdown_round()
+                log.debug(
+                    "START_DELAY_COUNTDOWN TargetAgency({0})".format(self.tag))
+            elif self._dm.round_out():
+                self._dm.countdown_round += 1
+                self._dm.on_delaywait_round_out()
             return {}
 
         self.active_child = self._plan()

@@ -214,26 +214,33 @@ class DialogEngine(object):
 
     Attributes
     ----------
-    SAFE_UPPER_LIMIT : 100, the maximum execution loop between two request, used
-                      to recover from endless loop if there is a bug.
+    SAFE_UPPER_LIMIT : 100, the maximum execution loop between two request,
+                       used to recover from endless loop if there is a bug.
+    MAX_CONTEXT_RESERVED_ROUND : The maximum rounds that context will reserved.
     context : Context, maintaining the slot status of device.
     stack : Stack, maintaining the active interaction history.
     _timer : TimerRest, Calling handle function when timeout.
     _agenda : ExpectAgenda, Manage the visiblility of bizunit.
     _session : Session, Manage dialogue session.
+    countdown_round : Countdown by none `TargetAgent` or `TargetAgency`
+        dialog quantity.
     """
     SAFE_UPPER_LIMIT = 100
+    MAX_CONTEXT_RESERVED_ROUND = 2
 
     def __init__(self):
         self.context = Context()
         self.biz_tree = BizTree()
         self.stack = Stack()
+        self._session = Session()
+        self._agenda = ExpectAgenda(self.stack)
+        self.countdown_round = 0
+        self.countdown_unit = None
+
+        self._timer = None
+        self._debug_timer_count = 0
         self.debug_loop = 0
         self.debug_timeunit = 1  # 为了测试的时候加速时间计数
-        self._timer = None
-        self._session = Session()
-        self._debug_timer_count = 0
-        self._agenda = ExpectAgenda(self.stack)
 
     @property
     def is_waiting(self):
@@ -257,7 +264,6 @@ class DialogEngine(object):
         None
 
         """
-        pass
         ret = cms_rpc.get_dm_biztree(domain_id)
         if ret['code'] != 0:
             raise errors.RPCError
@@ -307,6 +313,7 @@ class DialogEngine(object):
 
         focus_unit = self.stack.top()
         if to_pop_unit.parent and to_pop_unit.parent != focus_unit:
+            # Topic switch.
             # previous focus and current focus not in the same hierarchy path.
             log.debug("ROUND_RETURN BizUnit({0})".format(focus_unit.tag))
             focus_unit.restore_topic_and_focus()
@@ -371,7 +378,7 @@ class DialogEngine(object):
                 continue
             log.debug("Init Trigger: {0}".format(bizunit))
             new_focus = bizunit.hierarchy_trigger()
-            # 清理trigger到栈顶间的节点，假设的仍然是中间节点都是亲属关系。
+            # 清理trigger到栈顶间的节点
             count = 0
             for unit in reversed(self.stack.items):
                 if unit == new_focus:
@@ -528,6 +535,20 @@ class DialogEngine(object):
             "agents": agents
         }
 
+    def reset_countdown_round(self, unit):
+        """ Reset count down round to zero.
+
+        """
+        self.countdown_unit = self.stack.top()
+        self.countdown_round = 0
+
+    def round_out(self):
+        """ If `countdown_unit` have been waiting targets for some maximum
+        rounds.
+
+        """
+        return self.countdown_round > self.MAX_CONTEXT_RESERVED_ROUND
+
     def on_actionwait_timeout(self):
         """
         Invoked when device failed to send an action confirm to agents in time.
@@ -540,28 +561,28 @@ class DialogEngine(object):
         self._handle_abnormal(AbnormalHandler.ABNORMAL_ACTION_TIMEOUT)
         self._agenda.compute_visible_units()
 
-    def on_inputwait_timeout(self):
+    def on_inputwait_round_out(self):
         """
         Invoked when device failed to send an inputting request
         to agents in time.
         """
-        self._debug_timer_count -= 1
-        delta = (time.time()- self._start_time) / self.debug_timeunit
+        self.countdown_round = 0
+        self.countdown_unit = None
         focus_unit = self.stack.top()
-        log.debug("INPUT_TIMEOUT {2}({0}) {1}".format(
-            self._timer.owner.tag, delta, focus_unit.__class__.__name__))
+        log.debug("INPUT_TIMEOUT {1}({0})".format(
+            self._timer.owner.tag, focus_unit.__class__.__name__))
         self._handle_abnormal(AbnormalHandler.ABNORMAL_INPUT_TIMEOUT)
         self._agenda.compute_visible_units()
 
-    def on_delaywait_timeout(self):
+    def on_delaywait_round_out(self):
         """
         Invoked when device failed to send a new input request to agencies.
         """
-        self._debug_timer_count -= 1
-        delta = (time.time()- self._start_time) / self.debug_timeunit
+        self.countdown_round = 0
+        self.countdown_unit = None
         focus_unit = self.stack.top()
-        log.debug("DELAY_TIMEOUT {2}({0}) {1}".format(
-            self._timer.owner.tag, delta, focus_unit.__class__.__name__))
+        log.debug("DELAY_TIMEOUT {1}({0})".format(
+            self._timer.owner.tag, focus_unit.__class__.__name__))
         focus_unit.set_state(BizUnit.STATUS_AGENCY_COMPLETED)
         self.execute_focus_agent()
         self._agenda.compute_visible_units()

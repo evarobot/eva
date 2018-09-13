@@ -208,11 +208,14 @@ class TargetAgent(Agent):
             log.debug("START_ACTION_TIMER TargetAgent({0})".format(self.tag))
 
         elif self.state == BizUnit.STATUS_WAIT_TARGET:
-            # start timer
-            self._dm.start_timer(
-                self, ConfigDM.input_timeout, self._dm.on_inputwait_timeout)
-            log.debug("START_INPUT_TIMER TargetAgent({0})".format(self.tag))
             self._execute_condition.remove(BizUnit.STATUS_WAIT_TARGET)
+            if self._dm.countdown_unit != self:
+                self._dm.reset_countdown_round()
+                log.debug(
+                    "START_INPUT_COUNTDOWN TargetAgent({0})".format(self.tag))
+            elif self._dm.round_out():
+                self._dm.countdown_round += 1
+                self._dm.on_inputwait_round_out()
         assert(len(self.target_slots) <= 1)
         return {
             'event_id': self.event_id,
