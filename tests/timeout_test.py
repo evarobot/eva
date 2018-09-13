@@ -43,7 +43,8 @@ class TestTiemoutCase(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                weather.query(STATUS_WAIT_TARGET)''')
+                weather.query(STATUS_STACKWAIT)
+                default@weather.query(STATUS_WAIT_TARGET)''')
 
         time.sleep(INPUT_TIMEOUT * dm.debug_timeunit)
         assert(dm.is_waiting == False)

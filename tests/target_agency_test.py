@@ -55,7 +55,8 @@ class TestTargetAgencyCase(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                weather.query(STATUS_WAIT_TARGET)''')
+                weather.query(STATUS_STACKWAIT)
+                default@weather.query(STATUS_WAIT_TARGET)''')
 
         # result triggered
         dm.process_slots("sid002", [

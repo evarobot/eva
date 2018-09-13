@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 from vikidm.units.bizunit import BizUnit
+from vikidm.units.agent import TargetAgent, TriggerAgent
 from vikidm.config import ConfigDM
 from vikidm.context import Slot
 import logging
@@ -28,7 +29,7 @@ class Agency(BizUnit):
 
     def __init__(self, dm, tag, data):
         super(Agency, self).__init__(dm, data["id"], tag, data)
-        self._type = data['type']
+        self.type = data['type']
         self._handler_finished = False
         self._trigger_child = None
         self.api_slot_keys = []
@@ -157,12 +158,9 @@ class TargetAgency(Agency):
         """
         if self.state == BizUnit.STATUS_ABNORMAL:
             return
-        if self._is_target_node(self.active_child):
+        if isinstance(self.active_child, TargetAgent):
                 self.set_state(BizUnit.STATUS_TRIGGERED)
-        elif self._is_default_node(self.active_child):
-            self.set_state(BizUnit.STATUS_WAIT_TARGET)
-            self._execute_condition.add(BizUnit.STATUS_WAIT_TARGET)
-        elif self._is_result_node(self.active_child):
+        elif isinstance(self.active_child, TriggerAgent):
             self.set_state(BizUnit.STATUS_DELAY_EXIST)
             self._execute_condition.add(BizUnit.STATUS_DELAY_EXIST)
         self.active_child = None
@@ -177,13 +175,7 @@ class TargetAgency(Agency):
 
     def _execute(self):
         log.debug("EXECUTE TargetAgency({0})".format(self.tag))
-        if self.state == BizUnit.STATUS_WAIT_TARGET:
-            self._execute_condition.remove(BizUnit.STATUS_WAIT_TARGET)
-            log.debug("START_INPUT_TIMER TargetAgency({0})".format(self.tag))
-            self._dm.start_timer(self, ConfigDM.input_timeout,
-                                 self._dm.on_inputwait_timeout)
-            return {}
-        elif self.state == BizUnit.STATUS_DELAY_EXIST:
+        if self.state == BizUnit.STATUS_DELAY_EXIST:
             self._execute_condition.remove(BizUnit.STATUS_DELAY_EXIST)
             log.debug("START_DELAY_TIMER TargetAgency({0})".format(self.tag))
             self._dm.start_timer(self, ConfigDM.input_timeout,
@@ -207,30 +199,22 @@ class TargetAgency(Agency):
 
     def _plan(self):
         for child in self.children:
-            if self._is_result_node(child) and child.satisfied():
+            if isinstance(child, TriggerAgent) and child.satisfied():
                 return child
-            elif self._is_default_node(child):
-                targets_clean = all([not self._dm.context.dirty(c.key)
-                                    for c in self.target_slots])
-                if targets_clean:
-                    log.debug("WAIT_INPUT TargetAgency({0})".format(self.tag))
-                    return child
-        #  TODO: support priority
+
         for child in self.children:
-            if self._is_target_node(child) and not child.target_completed():
+            if isinstance(child, TargetAgent) and\
+                    len(child.target_slots) == len(self.target_slots) and\
+                    child.target_clean():
+                return child
+
+        for child in self.children:
+            if isinstance(child, TargetAgent) and\
+                    len(child.target_slots) < len(self.target_slots) and\
+                    not child.target_completed():
                 # return first none complete target child
                 return child
         return None
-
-    def _is_default_node(self, bizunit):
-        return len(bizunit.target_slots) == 0 and\
-            len(bizunit.trigger_slots) == 1
-
-    def _is_result_node(self, bizunit):
-        return len(bizunit.trigger_slots) > 1
-
-    def _is_target_node(self, bizunit):
-        return len(bizunit.target_slots) != 0
 
 
 class MixAgency(Agency):

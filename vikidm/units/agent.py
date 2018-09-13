@@ -7,7 +7,6 @@ from vikicommon.util import escape_unicode
 from vikidm.units.bizunit import BizUnit
 from vikidm.context import Slot
 from vikidm.config import ConfigDM
-from .agency import MixAgency
 
 log = logging.getLogger(__name__)
 
@@ -174,12 +173,12 @@ class TargetAgent(Agent):
         return all([self._dm.context.dirty(c.key)
                     for c in self.target_slots])
 
-    def satisfied(self):
+    def target_clean(self):
+        """ If all target slots clean.
+
         """
-        Return if the trigger slots is satisfied and
-        all target slots filled.
-        """
-        return super(TargetAgent, self).satisfied() and self.target_completed()
+        return all([not self._dm.context.dirty(c.key)
+                    for c in self.target_slots])
 
     def restore_topic_and_focus(self):
         assert(self.state in [BizUnit.STATUS_WAIT_ACTION_CONFIRM,
@@ -207,7 +206,6 @@ class TargetAgent(Agent):
                 self, ConfigDM.input_timeout, self._dm.on_inputwait_timeout)
             log.debug("START_INPUT_TIMER TargetAgent({0})".format(self.tag))
             self._execute_condition.remove(BizUnit.STATUS_WAIT_TARGET)
-        assert(len(self.target_slots) <= 1)
         return {
             'event_id': self.event_id,
             'target': [self.target_slots[0].key]
@@ -241,5 +239,5 @@ class TriggerAgent(Agent):
 
     def reset_slots(self):
         super(TriggerAgent, self).reset_slots()
-        if isinstance(self.parent, MixAgency):
+        if self.parent.type == "TYPE_MIX":
             self._dm.context.reset_slot("intent")

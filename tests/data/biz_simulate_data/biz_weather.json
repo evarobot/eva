@@ -19,9 +19,11 @@
 					"intent=weather.query"
 				],
 				"target_slots": [
+                    "city",
+                    "date"
 				],
 				"timeout": 5,
-				"type": "TYPE_TRIGGER_RESPONSE"
+				"type": "TYPE_TARGET_RESPONSE"
 			},
 			"children": []
 

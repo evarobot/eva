@@ -101,8 +101,8 @@ class TestTopicCase(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                weather.query(STATUS_WAIT_TARGET)'''
-        )
+                weather.query(STATUS_STACKWAIT)
+                default@weather.query(STATUS_WAIT_TARGET)''')
 
         # switch to agent
         time.sleep(INPUT_TIMEOUT * 0.5 * dm.debug_timeunit)
@@ -112,7 +112,8 @@ class TestTopicCase(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                weather.query(STATUS_WAIT_TARGET)
+                weather.query(STATUS_STACKWAIT)
+                default@weather.query(STATUS_WAIT_TARGET)
                 casual_talk(STATUS_WAIT_ACTION_CONFIRM)'''
         )
         dm.process_confirm('sid002', {'code': 0, 'message': ''})
@@ -123,8 +124,8 @@ class TestTopicCase(object):
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                weather.query(STATUS_WAIT_TARGET)'''
-        )
+                weather.query(STATUS_STACKWAIT)
+                default@weather.query(STATUS_WAIT_TARGET)''')
         assert(str(dm.context) == '''
             Context:
                 Slot(city=None)
@@ -144,5 +145,5 @@ class TestTopicCase(object):
                 Slot(intent=None)
                 Slot(location=None)'''
         )
-        assert(dm.debug_loop == 7)
+        assert(dm.debug_loop == 8)
         assert(not dm.is_waiting)
