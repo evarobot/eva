@@ -11,10 +11,12 @@ class Slot(JSONEncoder):
     """
     LIFE_STACK = "LIFE_STACK"
 
-    def __init__(self, key, value=None, life_type="LIFE_STACK"):
+    def __init__(self, key, value=None,
+                 optional=False, life_type="LIFE_STACK"):
         self._key = key
         self._value = value
         self.life_type = life_type
+        self.optional = optional
 
     def default(self, o):
         return o.__dict__
@@ -134,10 +136,9 @@ class Context(object):
         slot: Slot, target comparing slot.
 
         """
-        target = self._all_slots.get(slot.key, None)
-        if target is None:
-            return False
+        target = self._all_slots[slot.key]
         if target.dirty and slot.value.startswith("@") or\
+                slot.optional and not target.dirty or\
                 target == slot:
             return True
         return False

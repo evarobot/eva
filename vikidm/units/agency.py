@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
+import copy
 from vikidm.units.bizunit import BizUnit
+from vikidm.units.agent import TargetAgent, TriggerAgent
 from vikidm.config import ConfigDM
 from vikidm.context import Slot
 import logging
@@ -28,7 +29,7 @@ class Agency(BizUnit):
 
     def __init__(self, dm, tag, data):
         super(Agency, self).__init__(dm, data["id"], tag, data)
-        self._type = data['type']
+        self.type = data['type']
         self._handler_finished = False
         self._trigger_child = None
         self.api_slot_keys = []
@@ -136,19 +137,16 @@ class TargetAgency(Agency):
         super(TargetAgency, self).__init__(dm, tag, data)
         self.event_id = ""
         self._timer = None
-        self._target_slots = None
+        self._target_slots = set()
 
     @property
     def target_slots(self):
         """ Slots to filled by `TargetAgent` children.  """
         if self._target_slots:
             return self._target_slots
-        slot_keys = set()
         for child in self.children:
             for c in child.target_slots:
-                slot_keys.add(c.key)
-        self._target_slots = set(
-            [Slot(key, None) for key in slot_keys])
+                self._target_slots.add(Slot(c.key, None))
         return self._target_slots
 
     def restore_focus_after_child_done(self):
@@ -157,12 +155,9 @@ class TargetAgency(Agency):
         """
         if self.state == BizUnit.STATUS_ABNORMAL:
             return
-        if self._is_target_node(self.active_child):
+        if isinstance(self.active_child, TargetAgent):
                 self.set_state(BizUnit.STATUS_TRIGGERED)
-        elif self._is_default_node(self.active_child):
-            self.set_state(BizUnit.STATUS_WAIT_TARGET)
-            self._execute_condition.add(BizUnit.STATUS_WAIT_TARGET)
-        elif self._is_result_node(self.active_child):
+        elif isinstance(self.active_child, TriggerAgent):
             self.set_state(BizUnit.STATUS_DELAY_EXIST)
             self._execute_condition.add(BizUnit.STATUS_DELAY_EXIST)
         self.active_child = None
@@ -177,25 +172,16 @@ class TargetAgency(Agency):
 
     def _execute(self):
         log.debug("EXECUTE TargetAgency({0})".format(self.tag))
-        if self.state == BizUnit.STATUS_WAIT_TARGET:
-            self._execute_condition.remove(BizUnit.STATUS_WAIT_TARGET)
-            if self._dm.countdown_unit != self:
-                self._dm.reset_countdown_round()
-                log.debug(
-                    "START_INPUT_COUNTDOWN TargetAgency({0})".format(self.tag))
-            elif self._dm.round_out():
-                self._dm.countdown_round += 1
-                self._dm.on_inputwait_round_out()
-            return {}
-        elif self.state == BizUnit.STATUS_DELAY_EXIST:
+        if self.state == BizUnit.STATUS_DELAY_EXIST:
             self._execute_condition.remove(BizUnit.STATUS_DELAY_EXIST)
             if self._dm.countdown_unit != self:
                 self._dm.reset_countdown_round()
                 log.debug(
                     "START_DELAY_COUNTDOWN TargetAgency({0})".format(self.tag))
-            elif self._dm.round_out():
+            else:
                 self._dm.countdown_round += 1
-                self._dm.on_delaywait_round_out()
+                if self._dm.round_out():
+                    self._dm.on_delaywait_round_out()
             return {}
 
         self.active_child = self._plan()
@@ -214,31 +200,65 @@ class TargetAgency(Agency):
         return {}
 
     def _plan(self):
+
+        def _top_priority_child(units):
+            """
+            Child with most slots matched and most specified slot matched
+            have the top priority.
+            """
+            if len(units) == 1:
+                return units[0]
+            priority_units = []
+            max_match = 0
+            for unit in units:
+                any_match = 0
+                num_match = 0
+                for slot in unit.trigger_slots:
+                    if slot.key != "intent":
+                        if slot.optional:
+                            if slot.value[0] != '@':
+                                num_match += 1
+                            elif self._dm.context.dirty(slot.key):
+                                num_match += 1
+                                any_match += 1
+                        else:
+                            if slot.value[0] != '@':
+                                num_match += 1
+                            else:
+                                any_match += 1
+                        all_match = num_match + any_match
+                        if all_match > max_match:
+                            max_match = all_match
+                priority_units.append(
+                    (unit, all_match, any_match))
+            priority_units = filter(
+                lambda x: x[1] == max_match, priority_units)
+            priority_units.sort(key=lambda x: x[2])
+            #if self._dm._session._sid == "sid00xx":
+                #temp = [(unit[0].tag, unit[1], unit[2]) for unit in priority_units]
+                #print temp
+                #import pdb
+                #pdb.set_trace()
+            return priority_units[0][0]
+
+        triggered_children = []
         for child in self.children:
-            if self._is_result_node(child) and child.satisfied():
+            if isinstance(child, TriggerAgent) and child.satisfied():
+                triggered_children.append(child)
+        if triggered_children:
+            return _top_priority_child(triggered_children)
+
+        for child in self.children:
+            if isinstance(child, TargetAgent) and\
+                    len(child.target_slots) > 1 and child.target_clean():
                 return child
-            elif self._is_default_node(child):
-                targets_clean = all([not self._dm.context.dirty(c.key)
-                                    for c in self.target_slots])
-                if targets_clean:
-                    log.debug("WAIT_INPUT TargetAgency({0})".format(self.tag))
-                    return child
-        #  TODO: support priority
+
         for child in self.children:
-            if self._is_target_node(child) and not child.target_completed():
+            if isinstance(child, TargetAgent) and\
+                    len(child.target_slots) == 1 and not child.target_completed():
                 # return first none complete target child
                 return child
         return None
-
-    def _is_default_node(self, bizunit):
-        return len(bizunit.target_slots) == 0 and\
-            len(bizunit.trigger_slots) == 1
-
-    def _is_result_node(self, bizunit):
-        return len(bizunit.trigger_slots) > 1
-
-    def _is_target_node(self, bizunit):
-        return len(bizunit.target_slots) != 0
 
 
 class MixAgency(Agency):
@@ -268,9 +288,14 @@ class MixAgency(Agency):
         log.debug("EXECUTE MixAgency({0})".format(self.tag))
         if self.state == BizUnit.STATUS_DELAY_EXIST:
             self._execute_condition.remove(BizUnit.STATUS_DELAY_EXIST)
-            self._dm.start_timer(
-                self, ConfigDM.input_timeout, self._dm.on_delaywait_timeout)
-            log.debug("START_DELAY_TIMER MixAgency({0})".format(self.tag))
+            if self._dm.countdown_unit != self:
+                self._dm.reset_countdown_round()
+                log.debug(
+                    "START_DELAY_COUNTDOWN MixAgency({0})".format(self.tag))
+            else:
+                self._dm.countdown_round += 1
+                if self._dm.round_out():
+                    self._dm.on_delaywait_round_out()
             return {}
 
         self.trigger_child.set_state(BizUnit.STATUS_TRIGGERED)

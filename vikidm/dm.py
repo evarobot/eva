@@ -247,7 +247,8 @@ class DialogEngine(object):
         """
         If DM is in the waiting user's input.
         """
-        return self._debug_timer_count > 0
+        return self.stack.top().state in [BizUnit.STATUS_WAIT_ACTION_CONFIRM,
+                                          BizUnit.STATUS_WAIT_TARGET]
 
     def init_from_db(self, domain_id):
         """ Initialize DM from database.
@@ -349,12 +350,14 @@ class DialogEngine(object):
         log.info("-------- {0} ----- {1} -------------------".format(
             sid, slots))
         if self._session.new_session(sid) or self.is_waiting:
-            if self._session.new_session(sid):
+            focus = self.stack.top()
+            if focus.state == BizUnit.STATUS_WAIT_ACTION_CONFIRM:
                 # Could be a remote error
+                self.cancel_timer()
                 log.debug("NEW_SESSION, ABANDON OLD CONFIRM WAITING")
-            self.cancel_timer()
-            log.debug("CANCEL_TIMER {0}({1})".format(
-                self._timer.owner.__class__.__name__, self._timer.owner.tag))
+                log.debug("CANCEL_TIMER {0}({1})".format(
+                    self._timer.owner.__class__.__name__,
+                    self._timer.owner.tag))
         self._session.begin_session(sid)
         self._update_slots(slots)
         self._mark_completed_bizunits()
@@ -364,6 +367,8 @@ class DialogEngine(object):
             self._session.end_session()
         log.info(self.stack)
         log.info(self.context)
+        log.info("\n            Round:\n                {0}".format(
+            self.countdown_round))
         #  @OPTIMIZE return then compute visible units
         self._agenda.compute_visible_units()
         return ret
@@ -378,19 +383,31 @@ class DialogEngine(object):
                 continue
             log.debug("Init Trigger: {0}".format(bizunit))
             new_focus = bizunit.hierarchy_trigger()
+            self._clear_focus_to_stack_top(new_focus)
             # 清理trigger到栈顶间的节点
-            count = 0
-            for unit in reversed(self.stack.items):
-                if unit == new_focus:
-                    break
-                count += 1
-            while count > 0:
-                self.stack.top().set_state(BizUnit.STATUS_TREEWAIT)
-                self.stack.pop()
-                count -= 1
             log.debug("Triggered Stack:")
             log.debug(self.stack)
             break
+
+    def _clear_focus_to_root(self):
+        focus = self._dm.stack.pop()
+        for unit in reversed(self.stack.items):
+            if unit == self.biz_tree.root:
+                break
+            self.stack.top().set_state(BizUnit.STATUS_TREEWAIT)
+            self.stack.pop()
+        self._dm.stack.push(focus)
+
+    def _clear_focus_to_stack_top(self, focus):
+        count = 0
+        for unit in reversed(self.stack.items):
+            if unit == focus:
+                break
+            count += 1
+        while count > 0:
+            self.stack.top().set_state(BizUnit.STATUS_TREEWAIT)
+            self.stack.pop()
+            count -= 1
 
     def _update_slots(self, slots):
         # OPTIMIZE:  `get_visible_units` control the range of activation,
@@ -451,6 +468,8 @@ class DialogEngine(object):
             self._handle_success_confirm()
         log.info(self.stack)
         log.info(self.context)
+        log.info("\n            Round:\n                {0}".format(
+            self.countdown_round))
         return ret
 
     def _handle_failed_confirm(self):
@@ -535,7 +554,7 @@ class DialogEngine(object):
             "agents": agents
         }
 
-    def reset_countdown_round(self, unit):
+    def reset_countdown_round(self):
         """ Reset count down round to zero.
 
         """
@@ -547,7 +566,7 @@ class DialogEngine(object):
         rounds.
 
         """
-        return self.countdown_round > self.MAX_CONTEXT_RESERVED_ROUND
+        return self.countdown_round >= self.MAX_CONTEXT_RESERVED_ROUND
 
     def on_actionwait_timeout(self):
         """
@@ -569,8 +588,8 @@ class DialogEngine(object):
         self.countdown_round = 0
         self.countdown_unit = None
         focus_unit = self.stack.top()
-        log.debug("INPUT_TIMEOUT {1}({0})".format(
-            self._timer.owner.tag, focus_unit.__class__.__name__))
+        log.debug("INPUT_ROUND_OUT {1}({0})".format(
+            focus_unit.tag, focus_unit.__class__.__name__))
         self._handle_abnormal(AbnormalHandler.ABNORMAL_INPUT_TIMEOUT)
         self._agenda.compute_visible_units()
 
@@ -582,7 +601,7 @@ class DialogEngine(object):
         self.countdown_unit = None
         focus_unit = self.stack.top()
         log.debug("DELAY_TIMEOUT {1}({0})".format(
-            self._timer.owner.tag, focus_unit.__class__.__name__))
+            focus_unit.tag, focus_unit.__class__.__name__))
         focus_unit.set_state(BizUnit.STATUS_AGENCY_COMPLETED)
         self.execute_focus_agent()
         self._agenda.compute_visible_units()

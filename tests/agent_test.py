@@ -6,7 +6,7 @@ import time
 from vikidm.dm import DialogEngine, Stack
 from vikidm.context import Slot
 from vikidm.biztree import Agent
-from .prepare import data_path, mock_cms_rpc, construct_dm, INPUT_TIMEOUT
+from .prepare import data_path, mock_cms_rpc, construct_dm
 
 
 def test_stack():
@@ -76,13 +76,15 @@ class TestAgentCase(object):
         assert(str(dm.context) == '''
             Context:
                 Slot(city=None)
+                Slot(country=None)
                 Slot(date=None)
                 Slot(intent=name.query)
-                Slot(location=None)'''
+                Slot(location=None)
+                Slot(meteorology=None)'''
         )
         assert(dm._session.valid_session("sid001"))
         assert(dm.debug_loop == 1)
-        time.sleep(INPUT_TIMEOUT * dm.debug_timeunit)
+        time.sleep((dm.stack.top().timeout + 1) * dm.debug_timeunit)
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)''')

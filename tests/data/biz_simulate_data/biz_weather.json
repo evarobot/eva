@@ -19,9 +19,11 @@
 					"intent=weather.query"
 				],
 				"target_slots": [
+                    "city",
+                    "date"
 				],
 				"timeout": 5,
-				"type": "TYPE_TRIGGER_RESPONSE"
+				"type": "TYPE_TARGET_RESPONSE"
 			},
 			"children": []
 
@@ -77,13 +79,79 @@
 				"trigger_slots": [
 					"intent=weather.query",
 					"date=@date",
-					"city=@city"
+					"city=@city",
+                    "meteorology=@meteorology"
 				],
 				"target_slots": [],
+                "optional_slots": ["meteorology"],
 				"timeout": 5,
 				"type": "TYPE_TRIGGER_RESPONSE"
 			},
 			"children": []
-		}
+        },
+		{
+			"data": {
+				"id": "city_priority",
+				"tag": "city_priority",
+				"entrance": false,
+				"event_id": "city_priority",
+				"subject": "",
+				"scope": "",
+				"trigger_slots": [
+					"intent=weather.query",
+					"date=@date",
+					"city=北京",
+                    "meteorology=@meteorology"
+				],
+				"target_slots": [],
+                "optional_slots": ["meteorology"],
+				"timeout": 5,
+				"type": "TYPE_TRIGGER_RESPONSE"
+			},
+			"children": []
+        },
+		{
+			"data": {
+				"id": "optional_none",
+				"tag": "optional_none",
+				"entrance": false,
+				"event_id": "optional_none",
+				"subject": "",
+				"scope": "",
+				"trigger_slots": [
+					"intent=weather.query",
+					"date=@date",
+					"city=北京",
+                    "meteorology=None"
+				],
+				"target_slots": [],
+                "optional_slots": ["meteorology"],
+				"timeout": 5,
+				"type": "TYPE_TRIGGER_RESPONSE"
+			},
+			"children": []
+        },
+		{
+			"data": {
+				"id": "addtional_slot",
+				"tag": "addtional_slot",
+				"entrance": false,
+				"event_id": "addtional_slot",
+				"subject": "",
+				"scope": "",
+				"trigger_slots": [
+					"intent=weather.query",
+					"date=@data",
+					"city=@city",
+                    "meteorology=@meteorology",
+                    "country=@country"
+				],
+				"target_slots": [],
+                "optional_slots": ["meteorology"],
+				"timeout": 5,
+				"type": "TYPE_TRIGGER_RESPONSE"
+			},
+			"children": []
+        }
 	]
 }

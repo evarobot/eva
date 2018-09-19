@@ -6,8 +6,6 @@ import logging
 from vikicommon.util import escape_unicode
 from vikidm.units.bizunit import BizUnit
 from vikidm.context import Slot
-from vikidm.config import ConfigDM
-from .agency import MixAgency
 
 log = logging.getLogger(__name__)
 
@@ -28,6 +26,7 @@ class Agent(BizUnit):
     state : The state of agent.
     trigger_slots : dict, Slots that could trigger the agent.
     target_slots : list, Slots that the agent will fill.
+    optional_slots : list, Slots that the agent may fill.
 
     """
 
@@ -41,7 +40,8 @@ class Agent(BizUnit):
                 'entrance': data['entrance'],
                 'state': BizUnit.STATUS_TREEWAIT,
                 'trigger_slots': data['trigger_slots'],
-                'target_slots': data['target_slots']
+                'target_slots': data['target_slots'],
+                'optional_slots': data.get('optional_slots', [])
             }
         except KeyError as e:
             log.error(data)
@@ -58,7 +58,8 @@ class Agent(BizUnit):
             split_index = kv.find('=')
             key = kv[0: split_index]
             value = kv[split_index + 1:]
-            yield Slot(key, value)
+            optional = key in data['optional_slots']
+            yield Slot(key, value, optional)
 
     def _deserialize_target_slots(self, data):
         for key in data['target_slots']:
@@ -100,7 +101,7 @@ class Agent(BizUnit):
 
     def satisfied(self):
         """
-        Return if the trigger slots is satisfied.
+        Return if all the trigger slots is satisfied.
         """
         return all(
             [self._dm.context.satisfied(c)for c in self.trigger_slots])
@@ -113,12 +114,6 @@ class Agent(BizUnit):
             if slot.key == "intent":
                 self._intent = slot.value
                 return self._intent
-        import pdb
-        pdb.set_trace()
-        if self.trigger_slots:
-            assert(False)
-        #  TODO:  <14-08-18, yourname> #
-        assert(False)
 
     @property
     def subject(self):
@@ -180,12 +175,12 @@ class TargetAgent(Agent):
         return all([self._dm.context.dirty(c.key)
                     for c in self.target_slots])
 
-    def satisfied(self):
+    def target_clean(self):
+        """ If all target slots clean.
+
         """
-        Return if the trigger slots is satisfied and
-        all target slots filled.
-        """
-        return super(TargetAgent, self).satisfied() and self.target_completed()
+        return all([not self._dm.context.dirty(c.key)
+                    for c in self.target_slots])
 
     def restore_topic_and_focus(self):
         assert(self.state in [BizUnit.STATUS_WAIT_ACTION_CONFIRM,
@@ -213,10 +208,10 @@ class TargetAgent(Agent):
                 self._dm.reset_countdown_round()
                 log.debug(
                     "START_INPUT_COUNTDOWN TargetAgent({0})".format(self.tag))
-            elif self._dm.round_out():
+            else:
                 self._dm.countdown_round += 1
-                self._dm.on_inputwait_round_out()
-        assert(len(self.target_slots) <= 1)
+                if self._dm.round_out():
+                    self._dm.on_inputwait_round_out()
         return {
             'event_id': self.event_id,
             'target': [self.target_slots[0].key]
@@ -250,5 +245,5 @@ class TriggerAgent(Agent):
 
     def reset_slots(self):
         super(TriggerAgent, self).reset_slots()
-        if isinstance(self.parent, MixAgency):
+        if self.parent.type == "TYPE_MIX":
             self._dm.context.reset_slot("intent")

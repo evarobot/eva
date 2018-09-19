@@ -3,7 +3,7 @@
 import time
 
 from vikidm.context import Slot
-from .prepare import construct_dm, INPUT_TIMEOUT
+from .prepare import construct_dm, round_out_simulate
 
 
 class TestTiemoutCase(object):
@@ -12,25 +12,28 @@ class TestTiemoutCase(object):
     ├── casual_talk
     ├── name.query
     ├── weather.query
+    │   ├── addtional_slot
     │   ├── city
+    │   ├── city_priority
     │   ├── date
     │   ├── default@weather.query
+    │   ├── optional_none
     │   └── result
     └── where.query
         ├── nike
         └── zhou_hei_ya
     '''
-    def test_process_confirm_case_agent_timeout(self):
+    def test_agent_action_timeout(self):
         dm = construct_dm()
         dm.process_slots("sid001", [
             Slot('intent', 'name.query')
         ])
         assert(dm.is_waiting)
-        time.sleep(INPUT_TIMEOUT * dm.debug_timeunit)
+        time.sleep((dm.stack.top().timeout + 1) * dm.debug_timeunit)
         assert(dm.is_waiting == False)
         assert(dm.debug_loop == 6)
 
-    def test_target_default_triggered_timeout(self):
+    def test_default_target_agent_input_timeout(self):
         dm = construct_dm()
         dm.process_slots("sid001", [
             Slot("intent", "weather.query")
@@ -39,15 +42,14 @@ class TestTiemoutCase(object):
             'code': 0,
             'message': ''
         })
-        assert(dm.is_waiting)
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                weather.query(STATUS_WAIT_TARGET)''')
+                weather.query(STATUS_STACKWAIT)
+                default@weather.query(STATUS_WAIT_TARGET)''')
 
-        time.sleep(INPUT_TIMEOUT * dm.debug_timeunit)
-        assert(dm.is_waiting == False)
-        assert(dm.debug_loop == 7)
+        round_out_simulate(dm)
+        assert(dm.debug_loop == 8)
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)''')

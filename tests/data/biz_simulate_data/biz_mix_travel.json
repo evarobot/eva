@@ -92,9 +92,12 @@
                     "trigger_slots": [
                         "intent=weather.query"
                     ],
-                    "target_slots": [],
+                    "target_slots": [
+                        "city",
+                        "date"
+                    ],
                     "timeout": 5,
-                    "type": "TYPE_TRIGGER_RESPONSE"
+                    "type": "TYPE_TARGET_RESPONSE"
                 },
                 "children": []
 
@@ -164,7 +167,7 @@
             "data": {
                 "id": "spots.query",
                 "tag": "spots.query",
-                "type": "TYPE_CLUSTER",
+                "type": "TYPE_TARGET",
                 "subject": "",
                 "scope": "",
                 "entrance": false
@@ -183,7 +186,7 @@
                     ],
                     "target_slots": [],
                     "timeout": 5,
-                    "type": "TYPE_CLUSTER_RESPONSE"
+                    "type": "TYPE_TRIGGER_RESPONSE"
                 },
                 "children": []
 
