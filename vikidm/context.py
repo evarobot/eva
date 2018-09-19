@@ -85,6 +85,17 @@ class Context(object):
         slot.value = None
         self._all_slots[slot.key] = slot
 
+    def update_slot_by_value(self, key, value):
+        """
+
+        Parameters
+        ----------
+        key : str, key of target slot
+        value : Slot, Slot instance
+
+        """
+        self.update_slot(key, Slot(key, value))
+
     def update_slot(self, key, slot):
         """ Update specific slot.
 

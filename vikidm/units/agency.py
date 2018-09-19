@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
-import copy
 from vikidm.units.bizunit import BizUnit
 from vikidm.units.agent import TargetAgent, TriggerAgent
-from vikidm.config import ConfigDM
 from vikidm.context import Slot
 import logging
 log = logging.getLogger(__name__)
@@ -138,6 +136,7 @@ class TargetAgency(Agency):
         self.event_id = ""
         self._timer = None
         self._target_slots = set()
+        self._context = None
 
     @property
     def target_slots(self):
@@ -148,6 +147,19 @@ class TargetAgency(Agency):
             for c in child.target_slots:
                 self._target_slots.add(Slot(c.key, None))
         return self._target_slots
+
+    @property
+    def context(self):
+        if self._context:
+            return self._context
+        for child in self.children:
+            if isinstance(child, TriggerAgent):
+                for slot in child.trigger_slots:
+                    if slot.key == "intent":
+                        self._context = {
+                            'intent': slot.value
+                        }
+                        return self._context
 
     def restore_focus_after_child_done(self):
         """
@@ -171,6 +183,7 @@ class TargetAgency(Agency):
         self._execute_condition.add(self.state)
 
     def _execute(self):
+        self._dm.context.update_slot_by_value("intent", self.context["intent"])
         log.debug("EXECUTE TargetAgency({0})".format(self.tag))
         if self.state == BizUnit.STATUS_DELAY_EXIST:
             self._execute_condition.remove(BizUnit.STATUS_DELAY_EXIST)

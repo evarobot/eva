@@ -179,19 +179,13 @@ class TestTopicCase(object):
                 casual_talk(STATUS_WAIT_ACTION_CONFIRM)'''
         )
 
-        dm.process_slots("sid003", [
+        dm.process_slots("sid00x", [
             Slot("intent", "where.query"),
             Slot("location", "nike")
         ])
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                weather.query(STATUS_STACKWAIT)
-                default@weather.query(STATUS_WAIT_TARGET)
-                casual_talk(STATUS_WAIT_ACTION_CONFIRM)
                 where.query(STATUS_STACKWAIT)
                 nike(STATUS_WAIT_ACTION_CONFIRM)'''
         )
-        #round_out_simulate(dm)
-        #import pdb
-        #pdb.set_trace()

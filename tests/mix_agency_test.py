@@ -237,7 +237,7 @@ class TestMixAgency(object):
                 Slot(intent=None)
                 Slot(location=None)'''
         )
-        dm.process_slots("sid005", [
+        dm.process_slots("sid00x", [
             Slot("intent", "spots.query"),
         ])
         assert(str(dm.stack) == '''
@@ -247,7 +247,7 @@ class TestMixAgency(object):
                 Mix(weather.query)(STATUS_STACKWAIT)
                 spots.query(STATUS_STACKWAIT)
                 all_city(STATUS_WAIT_ACTION_CONFIRM)''')
-        assert(dm.debug_loop == 3)
+        assert(dm.debug_loop == 4)
 
     def clear_share_clear(self):
         pass

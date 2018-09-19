@@ -305,22 +305,23 @@ class DialogEngine(object):
                 assert(False)
         return ret
 
-    def _pop_focus_unit(self, to_pop_unit):
+    def _pop_focus_unit(self, old_focus_unit):
         self.stack.pop()
-        to_pop_unit.set_state(BizUnit.STATUS_TREEWAIT)
-        to_pop_unit.reset_slots()
+        old_focus_unit.set_state(BizUnit.STATUS_TREEWAIT)
+        old_focus_unit.reset_slots()
         log.debug("POP_STACK: {0}({1})".format(
-            to_pop_unit.__class__.__name__, to_pop_unit.tag))
+            old_focus_unit.__class__.__name__, old_focus_unit.tag))
 
-        focus_unit = self.stack.top()
-        if to_pop_unit.parent and to_pop_unit.parent != focus_unit:
+        new_focus_unit = self.stack.top()
+        if old_focus_unit.parent and old_focus_unit.parent != new_focus_unit:
             # Topic switch.
             # previous focus and current focus not in the same hierarchy path.
-            log.debug("ROUND_RETURN BizUnit({0})".format(focus_unit.tag))
-            focus_unit.restore_topic_and_focus()
-        elif not focus_unit.is_root():
+            pass
+            log.debug("ROUND_RETURN BizUnit({0})".format(new_focus_unit.tag))
+            new_focus_unit.restore_topic_and_focus()
+        elif not new_focus_unit.is_root():
             # same hierarchy path.
-            focus_unit.restore_focus_after_child_done()
+            new_focus_unit.restore_focus_after_child_done()
         log.debug("STATUS: \n{0}\n{1}".format(self.stack, self.context))
 
     def process_slots(self, sid, slots):
@@ -383,30 +384,40 @@ class DialogEngine(object):
                 continue
             log.debug("Init Trigger: {0}".format(bizunit))
             new_focus = bizunit.hierarchy_trigger()
+            # Remove units not in the hierarchy path,
+            # except 'casual_talk'
             self._clear_focus_to_stack_top(new_focus)
+            self._clear_focus_to_root()
             # 清理trigger到栈顶间的节点
             log.debug("Triggered Stack:")
             log.debug(self.stack)
             break
 
     def _clear_focus_to_root(self):
-        focus = self._dm.stack.pop()
-        for unit in reversed(self.stack.items):
-            if unit == self.biz_tree.root:
-                break
-            self.stack.top().set_state(BizUnit.STATUS_TREEWAIT)
-            self.stack.pop()
-        self._dm.stack.push(focus)
+        if self.stack.top().tag != 'casual_talk':
+            focus = self.stack.pop()
+            for unit in reversed(self.stack.items):
+                if unit == self.biz_tree.get_node('root'):
+                    break
+                old_focus_unit = self.stack.pop()
+                old_focus_unit.set_state(BizUnit.STATUS_TREEWAIT)
+                old_focus_unit.reset_slots()
+            self.stack.push(focus)
 
     def _clear_focus_to_stack_top(self, focus):
+        """
+        Note: Won't reset concepts if ancestor node in the stack, but may clear
+        shared slots.
+        """
         count = 0
         for unit in reversed(self.stack.items):
             if unit == focus:
                 break
             count += 1
         while count > 0:
-            self.stack.top().set_state(BizUnit.STATUS_TREEWAIT)
-            self.stack.pop()
+            old_focus_unit = self.stack.pop()
+            old_focus_unit.set_state(BizUnit.STATUS_TREEWAIT)
+            old_focus_unit.reset_slots()
             count -= 1
 
     def _update_slots(self, slots):
