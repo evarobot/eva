@@ -6,7 +6,6 @@ import logging
 from vikicommon.util import escape_unicode
 from vikidm.units.bizunit import BizUnit
 from vikidm.context import Slot
-from vikidm.config import ConfigDM
 
 log = logging.getLogger(__name__)
 
@@ -27,6 +26,7 @@ class Agent(BizUnit):
     state : The state of agent.
     trigger_slots : dict, Slots that could trigger the agent.
     target_slots : list, Slots that the agent will fill.
+    optional_slots : list, Slots that the agent may fill.
 
     """
 
@@ -40,7 +40,8 @@ class Agent(BizUnit):
                 'entrance': data['entrance'],
                 'state': BizUnit.STATUS_TREEWAIT,
                 'trigger_slots': data['trigger_slots'],
-                'target_slots': data['target_slots']
+                'target_slots': data['target_slots'],
+                'optional_slots': data.get('optional_slots', [])
             }
         except KeyError as e:
             log.error(data)
@@ -57,7 +58,8 @@ class Agent(BizUnit):
             split_index = kv.find('=')
             key = kv[0: split_index]
             value = kv[split_index + 1:]
-            yield Slot(key, value)
+            optional = key in data['optional_slots']
+            yield Slot(key, value, optional)
 
     def _deserialize_target_slots(self, data):
         for key in data['target_slots']:
@@ -99,7 +101,7 @@ class Agent(BizUnit):
 
     def satisfied(self):
         """
-        Return if the trigger slots is satisfied.
+        Return if all the trigger slots is satisfied.
         """
         return all(
             [self._dm.context.satisfied(c)for c in self.trigger_slots])
@@ -201,11 +203,15 @@ class TargetAgent(Agent):
             log.debug("START_ACTION_TIMER TargetAgent({0})".format(self.tag))
 
         elif self.state == BizUnit.STATUS_WAIT_TARGET:
-            # start timer
-            self._dm.start_timer(
-                self, ConfigDM.input_timeout, self._dm.on_inputwait_timeout)
-            log.debug("START_INPUT_TIMER TargetAgent({0})".format(self.tag))
             self._execute_condition.remove(BizUnit.STATUS_WAIT_TARGET)
+            if self._dm.countdown_unit != self:
+                self._dm.reset_countdown_round()
+                log.debug(
+                    "START_INPUT_COUNTDOWN TargetAgent({0})".format(self.tag))
+            else:
+                self._dm.countdown_round += 1
+                if self._dm.round_out():
+                    self._dm.on_inputwait_round_out()
         return {
             'event_id': self.event_id,
             'target': [self.target_slots[0].key]

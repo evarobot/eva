@@ -214,33 +214,41 @@ class DialogEngine(object):
 
     Attributes
     ----------
-    SAFE_UPPER_LIMIT : 100, the maximum execution loop between two request, used
-                      to recover from endless loop if there is a bug.
+    SAFE_UPPER_LIMIT : 100, the maximum execution loop between two request,
+                       used to recover from endless loop if there is a bug.
+    MAX_CONTEXT_RESERVED_ROUND : The maximum rounds that context will reserved.
     context : Context, maintaining the slot status of device.
     stack : Stack, maintaining the active interaction history.
     _timer : TimerRest, Calling handle function when timeout.
     _agenda : ExpectAgenda, Manage the visiblility of bizunit.
     _session : Session, Manage dialogue session.
+    countdown_round : Countdown by none `TargetAgent` or `TargetAgency`
+        dialog quantity.
     """
     SAFE_UPPER_LIMIT = 100
+    MAX_CONTEXT_RESERVED_ROUND = 2
 
     def __init__(self):
         self.context = Context()
         self.biz_tree = BizTree()
         self.stack = Stack()
+        self._session = Session()
+        self._agenda = ExpectAgenda(self.stack)
+        self.countdown_round = 0
+        self.countdown_unit = None
+
+        self._timer = None
+        self._debug_timer_count = 0
         self.debug_loop = 0
         self.debug_timeunit = 1  # 为了测试的时候加速时间计数
-        self._timer = None
-        self._session = Session()
-        self._debug_timer_count = 0
-        self._agenda = ExpectAgenda(self.stack)
 
     @property
     def is_waiting(self):
         """
         If DM is in the waiting user's input.
         """
-        return self._debug_timer_count > 0
+        return self.stack.top().state in [BizUnit.STATUS_WAIT_ACTION_CONFIRM,
+                                          BizUnit.STATUS_WAIT_TARGET]
 
     def init_from_db(self, domain_id):
         """ Initialize DM from database.
@@ -257,7 +265,6 @@ class DialogEngine(object):
         None
 
         """
-        pass
         ret = cms_rpc.get_dm_biztree(domain_id)
         if ret['code'] != 0:
             raise errors.RPCError
@@ -298,21 +305,23 @@ class DialogEngine(object):
                 assert(False)
         return ret
 
-    def _pop_focus_unit(self, to_pop_unit):
+    def _pop_focus_unit(self, old_focus_unit):
         self.stack.pop()
-        to_pop_unit.set_state(BizUnit.STATUS_TREEWAIT)
-        to_pop_unit.reset_slots()
+        old_focus_unit.set_state(BizUnit.STATUS_TREEWAIT)
+        old_focus_unit.reset_slots()
         log.debug("POP_STACK: {0}({1})".format(
-            to_pop_unit.__class__.__name__, to_pop_unit.tag))
+            old_focus_unit.__class__.__name__, old_focus_unit.tag))
 
-        focus_unit = self.stack.top()
-        if to_pop_unit.parent and to_pop_unit.parent != focus_unit:
+        new_focus_unit = self.stack.top()
+        if old_focus_unit.parent and old_focus_unit.parent != new_focus_unit:
+            # Topic switch.
             # previous focus and current focus not in the same hierarchy path.
-            log.debug("ROUND_RETURN BizUnit({0})".format(focus_unit.tag))
-            focus_unit.restore_topic_and_focus()
-        elif not focus_unit.is_root():
+            pass
+            log.debug("ROUND_RETURN BizUnit({0})".format(new_focus_unit.tag))
+            new_focus_unit.restore_topic_and_focus()
+        elif not new_focus_unit.is_root():
             # same hierarchy path.
-            focus_unit.restore_focus_after_child_done()
+            new_focus_unit.restore_focus_after_child_done()
         log.debug("STATUS: \n{0}\n{1}".format(self.stack, self.context))
 
     def process_slots(self, sid, slots):
@@ -342,12 +351,14 @@ class DialogEngine(object):
         log.info("-------- {0} ----- {1} -------------------".format(
             sid, slots))
         if self._session.new_session(sid) or self.is_waiting:
-            if self._session.new_session(sid):
+            focus = self.stack.top()
+            if focus.state == BizUnit.STATUS_WAIT_ACTION_CONFIRM:
                 # Could be a remote error
+                self.cancel_timer()
                 log.debug("NEW_SESSION, ABANDON OLD CONFIRM WAITING")
-            self.cancel_timer()
-            log.debug("CANCEL_TIMER {0}({1})".format(
-                self._timer.owner.__class__.__name__, self._timer.owner.tag))
+                log.debug("CANCEL_TIMER {0}({1})".format(
+                    self._timer.owner.__class__.__name__,
+                    self._timer.owner.tag))
         self._session.begin_session(sid)
         self._update_slots(slots)
         self._mark_completed_bizunits()
@@ -357,6 +368,8 @@ class DialogEngine(object):
             self._session.end_session()
         log.info(self.stack)
         log.info(self.context)
+        log.info("\n            Round:\n                {0}".format(
+            self.countdown_round))
         #  @OPTIMIZE return then compute visible units
         self._agenda.compute_visible_units()
         return ret
@@ -371,19 +384,41 @@ class DialogEngine(object):
                 continue
             log.debug("Init Trigger: {0}".format(bizunit))
             new_focus = bizunit.hierarchy_trigger()
-            # 清理trigger到栈顶间的节点，假设的仍然是中间节点都是亲属关系。
-            count = 0
-            for unit in reversed(self.stack.items):
-                if unit == new_focus:
-                    break
-                count += 1
-            while count > 0:
-                self.stack.top().set_state(BizUnit.STATUS_TREEWAIT)
-                self.stack.pop()
-                count -= 1
+            # Remove units not in the hierarchy path,
+            # except 'casual_talk'
+            self._clear_focus_to_stack_top(new_focus)
+            self._clear_focus_to_root()
+            # 清理trigger到栈顶间的节点
             log.debug("Triggered Stack:")
             log.debug(self.stack)
             break
+
+    def _clear_focus_to_root(self):
+        if self.stack.top().tag != 'casual_talk':
+            focus = self.stack.pop()
+            for unit in reversed(self.stack.items):
+                if unit == self.biz_tree.get_node('root'):
+                    break
+                old_focus_unit = self.stack.pop()
+                old_focus_unit.set_state(BizUnit.STATUS_TREEWAIT)
+                old_focus_unit.reset_slots()
+            self.stack.push(focus)
+
+    def _clear_focus_to_stack_top(self, focus):
+        """
+        Note: Won't reset concepts if ancestor node in the stack, but may clear
+        shared slots.
+        """
+        count = 0
+        for unit in reversed(self.stack.items):
+            if unit == focus:
+                break
+            count += 1
+        while count > 0:
+            old_focus_unit = self.stack.pop()
+            old_focus_unit.set_state(BizUnit.STATUS_TREEWAIT)
+            old_focus_unit.reset_slots()
+            count -= 1
 
     def _update_slots(self, slots):
         # OPTIMIZE:  `get_visible_units` control the range of activation,
@@ -444,6 +479,8 @@ class DialogEngine(object):
             self._handle_success_confirm()
         log.info(self.stack)
         log.info(self.context)
+        log.info("\n            Round:\n                {0}".format(
+            self.countdown_round))
         return ret
 
     def _handle_failed_confirm(self):
@@ -528,6 +565,20 @@ class DialogEngine(object):
             "agents": agents
         }
 
+    def reset_countdown_round(self):
+        """ Reset count down round to zero.
+
+        """
+        self.countdown_unit = self.stack.top()
+        self.countdown_round = 0
+
+    def round_out(self):
+        """ If `countdown_unit` have been waiting targets for some maximum
+        rounds.
+
+        """
+        return self.countdown_round >= self.MAX_CONTEXT_RESERVED_ROUND
+
     def on_actionwait_timeout(self):
         """
         Invoked when device failed to send an action confirm to agents in time.
@@ -540,28 +591,28 @@ class DialogEngine(object):
         self._handle_abnormal(AbnormalHandler.ABNORMAL_ACTION_TIMEOUT)
         self._agenda.compute_visible_units()
 
-    def on_inputwait_timeout(self):
+    def on_inputwait_round_out(self):
         """
         Invoked when device failed to send an inputting request
         to agents in time.
         """
-        self._debug_timer_count -= 1
-        delta = (time.time()- self._start_time) / self.debug_timeunit
+        self.countdown_round = 0
+        self.countdown_unit = None
         focus_unit = self.stack.top()
-        log.debug("INPUT_TIMEOUT {2}({0}) {1}".format(
-            self._timer.owner.tag, delta, focus_unit.__class__.__name__))
+        log.debug("INPUT_ROUND_OUT {1}({0})".format(
+            focus_unit.tag, focus_unit.__class__.__name__))
         self._handle_abnormal(AbnormalHandler.ABNORMAL_INPUT_TIMEOUT)
         self._agenda.compute_visible_units()
 
-    def on_delaywait_timeout(self):
+    def on_delaywait_round_out(self):
         """
         Invoked when device failed to send a new input request to agencies.
         """
-        self._debug_timer_count -= 1
-        delta = (time.time()- self._start_time) / self.debug_timeunit
+        self.countdown_round = 0
+        self.countdown_unit = None
         focus_unit = self.stack.top()
-        log.debug("DELAY_TIMEOUT {2}({0}) {1}".format(
-            self._timer.owner.tag, delta, focus_unit.__class__.__name__))
+        log.debug("DELAY_TIMEOUT {1}({0})".format(
+            focus_unit.tag, focus_unit.__class__.__name__))
         focus_unit.set_state(BizUnit.STATUS_AGENCY_COMPLETED)
         self.execute_focus_agent()
         self._agenda.compute_visible_units()

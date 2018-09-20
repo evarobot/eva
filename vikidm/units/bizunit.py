@@ -95,7 +95,7 @@ class BizUnit(treelib.Node):
             return self
 
         unit = self
-        while unit.parent.state == BizUnit.STATUS_TREEWAIT:
+        while not unit.parent.is_root():
             unit.parent.trigger_child = unit
             unit = unit.parent
 

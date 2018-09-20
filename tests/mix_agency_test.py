@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import os
-import time
 from vikidm.context import Slot
 from vikidm.dm import DialogEngine
-from .prepare import data_path, mock_cms_rpc
+from .prepare import data_path, mock_cms_rpc, round_out_simulate
 
 
 class TestMixAgency(object):
@@ -30,7 +29,7 @@ class TestMixAgency(object):
     ├── name.query
     └── where.query
         ├── nike
-            └── zhou_hei_ya
+        └── zhou_hei_ya
     '''
 
     def _construct_dm(self):
@@ -47,6 +46,7 @@ class TestMixAgency(object):
 
     def test_multi_entrance(self):
         dm = self._construct_dm()
+        dm.biz_tree.show()
         dm.process_slots("sid002", [
             Slot("intent", "weather.query"),
         ])
@@ -224,7 +224,7 @@ class TestMixAgency(object):
                 Mix(Mix(weather.query))(STATUS_STACKWAIT)
                 Mix(weather.query)(STATUS_STACKWAIT)
                 weather.query(STATUS_DELAY_EXIST)''')
-        time.sleep(6 * dm.debug_timeunit)
+        round_out_simulate(dm)
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
@@ -237,7 +237,7 @@ class TestMixAgency(object):
                 Slot(intent=None)
                 Slot(location=None)'''
         )
-        dm.process_slots("sid005", [
+        dm.process_slots("sid00x", [
             Slot("intent", "spots.query"),
         ])
         assert(str(dm.stack) == '''
@@ -247,7 +247,7 @@ class TestMixAgency(object):
                 Mix(weather.query)(STATUS_STACKWAIT)
                 spots.query(STATUS_STACKWAIT)
                 all_city(STATUS_WAIT_ACTION_CONFIRM)''')
-        assert(dm.debug_loop == 3)
+        assert(dm.debug_loop == 4)
 
     def clear_share_clear(self):
         pass

@@ -10,7 +10,7 @@ class TestContext(object):
 
     def test_context(self):
         c1 = Slot("intent", "location.query")
-        c2 = Slot("intent", "name.query", "forever")
+        c2 = Slot("intent", "name.query", life_type="forever")
         c3 = Slot("location", "nike")
         c4 = Slot("date", "today")
         ctx = Context()

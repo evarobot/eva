@@ -167,7 +167,7 @@
             "data": {
                 "id": "spots.query",
                 "tag": "spots.query",
-                "type": "TYPE_CLUSTER",
+                "type": "TYPE_TARGET",
                 "subject": "",
                 "scope": "",
                 "entrance": false
@@ -186,7 +186,7 @@
                     ],
                     "target_slots": [],
                     "timeout": 5,
-                    "type": "TYPE_CLUSTER_RESPONSE"
+                    "type": "TYPE_TRIGGER_RESPONSE"
                 },
                 "children": []
 

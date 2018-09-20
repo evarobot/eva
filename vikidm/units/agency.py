@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
 from vikidm.units.bizunit import BizUnit
 from vikidm.units.agent import TargetAgent, TriggerAgent
-from vikidm.config import ConfigDM
 from vikidm.context import Slot
 import logging
 log = logging.getLogger(__name__)
@@ -137,20 +135,31 @@ class TargetAgency(Agency):
         super(TargetAgency, self).__init__(dm, tag, data)
         self.event_id = ""
         self._timer = None
-        self._target_slots = None
+        self._target_slots = set()
+        self._context = None
 
     @property
     def target_slots(self):
         """ Slots to filled by `TargetAgent` children.  """
         if self._target_slots:
             return self._target_slots
-        slot_keys = set()
         for child in self.children:
             for c in child.target_slots:
-                slot_keys.add(c.key)
-        self._target_slots = set(
-            [Slot(key, None) for key in slot_keys])
+                self._target_slots.add(Slot(c.key, None))
         return self._target_slots
+
+    @property
+    def context(self):
+        if self._context:
+            return self._context
+        for child in self.children:
+            if isinstance(child, TriggerAgent):
+                for slot in child.trigger_slots:
+                    if slot.key == "intent":
+                        self._context = {
+                            'intent': slot.value
+                        }
+                        return self._context
 
     def restore_focus_after_child_done(self):
         """
@@ -174,12 +183,18 @@ class TargetAgency(Agency):
         self._execute_condition.add(self.state)
 
     def _execute(self):
+        self._dm.context.update_slot_by_value("intent", self.context["intent"])
         log.debug("EXECUTE TargetAgency({0})".format(self.tag))
         if self.state == BizUnit.STATUS_DELAY_EXIST:
             self._execute_condition.remove(BizUnit.STATUS_DELAY_EXIST)
-            log.debug("START_DELAY_TIMER TargetAgency({0})".format(self.tag))
-            self._dm.start_timer(self, ConfigDM.input_timeout,
-                                 self._dm.on_delaywait_timeout)
+            if self._dm.countdown_unit != self:
+                self._dm.reset_countdown_round()
+                log.debug(
+                    "START_DELAY_COUNTDOWN TargetAgency({0})".format(self.tag))
+            else:
+                self._dm.countdown_round += 1
+                if self._dm.round_out():
+                    self._dm.on_delaywait_round_out()
             return {}
 
         self.active_child = self._plan()
@@ -198,20 +213,62 @@ class TargetAgency(Agency):
         return {}
 
     def _plan(self):
+
+        def _top_priority_child(units):
+            """
+            Child with most slots matched and most specified slot matched
+            have the top priority.
+            """
+            if len(units) == 1:
+                return units[0]
+            priority_units = []
+            max_match = 0
+            for unit in units:
+                any_match = 0
+                num_match = 0
+                for slot in unit.trigger_slots:
+                    if slot.key != "intent":
+                        if slot.optional:
+                            if slot.value[0] != '@':
+                                num_match += 1
+                            elif self._dm.context.dirty(slot.key):
+                                num_match += 1
+                                any_match += 1
+                        else:
+                            if slot.value[0] != '@':
+                                num_match += 1
+                            else:
+                                any_match += 1
+                        all_match = num_match + any_match
+                        if all_match > max_match:
+                            max_match = all_match
+                priority_units.append(
+                    (unit, all_match, any_match))
+            priority_units = filter(
+                lambda x: x[1] == max_match, priority_units)
+            priority_units.sort(key=lambda x: x[2])
+            #if self._dm._session._sid == "sid00xx":
+                #temp = [(unit[0].tag, unit[1], unit[2]) for unit in priority_units]
+                #print temp
+                #import pdb
+                #pdb.set_trace()
+            return priority_units[0][0]
+
+        triggered_children = []
         for child in self.children:
             if isinstance(child, TriggerAgent) and child.satisfied():
+                triggered_children.append(child)
+        if triggered_children:
+            return _top_priority_child(triggered_children)
+
+        for child in self.children:
+            if isinstance(child, TargetAgent) and\
+                    len(child.target_slots) > 1 and child.target_clean():
                 return child
 
         for child in self.children:
             if isinstance(child, TargetAgent) and\
-                    len(child.target_slots) == len(self.target_slots) and\
-                    child.target_clean():
-                return child
-
-        for child in self.children:
-            if isinstance(child, TargetAgent) and\
-                    len(child.target_slots) < len(self.target_slots) and\
-                    not child.target_completed():
+                    len(child.target_slots) == 1 and not child.target_completed():
                 # return first none complete target child
                 return child
         return None
@@ -244,9 +301,14 @@ class MixAgency(Agency):
         log.debug("EXECUTE MixAgency({0})".format(self.tag))
         if self.state == BizUnit.STATUS_DELAY_EXIST:
             self._execute_condition.remove(BizUnit.STATUS_DELAY_EXIST)
-            self._dm.start_timer(
-                self, ConfigDM.input_timeout, self._dm.on_delaywait_timeout)
-            log.debug("START_DELAY_TIMER MixAgency({0})".format(self.tag))
+            if self._dm.countdown_unit != self:
+                self._dm.reset_countdown_round()
+                log.debug(
+                    "START_DELAY_COUNTDOWN MixAgency({0})".format(self.tag))
+            else:
+                self._dm.countdown_round += 1
+                if self._dm.round_out():
+                    self._dm.on_delaywait_round_out()
             return {}
 
         self.trigger_child.set_state(BizUnit.STATUS_TRIGGERED)
