@@ -212,7 +212,8 @@ class DMQuestionHandler(RobotAPIHandler):
         log.info("[REQUEST: {0}]".format(self.data))
         domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
         robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
-        ret = robot.process_question(self.data['question'])
+        sid = int(round(time.time() * 1000))
+        ret = robot.process_question(self.data['question'], sid)
         log.info(ret)
         return self.write_json(ret)
 
