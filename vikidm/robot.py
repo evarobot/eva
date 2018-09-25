@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import logging
-import time
 from vikidm.context import Slot
-from vikidm.chat import CasualTalk
 from vikidm.dm import DialogEngine
-from evecms.models import Domain
 from vikidm.util import cms_rpc, nlu_predict
-from vikinlu.robot import NLURobot
 log = logging.getLogger(__name__)
 
 
@@ -17,9 +13,9 @@ class DMRobot(object):
     """
     robots_pool = {}
 
-    def __init__(self, robot_id, domain_id):
+    def __init__(self, robot_id, domain_id, domain_name):
         self.domain_id = domain_id
-        self.domain_name = Domain.query.get(domain_id).name
+        self.domain_name = domain_name
         self.robot_id = robot_id
         self._dm = DialogEngine()
         self._dm.init_from_db(self.domain_id)
@@ -31,10 +27,6 @@ class DMRobot(object):
         Convert question to intent, slots, slots with NLU.
         """
         question = question.strip(' \n')
-        if self._dm.is_waiting:
-            # Make sure the context is consistent during intent predicting.
-            # This request will cancel the timer anyway.
-            self._dm.cancel_timer()
         context = self.get_context()
         ret = nlu_predict(self.domain_id, context, question)
         slots = [Slot("intent", ret["intent"])]
@@ -57,7 +49,7 @@ class DMRobot(object):
                     slots[slot_name] = value
         return slots
 
-    def process_question(self, question):
+    def process_question(self, question, sid):
         """ Process question from device.
 
         It will parse question to (`Intent`, Slots, Slots) with NLU and
@@ -66,6 +58,7 @@ class DMRobot(object):
         Parameters
         ----------
         question : str, question text from human being.
+        sid : str, session id.
 
         Returns
         -------
@@ -85,7 +78,7 @@ class DMRobot(object):
                     "slots": {}
                 }
             }
-        ret = self._process_slots(slots)
+        ret = self._process_slots(slots, sid)
         if intent == 'casual_talk':
             # ret["action"] = {"tts": CasualTalk.get_tuling_answer(question)}
             ret["action"] = {}
@@ -95,8 +88,7 @@ class DMRobot(object):
         }
         return ret
 
-    def _process_slots(self, slots):
-        sid = int(round(time.time() * 1000))
+    def _process_slots(self, slots, sid):
         dm_ret = self._dm.process_slots(sid, slots)
         if not dm_ret:
             return {
@@ -133,12 +125,13 @@ class DMRobot(object):
         """
         return self._dm.get_visible_units()
 
-    def process_slots(self, d_slots):
+    def process_slots(self, d_slots, sid):
         """ Process slots input from device
 
         Parameters
         ----------
         d_slots : dict, slots with diction format.
+        sid : str, session id.
 
         Returns
         -------
@@ -147,7 +140,7 @@ class DMRobot(object):
         """
         slots = [Slot(key, value)
                     for key, value in d_slots.iteritems()]
-        return self._process_slots(slots)
+        return self._process_slots(slots, sid)
 
     def process_event(self, event_id):
         """ Process event from device.
@@ -216,7 +209,7 @@ class DMRobot(object):
         }
 
     @classmethod
-    def get_robot(self, robotid, domain_id):
+    def get_robot(self, robotid, domain_id, domain_name):
         """ Get a DMRobot instance with device id and it's application id.
 
         If there is no correspond robot instance in the robots buffer,
@@ -226,6 +219,7 @@ class DMRobot(object):
         ----------
         robotid : str, device id.
         domain_id : str, application id.
+        domain_name : str, name of domain
 
         Returns
         -------
@@ -235,7 +229,7 @@ class DMRobot(object):
         robot = DMRobot.robots_pool.get(robotid, None)
         if robot:
             return robot
-        robot = DMRobot(robotid, domain_id)
+        robot = DMRobot(robotid, domain_id, domain_name)
         DMRobot.robots_pool[robotid] = robot
         return robot
 

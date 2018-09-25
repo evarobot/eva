@@ -396,12 +396,10 @@ class DialogEngine(object):
     def _clear_focus_to_root(self):
         if self.stack.top().tag != 'casual_talk':
             focus = self.stack.pop()
-            for unit in reversed(self.stack.items):
-                if unit == self.biz_tree.get_node('root'):
-                    break
-                old_focus_unit = self.stack.pop()
-                old_focus_unit.set_state(BizUnit.STATUS_TREEWAIT)
-                old_focus_unit.reset_slots()
+            for unit in reversed(self.stack.items[1:]):
+                to_pop_unit = self.stack.pop()
+                to_pop_unit.set_state(BizUnit.STATUS_TREEWAIT)
+                to_pop_unit.reset_slots()
             self.stack.push(focus)
 
     def _clear_focus_to_stack_top(self, focus):
