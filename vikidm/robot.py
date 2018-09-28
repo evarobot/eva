@@ -138,8 +138,7 @@ class DMRobot(object):
         dict.
 
         """
-        slots = [Slot(key, value)
-                    for key, value in d_slots.iteritems()]
+        slots = [Slot(key, value) for key, value in d_slots.iteritems()]
         return self._process_slots(slots, sid)
 
     def process_event(self, event_id):

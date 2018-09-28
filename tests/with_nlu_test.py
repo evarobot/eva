@@ -19,32 +19,31 @@ init_logger(level="DEBUG", path=ConfigLog.log_path)
 
 class TestDM(object):
     """  测试对话管理引擎
-    ├── Mix(home.service)
-    │   ├── consume.query
-    │   ├── home.service
-    │   └── left.query
-    ├── Mix(travel.query)
-    │   ├── consume.query
-    │   ├── left.query
-    │   ├── travel.query
-    │   └── 天气查询
-    │       ├── spots.query
-    │       │   ├── @city
-    │       │   ├── 武汉
-    │       │   └── 深圳
-    │       └── weather.query
-    │           ├── @date,@city
-    │           ├── city
-    │           ├── date
-    │           └── default
-    ├── location.query
-    │   ├── 周黑鸭
-    │   └── 耐克
-    └── name.query
+    root
+├── home_service
+│   ├── consume.query
+│   ├── home.query
+│   └── left.query
+├── name.query
+└── travel_service
+    ├── consume.query1
+    ├── left.query1
+    ├── sports_service
+    │   ├── spots.query
+    │   │   ├── @city
+    │   │   ├── city
+    │   │   ├── 武汉
+    │   │   └── 深圳
+    │   └── weather.query
+    │       ├── @city,@date
+    │       ├── city
+    │       ├── city,date
+    │       └── date
+    └── travel.query
     """
     def _create_robot(self):
         # train models
-        domain = Domain.query.filter_by(name="C").first()
+        domain = Domain.query.filter_by(name="A").first()
         nlu_train(str(domain.id))
 
         self._debug_timeunit = 0.5
@@ -69,47 +68,42 @@ class TestDM(object):
         assert(ret["code"] == 0)
         # 数据读取有问题！
         assert(ret["nlu"]["intent"] == "travel.query")
-        assert(ret["event_id"] == "travel.query:None")
         dm_robot.process_confirm(ret['sid'], {
             'code': 0,
         })
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                Mix(travel.query)(STATUS_DELAY_EXIST)''')
+                travel_service(STATUS_DELAY_EXIST)''')
         ret = dm_robot.process_question(u"消费多少", "sid003")
-        assert(ret["nlu"]["intent"] == "consume.query")
-        assert(ret["event_id"] == "travel.consume.query:None")
+        assert(ret["nlu"]["intent"] == "consume.query1")
         dm_robot.process_confirm(ret['sid'], {
             'code': 0,
         })
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                Mix(travel.query)(STATUS_DELAY_EXIST)''')
+                travel_service(STATUS_DELAY_EXIST)''')
         ret = dm_robot.process_question(u"深圳什么天气", "sid004")
         assert(ret["nlu"]["intent"] == "weather.query")
-        assert(ret["nlu"]["slots"] == {u"city槽": u"深圳"})
-        assert(ret["event_id"] == "weather.query:date")
+        assert(ret["nlu"]["slots"] == {u"city": u"深圳"})
         dm_robot.process_confirm(ret['sid'], {
             'code': 0,
         })
         ret = dm_robot.process_question(u"深圳明天什么天气", "sid005")
         assert(ret["nlu"]["intent"] == "weather.query")
-        assert(ret["nlu"]["slots"] == {u"city槽": u"深圳", u"date槽": u"明天"})
-        assert(ret["event_id"] == "weather.query:date,city")
+        assert(ret["nlu"]["slots"] == {u"city": u"深圳", u"date": u"明天"})
         dm_robot.process_confirm(ret['sid'], {
             'code': 0,
         })
         assert(str(dm.stack) == '''
             Stack:
                 root(STATUS_STACKWAIT)
-                Mix(travel.query)(STATUS_STACKWAIT)
-                天气查询(STATUS_STACKWAIT)
+                travel_service(STATUS_STACKWAIT)
+                sports_service(STATUS_STACKWAIT)
                 weather.query(STATUS_DELAY_EXIST)''')
         ret = dm_robot.process_question(u"附近有什么景点", "sid006")
         assert(ret["nlu"]["intent"] == "spots.query")
-        assert(ret["event_id"] == u"spots.query:深圳")
         assert(ret["nlu"]["slots"] == {})
         dm_robot.process_confirm(ret['sid'], {
             'code': 0,

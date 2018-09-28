@@ -170,6 +170,9 @@ class ExpectAgenda(object):
             candicates.extend(self._visible_descendant_agents(unit))
         return candicates
 
+    def show_visible_agents(self):
+        return [agent.tag for agent in self.visible_agents]
+
     def _none_root_ancestors_of_focus_agent(self):
         focus = self._stack.top()
         unit = focus
@@ -392,6 +395,10 @@ class DialogEngine(object):
             log.debug("Triggered Stack:")
             log.debug(self.stack)
             break
+        else:
+            log.info("INVALID AGENTS")
+            log.info(
+                "Valid Agents: {0}".format(self._agenda.show_visible_agents()))
 
     def _clear_focus_to_root(self):
         if self.stack.top().tag != 'casual_talk':
@@ -413,9 +420,9 @@ class DialogEngine(object):
                 break
             count += 1
         while count > 0:
-            old_focus_unit = self.stack.pop()
-            old_focus_unit.set_state(BizUnit.STATUS_TREEWAIT)
-            old_focus_unit.reset_slots()
+            to_pop_unit = self.stack.pop()
+            to_pop_unit.set_state(BizUnit.STATUS_TREEWAIT)
+            to_pop_unit.reset_slots()
             count -= 1
 
     def _update_slots(self, slots):
@@ -427,13 +434,12 @@ class DialogEngine(object):
             visible_slots.extend(agent.trigger_slots)
         visible_slots = set([c.key for c in visible_slots])
         for slot in slots:
-            if slot.key in visible_slots:
-                is_valid_intent = slot.key == "intent" and\
-                    slot.value in self._agenda.visible_intents
-                if is_valid_intent or slot.key != "intent":
+            if slot.key == "intent":
+                if slot.value in self._agenda.visible_intents:
                     self.context.update_slot(slot.key, slot)
             else:
-                log.info("Invalid Slot: [{0}]".format(slot.key))
+                # or check with visible_slots and slots of triggered intent.
+                self.context.update_slot(slot.key, slot)
 
     def _mark_completed_bizunits(self):
         for bizunit in self.biz_tree.all_nodes_itr():
