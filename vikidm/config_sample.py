@@ -9,17 +9,31 @@ import os
 
 class _ConfigDM(object):
     input_timeout = 10.0
-    _host = "0.0.0.0"
-    _port = 9999
+
+
+class _ConfigNLU(object):
+    request_timeout = 10.0
+    _host = "127.0.0.1"
+    _port = 5000
+
+    @property
+    def train_url(self):
+        url = "http://{0}:{1}".format(self.host, self.port)
+        return url + "/v2/nlu/{0}/train"
+
+    @property
+    def predict_url(self):
+        url = "http://{0}:{1}".format(self.host, self.port)
+        return url + "/v2/nlu/{0}/predict"
 
     @property
     def host(self):
-        host = os.environ.get("DM_HOST")
+        host = os.environ.get("NLU_HOST")
         return host if host is not None else self._host
 
     @property
     def port(self):
-        port = os.environ.get("DM_PORT")
+        port = os.environ.get("NLU_PORT")
         return port if port is not None else self._port
 
 
@@ -60,3 +74,4 @@ class _ConfigMongo:
 ConfigMongo = _ConfigMongo()
 ConfigLog = _ConfigLog()
 ConfigDM = _ConfigDM()
+ConfigNLU = _ConfigNLU()
