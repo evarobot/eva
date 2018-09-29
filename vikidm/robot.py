@@ -3,7 +3,7 @@
 import logging
 from vikidm.context import Slot
 from vikidm.dm import DialogEngine
-from vikidm.util import cms_rpc, nlu_predict
+from vikidm.util import cms_gate, nlu_gate
 log = logging.getLogger(__name__)
 
 
@@ -28,7 +28,7 @@ class DMRobot(object):
         """
         question = question.strip(' \n')
         context = self.get_context()
-        ret = nlu_predict(self.domain_id, context, question)
+        ret = nlu_gate.predict(self.domain_id, context, question)
         slots = [Slot("intent", ret["intent"])]
         for slot_name, value_name in ret["slots"].iteritems():
             slots.append(Slot(slot_name, value_name))
@@ -39,7 +39,7 @@ class DMRobot(object):
         Return slots correspond to all dirty slots in Context.
         """
         slots = {}
-        ret2 = cms_rpc.get_intent_slots_without_value(self.domain_id, intent)
+        ret2 = cms_gate.get_intent_slots_without_value(self.domain_id, intent)
         if ret2['code'] != 0:
             log.error("调用错误")
         else:
@@ -96,7 +96,7 @@ class DMRobot(object):
                 'message': '对话管理无响应',
                 "sid": sid,
             }
-        ret = cms_rpc.event_id_to_answer(self.domain_id, dm_ret["event_id"])
+        ret = cms_gate.event_id_to_answer(self.domain_id, dm_ret["event_id"])
         if ret["code"] != 0:
             return ret
         return {
@@ -199,8 +199,7 @@ class DMRobot(object):
         }
 
         """
-        slots = [Slot(key, value)
-                    for key, value in d_slots.iteritems()]
+        slots = [Slot(key, value) for key, value in d_slots.iteritems()]
         self._dm.update_by_remote(slots)
         log.info(self._dm.context)
         return {
@@ -233,7 +232,7 @@ class DMRobot(object):
         return robot
 
     @classmethod
-    def reset_robot(self, robotid, domain_id):
+    def reset_robot(self, robotid, domain_id, domain_name):
         """ Delete old robot from buffer and recreate new one.
 
         Parameters
@@ -242,6 +241,8 @@ class DMRobot(object):
         domain_id : str, application id.
 
         """
-        robot = DMRobot(robotid, domain_id)
-        robot.nlu.reset_robot()
+        robot = DMRobot(robotid, domain_id, domain_name)
         DMRobot.robots_pool[robotid] = robot
+        return {
+            "code": 0
+        }

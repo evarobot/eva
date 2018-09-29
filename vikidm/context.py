@@ -58,7 +58,10 @@ class Slot(JSONEncoder):
             return hash(self) == hash(r)
 
     def __repr__(self):
-        return self.__unicode__()
+        try:
+            return self.__unicode__()
+        except Exception as e:
+            raise e
 
 
 class Context(object):

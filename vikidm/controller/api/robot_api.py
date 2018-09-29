@@ -4,11 +4,10 @@
 """
 import logging
 import time
-from vikinlu.robot import NLURobot
 from vikidm.libs.handler import RobotAPIHandler
 from vikidm.libs.route import Route
 from vikidm.robot import DMRobot
-from evecms.models import Domain
+from vikidm.util import cms_gate
 log = logging.getLogger(__name__)
 
 
@@ -145,8 +144,11 @@ class BackendConceptsHandler(RobotAPIHandler):
 
         """
         log.info("[REQUEST: {0}]".format(self.data))
-        domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
-        robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
+        domain_id = cms_gate.get_domain_by_name(
+            self.data["project"])["data"]["id"]
+        robot = DMRobot.get_robot(self.data["robot_id"], domain_id,
+                                  self.data["project"])
+        log.info("Create DM Robot: {0}".format(self.data["project"]))
         ret = robot.update_slots_by_backend(self.data['slots'])
         return self.write_json(ret)
 
@@ -210,8 +212,9 @@ class DMQuestionHandler(RobotAPIHandler):
 
         """
         log.info("[REQUEST: {0}]".format(self.data))
-        domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
-        robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
+        domain_id = cms_gate.get_domain_by_name(self.data["project"])["data"]["id"]
+        robot = DMRobot.get_robot(self.data["robot_id"], domain_id,
+                                  self.data["project"])
         sid = int(round(time.time() * 1000))
         ret = robot.process_question(self.data['question'], sid)
         log.info(ret)
@@ -276,8 +279,9 @@ class DMEventHandler(RobotAPIHandler):
         """
 
         log.info("[REQUEST: {0}]".format(self.data))
-        domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
-        robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
+        domain_id = cms_gate.get_domain_by_name(self.data["project"])["data"]["id"]
+        robot = DMRobot.get_robot(self.data["robot_id"], domain_id,
+                                  self.data["project"])
         ret = robot.process_question(self.data['sid'], self.data['question'])
         return self.write_json(ret)
 
@@ -322,8 +326,9 @@ class DMConfirmHandler(RobotAPIHandler):
 
         """
         log.info("[REQUEST: {0}]".format(self.data))
-        domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
-        robot = DMRobot.get_robot(self.data['robot_id'], domain_id)
+        domain_id = cms_gate.get_domain_by_name(self.data["project"])["data"]["id"]
+        robot = DMRobot.get_robot(self.data["robot_id"], domain_id,
+                                  self.data["project"])
         ret = robot.process_confirm(self.data['sid'], self.data['result'])
         return self.write_json(ret)
 
@@ -333,27 +338,6 @@ class DMResetRobotHandler(RobotAPIHandler):
 
     def post(self):
         log.info("[REQUEST: {0}]".format(self.data))
-        domain_id = str(Domain.objects.get(name=self.data["project"]).pk)
-        DMRobot.reset_robot(self.data['robot_id'], domain_id)
+        domain_id = cms_gate.get_domain_by_name(self.data["project"])["data"]["id"]
+        DMRobot.reset_robot(self.data["robot_id"], domain_id, self.data["project"])
         return self.write_json({"code": 0})
-
-
-@Route('/dm/robot/train/')
-class DMTrainHandler(RobotAPIHandler):
-
-    def post(self):
-        log.info("[REQUEST: {0}]".format(self.data))
-        robot = NLURobot.get_robot(self.data["domain_id"])
-        start = time.time()
-        ret = robot.train(("logistic", "0.1"))
-        end = time.time()
-        log.info("Training takes {0} seconds".format(end - start))
-        if ret["code"] == 0:
-            return self.write_json(ret.update({
-                "message": u"训练成功!",
-                "duration": "%.2f" % (end - start)
-            }))
-        return self.write_json({
-            "code": -1,
-            "message": "failed"
-        })

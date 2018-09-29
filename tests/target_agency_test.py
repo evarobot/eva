@@ -135,18 +135,18 @@ class TestTargetAgencyCase(object):
         # result triggered
         dm.process_slots("sid002", [
             Slot('intent', 'weather.query'),
-            Slot('city', '深圳'),
-            Slot('meteorology', '小雪'),
-            Slot('date', '今天')
+            Slot('city', 'Shenzheng'),
+            Slot('meteorology', 'snow'),
+            Slot('date', 'today')
         ])
         assert(str(dm.context) == '''
             Context:
-                Slot(city=深圳)
+                Slot(city=Shenzheng)
                 Slot(country=None)
-                Slot(date=今天)
+                Slot(date=today)
                 Slot(intent=weather.query)
                 Slot(location=None)
-                Slot(meteorology=小雪)'''
+                Slot(meteorology=snow)'''
         )
         assert(str(dm.stack) == '''
             Stack:
@@ -165,7 +165,7 @@ class TestTargetAgencyCase(object):
         # context preserve
         dm.process_slots("sid001", [
             Slot('intent', 'weather.query'),
-            Slot('city', '上海'),
+            Slot('city', 'Shanghai'),
         ])
         assert(str(dm.stack) == '''
             Stack:
@@ -174,12 +174,12 @@ class TestTargetAgencyCase(object):
                 result(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
-                Slot(city=上海)
+                Slot(city=Shanghai)
                 Slot(country=None)
-                Slot(date=今天)
+                Slot(date=today)
                 Slot(intent=weather.query)
                 Slot(location=None)
-                Slot(meteorology=小雪)'''
+                Slot(meteorology=snow)'''
         )
         dm.process_confirm('sid001', {
             'code': 0,
@@ -210,11 +210,11 @@ class TestTargetAgencyCase(object):
         dm = construct_dm()
         dm.process_slots("sid001", [
             Slot("intent", "weather.query"),
-            Slot("city", "深圳")
+            Slot("city", "Shenzheng")
         ])
         assert(str(dm.context) == '''
             Context:
-                Slot(city=深圳)
+                Slot(city=Shenzheng)
                 Slot(country=None)
                 Slot(date=None)
                 Slot(intent=weather.query)
@@ -238,8 +238,8 @@ class TestTargetAgencyCase(object):
 
         # target complete
         dm.process_slots("sid002", [
-            Slot("date", "今天"),
-            Slot("meteorology", "小雪"),
+            Slot("date", "today"),
+            Slot("meteorology", "snow"),
             Slot("intent", "weather.query")
         ])
         assert(str(dm.stack) == '''
@@ -249,21 +249,21 @@ class TestTargetAgencyCase(object):
                 result(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
-                Slot(city=深圳)
+                Slot(city=Shenzheng)
                 Slot(country=None)
-                Slot(date=今天)
+                Slot(date=today)
                 Slot(intent=weather.query)
                 Slot(location=None)
-                Slot(meteorology=小雪)''')
+                Slot(meteorology=snow)''')
         dm.cancel_timer()
 
     def test_optional(self):
         dm = construct_dm()
         dm.process_slots("sid001", [
             Slot("intent", "weather.query"),
-            Slot("city", "上海"),
-            Slot("date", "明天"),
-            Slot("meteorology", "小雨")
+            Slot("city", "Shanghai"),
+            Slot("date", "tomorrow"),
+            Slot("meteorology", "rainy")
         ])
         assert(str(dm.stack) == '''
             Stack:
@@ -280,8 +280,8 @@ class TestTargetAgencyCase(object):
         dm = construct_dm()
         dm.process_slots("sid001", [
             Slot("intent", "weather.query"),
-            Slot("city", "北京"),
-            Slot("date", "明天")
+            Slot("city", "Beijing"),
+            Slot("date", "tomorrow")
         ])
         assert(str(dm.stack) == '''
             Stack:
@@ -299,9 +299,9 @@ class TestTargetAgencyCase(object):
         dm = construct_dm()
         dm.process_slots("sid001", [
             Slot("intent", "weather.query"),
-            Slot("city", "北京"),
-            Slot("date", "明天"),
-            Slot("meteorology", "小雨")
+            Slot("city", "Beijing"),
+            Slot("date", "tomorrow"),
+            Slot("meteorology", "rainy")
         ])
         assert(str(dm.stack) == '''
             Stack:
@@ -317,10 +317,10 @@ class TestTargetAgencyCase(object):
         dm = construct_dm()
         dm.process_slots("sid001", [
             Slot("intent", "weather.query"),
-            Slot("city", "北京"),
-            Slot("date", "明天"),
-            Slot("country", "中国"),
-            Slot("meteorology", "小雨"),
+            Slot("city", "Beijing"),
+            Slot("date", "tomorrow"),
+            Slot("country", "china"),
+            Slot("meteorology", "rainy"),
         ])
         assert(str(dm.stack) == '''
             Stack:

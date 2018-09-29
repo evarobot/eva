@@ -3,7 +3,7 @@
 import os
 from vikidm.context import Slot
 from vikidm.dm import DialogEngine
-from .prepare import data_path, mock_cms_rpc, round_out_simulate
+from .prepare import data_path, mock_cms_gate, round_out_simulate
 
 
 class TestMixAgency(object):
@@ -40,7 +40,7 @@ class TestMixAgency(object):
         fpath5 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
         dm = DialogEngine()
         dm.debug_timeunit = 0.2
-        mock_cms_rpc([fpath1, fpath2, fpath3, fpath4, fpath5])
+        mock_cms_gate([fpath1, fpath2, fpath3, fpath4, fpath5])
         dm.init_from_db("mock_domain_id")
         return dm
 
@@ -161,8 +161,8 @@ class TestMixAgency(object):
         })
         dm.process_slots('sid004', [
             Slot("intent", "weather.query"),
-            Slot("date", "明天"),
-            Slot("city", "深圳")
+            Slot("date", "tomorrow"),
+            Slot("city", "Shenzheng")
         ])
         assert(str(dm.stack) == '''
             Stack:
@@ -173,8 +173,8 @@ class TestMixAgency(object):
                 result(STATUS_WAIT_ACTION_CONFIRM)''')
         assert(str(dm.context) == '''
             Context:
-                Slot(city=深圳)
-                Slot(date=明天)
+                Slot(city=Shenzheng)
+                Slot(date=tomorrow)
                 Slot(intent=weather.query)
                 Slot(location=None)'''
         )
@@ -208,8 +208,8 @@ class TestMixAgency(object):
         })
         dm.process_slots('sid004', [
             Slot("intent", "weather.query"),
-            Slot("date", "明天"),
-            Slot("city", "深圳")
+            Slot("date", "tomorrow"),
+            Slot("city", "Shenzheng")
         ])
         return dm
 
@@ -232,8 +232,8 @@ class TestMixAgency(object):
                 Mix(weather.query)(STATUS_DELAY_EXIST)''')
         assert(str(dm.context) == '''
             Context:
-                Slot(city=深圳)
-                Slot(date=明天)
+                Slot(city=Shenzheng)
+                Slot(date=tomorrow)
                 Slot(intent=None)
                 Slot(location=None)'''
         )

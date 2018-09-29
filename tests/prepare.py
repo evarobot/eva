@@ -4,7 +4,7 @@ import logging
 import json
 import mock
 import os
-from vikidm.util import PROJECT_DIR, cms_rpc
+from vikidm.util import PROJECT_DIR, cms_gate
 from vikicommon.log import init_logger
 from vikidm.config import ConfigLog, ConfigDM
 from vikidm.dm import DialogEngine
@@ -18,7 +18,7 @@ ConfigDM.input_timeout = 5.0
 INPUT_TIMEOUT = ConfigDM.input_timeout + 1.0
 
 
-def mock_cms_rpc(paths):
+def mock_cms_gate(paths):
     d_subtrees = []
     for fpath in paths:
         with open(fpath, 'r') as file_obj:
@@ -41,7 +41,7 @@ def mock_cms_rpc(paths):
         "code": 0,
         "tree": json.dumps(root)
     }
-    cms_rpc.get_dm_biztree = mock.Mock(return_value=data)
+    cms_gate.get_dm_biztree = mock.Mock(return_value=json.dumps(data))
 
 
 def construct_dm():
@@ -63,7 +63,7 @@ def construct_dm():
     fpath3 = os.path.join(data_path, 'biz_simulate_data/biz_chat.json')
     fpath4 = os.path.join(data_path, 'biz_simulate_data/biz_weather.json')
     dm = DialogEngine()
-    mock_cms_rpc([fpath1, fpath2, fpath3, fpath4])
+    mock_cms_gate([fpath1, fpath2, fpath3, fpath4])
     dm.init_from_db("mock_domain_id")
     dm.debug_timeunit = 0.2
     return dm

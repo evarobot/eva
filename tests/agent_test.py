@@ -6,7 +6,7 @@ import time
 from vikidm.dm import DialogEngine, Stack
 from vikidm.context import Slot
 from vikidm.biztree import Agent
-from .prepare import data_path, mock_cms_rpc, construct_dm
+from .prepare import data_path, mock_cms_gate, construct_dm
 
 
 def test_stack():
@@ -26,7 +26,7 @@ def test_init_biz_from_db():
     """
     dm = DialogEngine()
     fpath = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
-    mock_cms_rpc([fpath])
+    mock_cms_gate([fpath])
     dm.init_from_db("mock_domain_id")
 
     # tree testing

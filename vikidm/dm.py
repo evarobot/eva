@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
+import json
 import copy
 import logging
 import pprint
@@ -19,7 +20,7 @@ from vikidm.units import (
     MixAgency,
     AbnormalHandler
 )
-from vikidm.util import cms_rpc
+from vikidm.util import cms_gate
 
 
 log = logging.getLogger(__name__)
@@ -268,7 +269,7 @@ class DialogEngine(object):
         None
 
         """
-        ret = cms_rpc.get_dm_biztree(domain_id)
+        ret = json.loads(cms_gate.get_dm_biztree(domain_id))
         if ret['code'] != 0:
             raise errors.RPCError
         self.biz_tree.init_from_json(ret['tree'], self)

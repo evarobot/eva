@@ -100,7 +100,7 @@
 				"trigger_slots": [
 					"intent=weather.query",
 					"date=@date",
-					"city=北京",
+					"city=Beijing",
                     "meteorology=@meteorology"
 				],
 				"target_slots": [],
@@ -121,7 +121,7 @@
 				"trigger_slots": [
 					"intent=weather.query",
 					"date=@date",
-					"city=北京",
+					"city=Beijing",
                     "meteorology=None"
 				],
 				"target_slots": [],
