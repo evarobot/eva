@@ -215,9 +215,8 @@ class DMQuestionHandler(RobotAPIHandler):
         domain_id = cms_gate.get_domain_by_name(self.data["project"])["data"]["id"]
         robot = DMRobot.get_robot(self.data["robot_id"], domain_id,
                                   self.data["project"])
-        sid = int(round(time.time() * 1000))
-        ret = robot.process_question(self.data['question'], sid)
-        log.info(ret)
+        #sid = int(round(time.time() * 1000))
+        ret = robot.process_question(self.data['question'], self.data['sid'])
         return self.write_json(ret)
 
 
