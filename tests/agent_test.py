@@ -30,7 +30,7 @@ def test_init_biz_from_db():
     dm.init_from_db("mock_domain_id")
 
     # tree testing
-    assert(len(dm.biz_tree.children('root')) == 1)
+    assert(len(dm.biz_tree.children('root')) == 2)
     assert(len(dm.biz_tree.children('where.query')) == 2)
     assert(dm.biz_tree.get_node('zhou_hei_ya').trigger_slots[0] in
            ["Slot(intent=where.query)"])

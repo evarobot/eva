@@ -63,7 +63,11 @@ class TestDM(object):
         assert(ret["nlu"]["intent"] == "casual_talk")
         assert(str(dm.stack) == '''
             Stack:
-                root(STATUS_STACKWAIT)''')
+                root(STATUS_STACKWAIT)
+                casual_talk(STATUS_WAIT_ACTION_CONFIRM)''')
+        dm_robot.process_confirm(ret['sid'], {
+            'code': 0,
+        })
         ret = dm_robot.process_question(u"有什么旅游服务", "sid002")
         assert(ret["code"] == 0)
         # 数据读取有问题！

@@ -35,12 +35,11 @@ class TestMixAgency(object):
     def _construct_dm(self):
         fpath1 = os.path.join(data_path, 'biz_simulate_data/biz_mix_travel.json')
         fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_mix_home.json')
-        fpath3 = os.path.join(data_path, 'biz_simulate_data/biz_chat.json')
         fpath4 = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
         fpath5 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
         dm = DialogEngine()
         dm.debug_timeunit = 0.2
-        mock_cms_gate([fpath1, fpath2, fpath3, fpath4, fpath5])
+        mock_cms_gate([fpath1, fpath2, fpath4, fpath5])
         dm.init_from_db("mock_domain_id")
         return dm
 
@@ -81,8 +80,8 @@ class TestMixAgency(object):
         priority_nodes = [agent[0] for agent in context["agents"]]
         assert(priority_nodes == [
             u'travel.service', u'default@weather.query', u'city',
-            u'date', u'result', u'home.service', u'casual_talk',
-            u'nike', u'zhou_hei_ya', u'name.query'
+            u'date', u'result', u'home.service', u'nike', u'zhou_hei_ya'
+            , u'name.query', 'casual_talk'
         ])
         assert(set(context["visible_slots"]) == set(["date", "city", "location"]))
         dm.process_slots("sid002", [
@@ -93,8 +92,8 @@ class TestMixAgency(object):
         assert(priority_nodes == [
             'travel.service', 'travel_consume.query', 'travel_left.query',
             'default@weather.query', 'city', 'date', 'result',
-            'home.service', 'casual_talk', u'nike', 'zhou_hei_ya',
-            'name.query'
+            'home.service', u'nike', 'zhou_hei_ya',
+            'name.query', 'casual_talk',
         ])
         assert(set(context["visible_slots"]) == set(["date", "city", "location"]))
         assert(str(dm.stack) == '''
@@ -183,8 +182,8 @@ class TestMixAgency(object):
         assert(priority_nodes == [
             'result', 'default@weather.query', 'city', 'date',
             'all_city', 'travel.service', 'travel_consume.query',
-            'travel_left.query', 'home.service', 'casual_talk',
-            'nike', 'zhou_hei_ya', 'name.query'
+            'travel_left.query', 'home.service',
+            'nike', 'zhou_hei_ya', 'name.query', 'casual_talk'
         ])
         assert(dm.debug_loop == 4)
         dm.cancel_timer()

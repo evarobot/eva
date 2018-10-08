@@ -60,10 +60,9 @@ def construct_dm():
     '''
     fpath1 = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
     fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
-    fpath3 = os.path.join(data_path, 'biz_simulate_data/biz_chat.json')
-    fpath4 = os.path.join(data_path, 'biz_simulate_data/biz_weather.json')
+    fpath3 = os.path.join(data_path, 'biz_simulate_data/biz_weather.json')
     dm = DialogEngine()
-    mock_cms_gate([fpath1, fpath2, fpath3, fpath4])
+    mock_cms_gate([fpath1, fpath2, fpath3])
     dm.init_from_db("mock_domain_id")
     dm.debug_timeunit = 0.2
     return dm

@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # encoding: utf-8
-import json
 import copy
+import json
 import logging
 import pprint
 import time
+import os
 
 from vikicommon.timer import TimerReset
 from vikicommon.collections import OrderedSet
 from vikidm import errors
+from vikidm.util import PROJECT_DIR
 from vikidm.context import Context
 from vikidm.biztree import BizTree
 from vikidm.units import (
@@ -273,6 +275,11 @@ class DialogEngine(object):
         if ret['code'] != 0:
             raise errors.RPCError
         self.biz_tree.init_from_json(ret['tree'], self)
+        root = self.biz_tree.get_node(self.biz_tree.root)
+        fpath = os.path.join(PROJECT_DIR, "data", "casual_talk.json")
+        with open(fpath, 'r') as file_obj:
+            casual_talk_json = file_obj.read()
+        self.biz_tree.add_subtree_from_json(casual_talk_json, root, self)
         self._init_context()
         node = self.biz_tree.get_node(self.biz_tree.root)
         node.set_state(BizUnit.STATUS_STACKWAIT)

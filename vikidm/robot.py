@@ -86,17 +86,14 @@ class DMRobot(object):
                     "slots": {}
                 }
             }
-        ret = self._process_slots(slots, sid)
-        if intent == 'casual_talk':
-            # ret["response"] = {"tts": CasualTalk.get_tuling_answer(question)}
-            ret["response"] = {}
+        ret = self._process_slots(slots, sid, intent)
         ret["nlu"] = {
             "intent": intent,
             "slots": d_slots
         }
         return ret
 
-    def _process_slots(self, slots, sid):
+    def _process_slots(self, slots, sid, intent=None):
         dm_ret = self._dm.process_slots(sid, slots)
         if not dm_ret:
             return {
@@ -104,9 +101,19 @@ class DMRobot(object):
                 'message': '对话管理无响应',
                 "sid": sid,
             }
-        ret = cms_gate.event_id_to_answer(self.domain_id, dm_ret["event_id"])
-        if ret["code"] != 0:
-            return ret
+        if intent == 'casual_talk':
+            ret = {
+                "answer": {
+                    "tts": "图灵闲聊",
+                    "web": {
+                        "text": ""
+                    }
+                }
+            }
+        else:
+            ret = cms_gate.event_id_to_answer(self.domain_id, dm_ret["event_id"])
+            if ret["code"] != 0:
+                return ret
         return {
             "code": 0,
             "sid": sid,

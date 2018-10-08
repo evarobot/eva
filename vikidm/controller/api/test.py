@@ -8,7 +8,7 @@ from vikidm.libs.route import Route
 log = logging.getLogger(__name__)
 
 @Route('/dm/test/')
-class DMResetRobotHandler(RobotAPIHandler):
+class DMTestHandler(RobotAPIHandler):
 
     def get(self):
         log.debug("hello..")
