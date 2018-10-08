@@ -4,6 +4,7 @@ import logging
 from vikidm.context import Slot
 from vikidm.dm import DialogEngine
 from vikidm.util import cms_gate, nlu_gate
+from vikidm.units import MixAgency
 log = logging.getLogger(__name__)
 
 
@@ -29,10 +30,17 @@ class DMRobot(object):
         question = question.strip(' \n')
         context = self.get_context()
         ret = nlu_gate.predict(self.domain_id, context, question)
+        intent = ret["intent"]
+        if ret["node_id"] is not None:
+            node = self._dm.biz_tree.get_node(int(ret["node_id"]))
+            while node.parent is not None:
+                if isinstance(node, MixAgency):
+                    intent = "{0}-{1}".format(node.tag, intent)
+                node = node.parent
         slots = [Slot("intent", ret["intent"])]
         for slot_name, value_name in ret["slots"].iteritems():
             slots.append(Slot(slot_name, value_name))
-        return ret["intent"], ret["slots"], slots
+        return intent, ret["slots"], slots
 
     def _get_context_slots(self, intent):
         """
@@ -72,7 +80,7 @@ class DMRobot(object):
                 "code": 0,
                 "sid": "",
                 "event_id": intent,
-                "action": {},
+                "response": {},
                 "nlu": {
                     "intent": intent,
                     "slots": {}
@@ -80,8 +88,8 @@ class DMRobot(object):
             }
         ret = self._process_slots(slots, sid)
         if intent == 'casual_talk':
-            # ret["action"] = {"tts": CasualTalk.get_tuling_answer(question)}
-            ret["action"] = {}
+            # ret["response"] = {"tts": CasualTalk.get_tuling_answer(question)}
+            ret["response"] = {}
         ret["nlu"] = {
             "intent": intent,
             "slots": d_slots
@@ -103,7 +111,7 @@ class DMRobot(object):
             "code": 0,
             "sid": sid,
             "event_id": dm_ret["event_id"],
-            "action": ret["answer"],
+            "response": ret["answer"],
             "nlu": {
                 "ask": dm_ret.get('target', ""),
             }

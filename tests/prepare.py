@@ -41,7 +41,7 @@ def mock_cms_gate(paths):
         "code": 0,
         "tree": json.dumps(root)
     }
-    cms_gate.get_dm_biztree = mock.Mock(return_value=json.dumps(data))
+    cms_gate.get_dm_biztree = mock.Mock(return_value=data)
 
 
 def construct_dm():

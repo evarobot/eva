@@ -269,7 +269,7 @@ class DialogEngine(object):
         None
 
         """
-        ret = json.loads(cms_gate.get_dm_biztree(domain_id))
+        ret = cms_gate.get_dm_biztree(domain_id)
         if ret['code'] != 0:
             raise errors.RPCError
         self.biz_tree.init_from_json(ret['tree'], self)
