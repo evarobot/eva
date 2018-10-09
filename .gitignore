@@ -61,3 +61,4 @@ target/
 .pytest_cache
 config.py
 .DS_Store
+.idea/

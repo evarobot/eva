@@ -9,8 +9,8 @@ import os
 
 class _ConfigDM(object):
     input_timeout = 10.0
-    _host = "127.0.0.1"
-    _port = 9999
+    _host = "0.0.0.0"
+    _port = 5000
 
     @property
     def host(self):
