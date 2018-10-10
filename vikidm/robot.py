@@ -80,7 +80,10 @@ class DMRobot(object):
                 "code": 0,
                 "sid": "",
                 "event_id": intent,
-                "response": {},
+                "response": {
+                    "tts": "噪音导致的胡话",
+                    "web": {}
+                },
                 "nlu": {
                     "intent": intent,
                     "slots": {}
