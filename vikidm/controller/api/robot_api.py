@@ -4,7 +4,9 @@
 """
 import logging
 import time
-from vikidm.libs.handler import RobotAPIHandler, VersionedHandler
+from vikidm.libs.handler import RobotAPIHandler
+from tornado.web import RequestHandler
+from tornado.escape import json_encode
 from vikidm.libs.route import Route
 from vikidm.robot import DMRobot
 from vikidm.util import cms_gate
@@ -343,9 +345,11 @@ class DMResetRobotHandler(RobotAPIHandler):
 
 
 @Route('/health')
-class HealthCheckHandler(VersionedHandler):
+class HealthCheckHandler(RequestHandler):
     def get(self):
         "health cheack for sidecar"
-        return self.write_json({
-            "status": "UP"
-        })
+
+        data = {"status": "UP"}
+        self.set_header("Content-Type", "Application/json")
+        self.write(json_encode(data))
+        self.finish()
