@@ -340,3 +340,12 @@ class DMResetRobotHandler(RobotAPIHandler):
         domain_id = cms_gate.get_domain_by_name(self.data["project"])["data"]["id"]
         DMRobot.reset_robot(self.data["robot_id"], domain_id, self.data["project"])
         return self.write_json({"code": 0})
+
+
+@Route('/health')
+class HealthCheckHandler(RobotAPIHandler):
+    def get(self):
+        "health cheack for sidecar"
+        return self.write_json({
+            "status": "UP"
+        })
