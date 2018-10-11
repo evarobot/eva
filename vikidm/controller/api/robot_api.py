@@ -4,7 +4,7 @@
 """
 import logging
 import time
-from vikidm.libs.handler import RobotAPIHandler
+from vikidm.libs.handler import RobotAPIHandler, VersionedHandler
 from vikidm.libs.route import Route
 from vikidm.robot import DMRobot
 from vikidm.util import cms_gate
@@ -343,7 +343,7 @@ class DMResetRobotHandler(RobotAPIHandler):
 
 
 @Route('/health')
-class HealthCheckHandler(RobotAPIHandler):
+class HealthCheckHandler(VersionedHandler):
     def get(self):
         "health cheack for sidecar"
         return self.write_json({
