@@ -6,6 +6,9 @@
 
 import os
 
+from vikicommon import Config
+Config._sidecar_url = "http://127.0.0.1:9700"
+
 
 class _ConfigDM(object):
     input_timeout = 10.0
