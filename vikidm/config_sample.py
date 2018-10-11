@@ -6,7 +6,7 @@
 
 import os
 
-from vikicommon import Config
+from vikicommon.config import Config
 Config._sidecar_url = "http://127.0.0.1:9700"
 
 
