@@ -130,7 +130,7 @@ class RobotAPIHandler(VersionedHandler):
             data = json_decode(data_raw)
             self.data = data
         except:
-            log.error('params are not valid json: %s' % data_raw)
+            #log.error('params are not valid json: %s' % data_raw)
             return self.write_json({ 'error': '参数错误'})
 
     def get_version(self):

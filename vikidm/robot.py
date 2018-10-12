@@ -31,12 +31,12 @@ class DMRobot(object):
         context = self.get_context()
         ret = nlu_gate.predict(self.domain_id, context, question)
         intent = ret["intent"]
-        if ret["node_id"] is not None:
-            node = self._dm.biz_tree.get_node(int(ret["node_id"]))
-            while node.parent is not None:
-                if isinstance(node, MixAgency):
-                    intent = "{0}-{1}".format(node.tag, intent)
-                node = node.parent
+        #if ret["node_id"] is not None:
+            #node = self._dm.biz_tree.get_node(int(ret["node_id"]))
+            #while node.parent is not None:
+                #if isinstance(node, MixAgency):
+                    #intent = "{0}-{1}".format(node.tag, intent)
+                #node = node.parent
         slots = [Slot("intent", ret["intent"])]
         for slot_name, value_name in ret["slots"].iteritems():
             slots.append(Slot(slot_name, value_name))
@@ -75,20 +75,25 @@ class DMRobot(object):
         """
         # if rpc, pass robot id
         intent, d_slots, slots = self._parse_question(question)
-        if intent in [None, "nonsense"]:
-            return {
-                "code": 0,
-                "sid": "",
-                "event_id": intent,
-                "response": {
-                    "tts": "噪音导致的胡话",
-                    "web": {}
-                },
-                "nlu": {
-                    "intent": intent,
-                    "slots": {}
-                }
+        ret = {
+            "code": 0,
+            "sid": "",
+            "event_id": intent,
+            "response": {
+                "tts": "噪音导致的胡话",
+                "web": {}
+            },
+            "nlu": {
+                "intent": intent,
+                "slots": {}
             }
+        }
+        if intent in [None, "nonsense"]:
+            # When intent is invalid in current context, NLU return None.
+            return ret
+        if intent == "sensitive":
+            ret["response"]["tts"] = "很抱歉，这个问题我还不太懂。"
+            return ret
         ret = self._process_slots(slots, sid, intent)
         ret["nlu"] = {
             "intent": intent,
