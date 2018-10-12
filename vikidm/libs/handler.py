@@ -19,7 +19,7 @@ def exception_filter(func):
         try:
             ret = func(handler, *args, **kwargs)
             return ret
-        except HttpError, e:
+        except HttpError as e:
             caller = sys._getframe().f_back.f_code.co_filename
             if "viki" in caller:  # 调用者是项目的代码，继续往上抛
                 raise e

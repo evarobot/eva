@@ -3,7 +3,6 @@
 
 import json
 import logging
-from vikicommon.util import escape_unicode
 from vikidm.units.bizunit import BizUnit
 from vikidm.context import Slot
 
@@ -160,7 +159,7 @@ class Agent(BizUnit):
         return self._target_slots
 
     def __str__(self):
-        return json.dumps(escape_unicode(self.data))
+        return json.dumps(self.data)
 
 
 class TargetAgent(Agent):
