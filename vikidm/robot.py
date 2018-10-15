@@ -4,7 +4,7 @@ import logging
 from vikidm.context import Slot
 from vikidm.dm import DialogEngine
 from vikidm.util import cms_gate, nlu_gate
-from vikidm.units import MixAgency
+from vikidm.chat import CasualTalk
 log = logging.getLogger(__name__)
 
 
@@ -95,6 +95,8 @@ class DMRobot(object):
             ret["response"]["tts"] = "很抱歉，这个问题我还不太懂。"
             return ret
         ret = self._process_slots(slots, sid, intent)
+        if intent == "casual_talk":
+            ret["response"]["tts"] = CasualTalk.get_tuling_answer(question)
         ret["nlu"] = {
             "intent": intent,
             "slots": d_slots
@@ -104,14 +106,10 @@ class DMRobot(object):
     def _process_slots(self, slots, sid, intent=None):
         dm_ret = self._dm.process_slots(sid, slots)
         if not dm_ret:
-            return {
-                'code': -1,
-                'message': '对话管理无响应',
-                "sid": sid,
-            }
+            intent = 'casual_talk'
         if intent == 'casual_talk':
             ret = {
-                "answer": {
+                "response": {
                     "tts": "图灵闲聊",
                     "web": {
                         "text": ""
@@ -126,7 +124,7 @@ class DMRobot(object):
             "code": 0,
             "sid": sid,
             "event_id": dm_ret["event_id"],
-            "response": ret["answer"],
+            "response": ret["response"],
             "nlu": {
                 "ask": dm_ret.get('target', ""),
             }
