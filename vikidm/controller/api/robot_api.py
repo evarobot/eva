@@ -5,6 +5,8 @@
 import logging
 import time
 from vikidm.libs.handler import RobotAPIHandler
+from tornado.web import RequestHandler
+from tornado.escape import json_encode
 from vikidm.libs.route import Route
 from vikidm.robot import DMRobot
 from vikidm.util import cms_gate
@@ -340,3 +342,14 @@ class DMResetRobotHandler(RobotAPIHandler):
         domain_id = cms_gate.get_domain_by_name(self.data["project"])["data"]["id"]
         DMRobot.reset_robot(self.data["robot_id"], domain_id, self.data["project"])
         return self.write_json({"code": 0})
+
+
+@Route('/health')
+class HealthCheckHandler(RequestHandler):
+    def get(self):
+        "health cheack for sidecar"
+
+        data = {"status": "UP"}
+        self.set_header("Content-Type", "Application/json")
+        self.write(json_encode(data))
+        self.finish()
