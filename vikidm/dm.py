@@ -289,7 +289,7 @@ class DialogEngine(object):
     def _init_context(self):
         for bizunit in self.biz_tree.all_nodes_itr():
             if isinstance(bizunit, Agent):
-                for slot in bizunit.trigger_slots:
+                for slot in bizunit.trigger_slots + bizunit.target_slots:
                     slot = copy.deepcopy(slot)
                     self.context.add_slot(slot)
 
