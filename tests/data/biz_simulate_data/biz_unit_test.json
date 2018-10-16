@@ -12,7 +12,7 @@
                 "id": "nike",
                 "tag": "nike",
                 "entrance": false,
-                "event_id": "nike",
+                "response_id": "nike",
                 "subject": "",
                 "scope": "",
                 "trigger_slots": [
@@ -32,7 +32,7 @@
                 "tag": "zhou_hei_ya",
                 "entrance": false,
                 "id": "zhou_hei_ya",
-                "event_id": "zhou_hei_ya",
+                "response_id": "zhou_hei_ya",
                 "subject": "",
                 "scope": "",
                 "trigger_slots": [

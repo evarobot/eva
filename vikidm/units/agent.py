@@ -18,7 +18,7 @@ class Agent(BizUnit):
     ----------
     subject : str, Deprecated.
     scope : str, Deprecated.
-    event_id : str, Correspond to an resource and event with specific
+    response_id : str, Correspond to an resource and event with specific
                     arguments.
     timeout : float, Action time out.
     entrance : boolean, If the agent could trigger an ancestor node of
@@ -35,9 +35,9 @@ class Agent(BizUnit):
             filtered_data = {   # 用于tree.to_json(), 方便调试。
                 'subject': data['subject'],
                 'scope': data['scope'],
-                'event_id': data['event_id'],
                 'timeout': float(data['timeout']),
                 'entrance': data['entrance'],
+                'response_id': data['response_id'],
                 'state': BizUnit.STATUS_TREEWAIT,
                 'trigger_slots': data['trigger_slots'],
                 'target_slots': data['target_slots'],
@@ -45,6 +45,8 @@ class Agent(BizUnit):
             }
         except KeyError as e:
             log.error(data)
+            import pdb
+            pdb.set_trace()
             raise e
         self._trigger_slots = list(
             self._deserialize_trigger_slots(filtered_data))
@@ -132,12 +134,12 @@ class Agent(BizUnit):
         self.data['scope'] = value
 
     @property
-    def event_id(self):
-        return self.data['event_id']
+    def response_id(self):
+        return self.data['response_id']
 
-    @event_id.setter
-    def event_id(self, value):
-        self.data['event_id'] = value
+    @response_id.setter
+    def response_id(self, value):
+        self.data['response_id'] = value
 
     @property
     def timeout(self):
@@ -213,7 +215,7 @@ class TargetAgent(Agent):
                 if self._dm.round_out():
                     self._dm.on_inputwait_round_out()
         return {
-            'event_id': self.event_id,
+            'response_id': self.response_id,
             'target': [self.target_slots[0].key]
         }
 
@@ -241,7 +243,7 @@ class TriggerAgent(Agent):
             self._dm.start_timer(
                 self, self.timeout, self._dm.on_actionwait_timeout)
             log.debug("START_ACTION_TIMER TriggerAgent({0})".format(self.tag))
-        return {'event_id': self.event_id, 'target': []}
+        return {'response_id': self.response_id, 'target': []}
 
     def reset_slots(self):
         super(TriggerAgent, self).reset_slots()

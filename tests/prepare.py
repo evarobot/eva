@@ -28,7 +28,7 @@ def mock_cms_gate(paths):
             "id": "root",
             "tag": "root",
             "entrance": False,
-            "event_id": "root",
+            "response_id": "root",
             "subject": "",
             "scope": "",
             "timeout": "5",

@@ -2,7 +2,7 @@
 {
     "data": {
         "id": "mix_home",
-        "event_id": "mix_home",
+        "response_id": "mix_home",
         "tag": "Mix(home.service)",
         "entrance": false,
         "subject": "",
@@ -13,7 +13,7 @@
         {
             "data":{
                 "id": "home.service",
-                "event_id": "home.service",
+                "response_id": "home.service",
                 "tag": "home.service",
                 "entrance": true,
                 "subject": "",
@@ -30,7 +30,7 @@
         {
             "data":{
                 "id": "home_consume.query",
-                "event_id": "home_consume.query",
+                "response_id": "home_consume.query",
                 "tag": "home_consume.query",
                 "entrance": false,
                 "subject": "",
@@ -47,7 +47,7 @@
         {
             "data":{
                 "id": "home_left.query",
-                "event_id": "home_left.query",
+                "response_id": "home_left.query",
                 "tag": "home_left.query",
                 "entrance": false,
                 "subject": "",

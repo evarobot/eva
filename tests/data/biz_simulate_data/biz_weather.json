@@ -2,7 +2,7 @@
 
 	"data": {
 		"id": "weather.query",
-		"event_id": "weather.query",
+		"response_id": "weather.query",
 		"tag": "weather.query",
 		"entrance": false,
 		"type": "TYPE_TARGET"
@@ -12,7 +12,7 @@
 				"id": "default@weather.query",
 				"tag": "default@weather.query",
 				"entrance": false,
-				"event_id": "default@weather.query",
+				"response_id": "default@weather.query",
 				"subject": "",
 				"scope": "",
 				"trigger_slots": [
@@ -33,7 +33,7 @@
 				"id": "city",
 				"tag": "city",
 				"entrance": false,
-				"event_id": "city",
+				"response_id": "city",
 				"subject": "",
 				"scope": "",
 				"trigger_slots": [
@@ -53,7 +53,7 @@
 				"id": "date",
 				"tag": "date",
 				"entrance": false,
-				"event_id": "date",
+				"response_id": "date",
 				"subject": "",
 				"scope": "",
 				"trigger_slots": [
@@ -73,7 +73,7 @@
 				"id": "result",
 				"tag": "result",
 				"entrance": false,
-				"event_id": "result",
+				"response_id": "result",
 				"subject": "",
 				"scope": "",
 				"trigger_slots": [
@@ -94,7 +94,7 @@
 				"id": "city_priority",
 				"tag": "city_priority",
 				"entrance": false,
-				"event_id": "city_priority",
+				"response_id": "city_priority",
 				"subject": "",
 				"scope": "",
 				"trigger_slots": [
@@ -115,7 +115,7 @@
 				"id": "optional_none",
 				"tag": "optional_none",
 				"entrance": false,
-				"event_id": "optional_none",
+				"response_id": "optional_none",
 				"subject": "",
 				"scope": "",
 				"trigger_slots": [
@@ -136,7 +136,7 @@
 				"id": "addtional_slot",
 				"tag": "addtional_slot",
 				"entrance": false,
-				"event_id": "addtional_slot",
+				"response_id": "addtional_slot",
 				"subject": "",
 				"scope": "",
 				"trigger_slots": [

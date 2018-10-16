@@ -113,31 +113,31 @@ class DefaultHandlerAgent(Agent):
                     self.tag, self.timeout, self._dm._actionwait_timeout)
                 log.debug("START_TIMER BizUnit({0})".format(self.tag))
         # subclass could custom returned answer.
-        return {'event_id': self.event_id, 'target': []}
+        return {'response_id': self.response_id, 'target': []}
 
 
 class ActionFailedAgent(DefaultHandlerAgent):
     def __init__(self, dm, bizunit):
         data = {
-            'event_id': 'FAILED|' + bizunit.event_id,
-            'tag': 'FAILED|' + bizunit.event_id,
+            'response_id': 'FAILED|' + bizunit.response_id,
+            'tag': 'FAILED|' + bizunit.response_id,
         }
-        super(ActionFailedAgent, self).__init__(dm, data["event_id"], data)
+        super(ActionFailedAgent, self).__init__(dm, data["response_id"], data)
 
 
 class InputTimeoutAgent(DefaultHandlerAgent):
     def __init__(self, dm, bizunit):
         data = {
-            'event_id': 'INPUT_TIMEOUT|' + bizunit.event_id,
-            'tag': 'INPUT_TIMEOUT|' + bizunit.event_id,
+            'response_id': 'INPUT_TIMEOUT|' + bizunit.response_id,
+            'tag': 'INPUT_TIMEOUT|' + bizunit.response_id,
         }
-        super(InputTimeoutAgent, self).__init__(dm, data["event_id"], data)
+        super(InputTimeoutAgent, self).__init__(dm, data["response_id"], data)
 
 
 class ActionTimeoutAgent(DefaultHandlerAgent):
     def __init__(self, dm, bizunit):
         data = {
-            'event_id': 'ACTION_TIMEOUT|' + bizunit.event_id,
-            'tag': 'ACTION_TIMEOUT|' + bizunit.event_id,
+            'response_id': 'ACTION_TIMEOUT|' + bizunit.response_id,
+            'tag': 'ACTION_TIMEOUT|' + bizunit.response_id,
         }
-        super(ActionTimeoutAgent, self).__init__(dm, data["event_id"], data)
+        super(ActionTimeoutAgent, self).__init__(dm, data["response_id"], data)

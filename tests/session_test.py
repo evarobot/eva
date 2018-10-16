@@ -67,7 +67,7 @@ class TestTopicCase(object):
         ret = dm.process_slots("sid002", [
             Slot("intent", "casual_talk"),
         ])
-        assert(ret['event_id'] == 'casual_talk')
+        assert(ret['response_id'] == 'casual_talk')
         ret = dm.process_confirm('sid002', {
             'code': 0,
             'message': ''

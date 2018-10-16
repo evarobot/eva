@@ -1,7 +1,7 @@
 {
     "data": {
         "id": "mix_travel",
-        "event_id": "mix_travel",
+        "response_id": "mix_travel",
         "tag": "Mix(Mix(weather.query))",
         "entrance": false,
         "subject": "",
@@ -11,7 +11,7 @@
     "children": [{
         "data": {
             "id": "travel.service",
-            "event_id": "travel.service",
+            "response_id": "travel.service",
             "tag": "travel.service",
             "entrance": true,
             "subject": "",
@@ -28,7 +28,7 @@
     {
         "data": {
             "id": "travel_consume.query",
-            "event_id": "travel_consume.query",
+            "response_id": "travel_consume.query",
             "tag": "travel_consume.query",
             "entrance": false,
             "subject": "",
@@ -45,7 +45,7 @@
     {
         "data": {
             "id": "travel_left.query",
-            "event_id": "travel_left.query",
+            "response_id": "travel_left.query",
             "tag": "travel_left.query",
             "entrance": false,
             "subject": "",
@@ -64,7 +64,7 @@
 
         "data": {
             "id": "mix_weather",
-            "event_id": "mix_weather",
+            "response_id": "mix_weather",
             "tag": "Mix(weather.query)",
             "entrance": true,
             "subject": "",
@@ -74,7 +74,7 @@
         "children": [{
             "data": {
                 "id": "weather.query",
-                "event_id": "weather.query",
+                "response_id": "weather.query",
                 "tag": "weather.query",
                 "entrance": true,
                 "subject": "",
@@ -86,7 +86,7 @@
                     "id": "default@weather.query",
                     "tag": "default@weather.query",
                     "entrance": false,
-                    "event_id": "default@weather.query",
+                    "response_id": "default@weather.query",
                     "subject": "",
                     "scope": "",
                     "trigger_slots": [
@@ -107,7 +107,7 @@
                     "id": "city",
                     "tag": "city",
                     "entrance": false,
-                    "event_id": "city",
+                    "response_id": "city",
                     "subject": "",
                     "scope": "",
                     "trigger_slots": [
@@ -127,7 +127,7 @@
                     "id": "date",
                     "tag": "date",
                     "entrance": false,
-                    "event_id": "date",
+                    "response_id": "date",
                     "subject": "",
                     "scope": "",
                     "trigger_slots": [
@@ -147,7 +147,7 @@
                     "id": "result",
                     "tag": "result",
                     "entrance": false,
-                    "event_id": "result",
+                    "response_id": "result",
                     "subject": "",
                     "scope": "",
                     "trigger_slots": [
@@ -175,7 +175,7 @@
             "children": [{
                 "data": {
                     "id": "all_city",
-                    "event_id": "all_city",
+                    "response_id": "all_city",
                     "tag": "all_city",
                     "entrance": true,
                     "subject": "",

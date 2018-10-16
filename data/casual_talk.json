@@ -2,7 +2,7 @@
     "data":{
         "tag": "casual_talk",
         "entrance": false,
-        "event_id": "casual_talk",
+        "response_id": "casual_talk",
         "id": "casual_talk",
         "subject": "主题",
         "scope": "可见域",

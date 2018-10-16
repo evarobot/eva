@@ -3,7 +3,7 @@
         "id": "name.query",
         "tag": "name.query",
         "entrance": false,
-        "event_id": "name.query",
+        "response_id": "name.query",
         "subject": "主题",
         "scope": "可见域",
         "trigger_slots": [

@@ -350,7 +350,7 @@ class DialogEngine(object):
         Returns
         -------
         {
-            'event_id': "id of event"
+            'response_id': "id of event"
                         // Used to extract answer from db or event notifying.
 
             'target': ['slot_key1', 'slot_key2', ..]

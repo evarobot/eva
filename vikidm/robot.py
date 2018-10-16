@@ -78,10 +78,13 @@ class DMRobot(object):
         ret = {
             "code": 0,
             "sid": "",
-            "event_id": intent,
             "response": {
                 "tts": "噪音导致的胡话",
                 "web": {}
+            },
+            "event": {
+                "intent": intent,
+                "slots": {}
             },
             "nlu": {
                 "intent": intent,
@@ -94,6 +97,7 @@ class DMRobot(object):
         if intent == "sensitive":
             ret["response"]["tts"] = "很抱歉，这个问题我还不太懂。"
             return ret
+
         ret = self._process_slots(slots, sid, intent)
         if intent == "casual_talk":
             ret["response"]["tts"] = CasualTalk.get_tuling_answer(question)
@@ -101,6 +105,7 @@ class DMRobot(object):
             "intent": intent,
             "slots": d_slots
         }
+        ret["event"]["slots"] = d_slots
         return ret
 
     def _process_slots(self, slots, sid, intent=None):
@@ -116,15 +121,22 @@ class DMRobot(object):
                     }
                 }
             }
+            event = {
+                "intent": "casual_talk"
+            }
         else:
-            ret = cms_gate.event_id_to_answer(self.domain_id, dm_ret["event_id"])
+            ret = cms_gate.response_id_to_answer(self.domain_id,
+                                                 dm_ret["response_id"])
             if ret["code"] != 0:
                 return ret
+            event = {
+                "intent": ret["event"]
+            }
         return {
             "code": 0,
             "sid": sid,
-            "event_id": dm_ret["event_id"],
             "response": ret["response"],
+            "event": event,
             "nlu": {
                 "ask": dm_ret.get('target', ""),
             }
@@ -162,14 +174,14 @@ class DMRobot(object):
         slots = [Slot(key, value) for key, value in d_slots.iteritems()]
         return self._process_slots(slots, sid)
 
-    def process_event(self, event_id):
+    def process_event(self, response_id):
         """ Process event from device.
 
         System will convert event to `Slots`
 
         Parameters
         ----------
-        event_id : str, event id.
+        response_id : str, event id.
 
         Returns
         -------
