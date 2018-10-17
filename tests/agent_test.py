@@ -40,9 +40,7 @@ def test_init_biz_from_db():
                 assert(slot.value is not None)
 
     # context testing
-    slots = dm.context._all_slots.values()
-    import pdb
-    pdb.set_trace()
+    slots = list(dm.context._all_slots.values())
     assert(str(slots[0]) == "Slot(intent=None)")
     assert(str(slots[1]) == "Slot(location=None)")
     assert(len(dm.stack) == 1)

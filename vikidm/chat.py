@@ -35,7 +35,7 @@ class CasualTalk(object):
                      question, rst, int(cost))
         except Exception:
             log.error('[tuling] 连接错误!')
-            rst = '小莫困了，不和你闲聊了。'
+            rst = '小逗困了，不和你闲聊了。'
         i = rst.find('http')
         if not i == -1:
             rst = rst[0: i]
@@ -44,4 +44,4 @@ class CasualTalk(object):
 
 __all__ = ['CasualTalk']
 if __name__ == '__main__':
-    print CasualTalk().get_tuling_answer('深圳明天什么天气')
+    print(CasualTalk().get_tuling_answer('深圳明天什么天气'))
