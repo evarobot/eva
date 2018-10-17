@@ -39,11 +39,8 @@ class Slot(JSONEncoder):
     def dirty(self):
         return self.value is not None
 
-    def __unicode__(self):
-        return u"Slot({0}={1})".format(self.key, self.value)
-
     def __str__(self):
-        return unicode(self).encode('utf8')
+        return "Slot({0}={1})".format(self.key, self.value)
 
     def __hash__(self):
         if hasattr(self, '_hash'):
@@ -59,7 +56,7 @@ class Slot(JSONEncoder):
 
     def __repr__(self):
         try:
-            return self.__unicode__()
+            return self.__str__()
         except Exception as e:
             raise e
 
@@ -174,7 +171,7 @@ class Context(object):
 
     def __str__(self):
         slots = []
-        for key in sorted(self._all_slots.iterkeys()):
+        for key in sorted(self._all_slots.keys()):
             slots.append(self._all_slots[key])
         return "\n                ".join(["\n            Context:"] +
                                          [str(c) for c in slots])

@@ -1,5 +1,4 @@
 # coding=utf-8
-import sys
 import logging
 import tornado.httpserver
 from tornado.options import define, parse_command_line, options
@@ -12,8 +11,6 @@ from vikicommon.log import init_logger
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
-reload(sys)
-sys.setdefaultencoding("utf-8")
 
 define("port", type=int, default=ConfigDM.port,
        help="the server port")
