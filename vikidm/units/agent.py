@@ -44,8 +44,6 @@ class Agent(BizUnit):
             }
         except KeyError as e:
             log.error(data)
-            import pdb
-            pdb.set_trace()
             raise e
         self._trigger_slots = list(
             self._deserialize_trigger_slots(filtered_data))
