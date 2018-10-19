@@ -36,6 +36,7 @@ class CasualTalk(object):
         except Exception:
             log.error('[tuling] 连接错误!')
             rst = '小逗困了，不和你闲聊了。'
+        rst = rst.decode('utf8')
         i = rst.find('http')
         if not i == -1:
             rst = rst[0: i]
