@@ -29,14 +29,13 @@ class CasualTalk(object):
                                       data=json.dumps(params),
                                       headers=headers,
                                       timeout=10).text
-            rst = json.loads(json_data)['text'].encode('utf8')
+            rst = json.loads(json_data)['text']
             cost = (time.time() - t1) * 1000
             log.info("[tuling] Question:%s Answer:%s %sms",
                      question, rst, int(cost))
         except Exception:
             log.error('[tuling] 连接错误!')
             rst = '小逗困了，不和你闲聊了。'
-        rst = rst.decode('utf8')
         i = rst.find('http')
         if not i == -1:
             rst = rst[0: i]
