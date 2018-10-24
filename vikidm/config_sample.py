@@ -35,7 +35,7 @@ class _Config:
 
 
 class _ConfigLog(object):
-    _log_level = 'INFO'
+    _log_level = 'DEBUG'
     log_to_file = True
     log_to_console = True
     # log_path = '/Users/bitmain/logs/VikiDM/'
