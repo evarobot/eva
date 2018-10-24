@@ -38,7 +38,7 @@ class DMRobot(object):
                     #intent = "{0}-{1}".format(node.tag, intent)
                 #node = node.parent
         slots = [Slot("intent", ret["intent"])]
-        for slot_name, value_name in ret["slots"].iteritems():
+        for slot_name, value_name in ret["slots"].items():
             slots.append(Slot(slot_name, value_name))
         return intent, ret["slots"], slots
 
@@ -171,7 +171,7 @@ class DMRobot(object):
         dict.
 
         """
-        slots = [Slot(key, value) for key, value in d_slots.iteritems()]
+        slots = [Slot(key, value) for key, value in d_slots.items()]
         return self._process_slots(slots, sid)
 
     def process_event(self, response_id):
@@ -232,7 +232,7 @@ class DMRobot(object):
         }
 
         """
-        slots = [Slot(key, value) for key, value in d_slots.iteritems()]
+        slots = [Slot(key, value) for key, value in d_slots.items()]
         self._dm.update_by_remote(slots)
         log.info(self._dm.context)
         return {
