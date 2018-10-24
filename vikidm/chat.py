@@ -29,7 +29,7 @@ class CasualTalk(object):
                                       data=json.dumps(params),
                                       headers=headers,
                                       timeout=10).text
-            rst = json.loads(json_data)['text'].encode('utf8')
+            rst = json.loads(json_data)['text']
             cost = (time.time() - t1) * 1000
             #log.info("[tuling] Question:%s Answer:%s %sms",
                      #question, rst, int(cost))

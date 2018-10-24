@@ -244,8 +244,8 @@ class TargetAgency(Agency):
                             max_match = all_match
                 priority_units.append(
                     (unit, all_match, any_match))
-            priority_units = filter(
-                lambda x: x[1] == max_match, priority_units)
+            priority_units = list(filter(
+                lambda x: x[1] == max_match, priority_units))
             priority_units.sort(key=lambda x: x[2])
             #if self._dm._session._sid == "sid00xx":
                 #temp = [(unit[0].tag, unit[1], unit[2]) for unit in priority_units]

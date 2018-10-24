@@ -7,10 +7,15 @@
 import os
 
 
-class _ConfigDM(object):
+class _Config:
     input_timeout = 10.0
     _host = "0.0.0.0"
     _port = 5000
+    _debug = "False"
+
+    @staticmethod
+    def init_app(app):
+        pass
 
     @property
     def host(self):
@@ -22,9 +27,15 @@ class _ConfigDM(object):
         port = os.environ.get("DM_PORT")
         return port if port is not None else self._port
 
+    @property
+    def debug(self):
+        debug = os.environ.get("DEBUG")
+        return debug if debug is not None else self._debug
+
+
 
 class _ConfigLog(object):
-    _log_level = 'INFO'
+    _log_level = 'DEBUG'
     log_to_file = True
     log_to_console = True
     # log_path = '/Users/bitmain/logs/VikiDM/'
@@ -59,4 +70,4 @@ class _ConfigMongo:
 
 ConfigMongo = _ConfigMongo()
 ConfigLog = _ConfigLog()
-ConfigDM = _ConfigDM()
+Config = _Config()
