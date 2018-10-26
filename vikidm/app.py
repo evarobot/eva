@@ -79,8 +79,7 @@ def process_question():
     domain_id = cms_gate.get_domain_by_name(params["project"])["data"]["id"]
     robot = DMRobot.get_robot(params["robot_id"], domain_id,
                               params["project"])
-    # sid = int(round(time.time() * 1000))
-    ret = robot.process_question(params['question'], params['sid'])
+    ret = robot.process_question(params['question'], params['sid'], params['conn_id'])
     return jsonify(ret)
 
 

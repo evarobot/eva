@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import logging
+import datetime
+import threading
+
 from vikidm.context import Slot
 from vikidm.dm import DialogEngine
-from vikidm.util import cms_gate, nlu_gate
+from vikidm.util import cms_gate, nlu_gate, data_gate
 from vikidm.chat import CasualTalk
+from vikicommon.util import time_now
+
 log = logging.getLogger(__name__)
 
 
@@ -31,12 +36,6 @@ class DMRobot(object):
         context = self.get_context()
         ret = nlu_gate.predict(self.domain_id, context, question)
         intent = ret["intent"]
-        #if ret["node_id"] is not None:
-            #node = self._dm.biz_tree.get_node(int(ret["node_id"]))
-            #while node.parent is not None:
-                #if isinstance(node, MixAgency):
-                    #intent = "{0}-{1}".format(node.tag, intent)
-                #node = node.parent
         slots = [Slot("intent", ret["intent"])]
         for slot_name, value_name in ret["slots"].items():
             slots.append(Slot(slot_name, value_name))
@@ -57,7 +56,7 @@ class DMRobot(object):
                     slots[slot_name] = value
         return slots
 
-    def process_question(self, question, sid):
+    def process_question(self, question, sid, conn_id):
         """ Process question from device.
 
         It will parse question to (`Intent`, Slots, Slots) with NLU and
@@ -67,6 +66,7 @@ class DMRobot(object):
         ----------
         question : str, question text from human being.
         sid : str, session id.
+        conn_id: str, websocket id
 
         Returns
         -------
@@ -99,14 +99,169 @@ class DMRobot(object):
             return ret
 
         ret = self._process_slots(slots, sid, intent)
-        if intent == "casual_talk":
-            ret["response"]["tts"] = CasualTalk.get_tuling_answer(question)
         ret["nlu"] = {
             "intent": intent,
             "slots": d_slots
         }
         ret["event"]["slots"] = d_slots
+        if intent == "casual_talk":
+            if self._is_manual_online():
+                log.info('manual is online, send question to human agent')
+                # 转人工，同时返回转人工标志
+                ret["event"]["intent"] = "manual_talk"
+                self.manual_talk(self.domain_id, self.robot_id, sid,
+                                 question, ret, conn_id)
+            else:
+                tuling_answer = CasualTalk.get_tuling_answer(question)
+                ret["response"]["tts"] = tuling_answer
+                self.save_session(sid, question, tuling_answer, time_now(),
+                                  intent)
+        else:
+            answer = ret["response"]["tts"]
+            self.save_session(sid, question, answer, time_now(), intent)
         return ret
+
+    def save_session(self, sid, question, answer, question_datetime, intent,
+                     answer_timeout=False):
+        """ Every session needs to to be saved.
+
+        Parameters
+        ----------
+        sid : str, session id.
+        question : str, question text from human being.
+        answer ：str, answer by dm, tuling, or human agent
+        question_datetime: str, question time by client
+        intent: str, intent
+        answer_timeout: bool, set True if manual talk time out
+
+        Returns
+        -------
+        bool.
+        to tell if save success
+        """
+        params = {
+            "domain_id": str(self.domain_id),
+            "question": question,
+            "answer": answer,
+            "answerer": 'default_user',
+            "question_datetime": question_datetime,
+            "answer_datetime": time_now(),
+            "machine_intent": intent,
+            "robot_id": self.robot_id,
+            "sid": str(sid),
+            "answer_timeout": answer_timeout
+        }
+        return data_gate.save_session(**params)
+
+    def _is_manual_online(self):
+        """ Check to see if the manual is online
+        Returns
+        -------
+        bool.
+        """
+        return cms_gate.check_human_agent_status('default_user')
+
+    def response_check(self, sid):
+        """ Check to see if the question has been answered
+        Parameters
+        ----------
+        sid : str, session id.
+
+        Returns
+        -------
+        bool.
+        """
+        return data_gate.is_session_complete(sid)
+
+    def delay_task(self, session_info):
+        """ Check to see if the question has been answered,
+            if not , send tuling answer
+        Parameters
+        ----------
+        sid : str, session id.
+
+        Returns
+        -------
+        bool.
+        """
+        ret = session_info['ret']
+        sid = ret['sid']
+        intend = ret["event"]["intent"]
+        latest_session = session_info['list'][-1]
+        question = latest_session['question']
+        question_datetime = latest_session['question_datetime']
+        if not self.response_check(sid):
+            tuling_answer = CasualTalk.get_tuling_answer(question)
+            ret["response"]["tts"] = tuling_answer
+            # 回答推送至客户，执行推送动作后就记录对话信息
+            cms_gate.response_to_client(ret)
+            # 写入对话日志
+            self.save_session(sid, question, tuling_answer, question_datetime,
+                              intend, True)
+        else:
+            log.info('session {} has been answered'.format(sid))
+
+    def session_info(self, domain_id, robot_id, sid, question, ret):
+        """ 拼接对话信息，获取当天最新十条对话信息，再加上最新的问题，同时加上前端所需信息
+        Parameters
+        ----------
+        domain_id : str, domain_id.
+        robot_id : str, robot_id.
+        sid : str, session id.
+        question : str, question text from human being.
+        ret: dict, _process_slots return value
+
+        Returns
+        -------
+        dict.
+        """
+        session_history = data_gate.session_history(domain_id, robot_id)
+        today_session_log = session_history
+        new_session = {
+            "answer": "",
+            "answer_datetime": "",
+            "question": question,
+            "question_datetime": time_now(),
+            "robot_id": robot_id,
+            "sid": sid,
+        }
+        today_session_log.append(new_session)
+        exp_timestamp = int((datetime.datetime.now() + datetime.timedelta(
+            seconds=10)).timestamp() * 1000)
+        r = {
+            'domain_id': domain_id,
+            'robot_id': robot_id,
+            "sid": sid,
+            'exp_timestamp': exp_timestamp,
+            'ret': ret,
+            'list': today_session_log
+        }
+        return r
+
+    def manual_talk(self, domain_id, robot_id, sid, question, ret, conn_id):
+        """ 对话转人工, 传递问题至 cms 人工坐席, 同时启用延时任务
+        Parameters
+        ----------
+        domain_id : str, domain_id.
+        robot_id : str, robot_id.
+        sid : str, session id.
+        question : str, question text from human being.
+        ret: dict, _process_slots return value.
+        conn_id: str, websocket id
+
+        Returns
+        -------
+        dict.
+        """
+        ret['conn_id'] = conn_id
+        session_info = self.session_info(domain_id, robot_id, sid, question,
+                                         ret)
+        # send_message
+        cms_gate.send_manual_question(session_info)
+        # set delay task to ensure question to be answered
+        timethread = threading.Timer(10, self.delay_task, [session_info])
+        timethread.start()
+        return session_info
 
     def _process_slots(self, slots, sid, intent=None):
         dm_ret = self._dm.process_slots(sid, slots)
