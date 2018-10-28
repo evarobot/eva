@@ -56,7 +56,7 @@ class DMRobot(object):
                     slots[slot_name] = value
         return slots
 
-    def process_question(self, question, sid, conn_id):
+    def process_question(self, question, sid, conn_id=None):
         """ Process question from device.
 
         It will parse question to (`Intent`, Slots, Slots) with NLU and
