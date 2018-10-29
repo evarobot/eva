@@ -85,8 +85,7 @@ def process_question():
         params["project"])["data"]["id"]
     robot = DMRobot.get_robot(params["robot_id"], domain_id,
                               params["project"])
-    # sid = int(round(time.time() * 1000))
-    ret = robot.process_question(params['question'], params['sid'])
+    ret = robot.process_question(params['question'], params['sid'], params.get('conn_id'))
     return jsonify(ret)
 
 
