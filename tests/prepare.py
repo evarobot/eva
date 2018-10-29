@@ -6,7 +6,7 @@ import mock
 import os
 from vikidm.util import PROJECT_DIR, cms_gate
 from vikicommon.log import init_logger
-from vikidm.config import ConfigLog, ConfigDM
+from vikidm.config import ConfigLog, Config
 from vikidm.dm import DialogEngine
 from vikidm.context import Slot
 
@@ -14,8 +14,8 @@ from vikidm.context import Slot
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 data_path = os.path.join(PROJECT_DIR, "tests", "data")
-ConfigDM.input_timeout = 5.0
-INPUT_TIMEOUT = ConfigDM.input_timeout + 1.0
+Config.input_timeout = 5.0
+INPUT_TIMEOUT = Config.input_timeout + 1.0
 
 
 def mock_cms_gate(paths):

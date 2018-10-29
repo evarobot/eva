@@ -24,7 +24,7 @@ def health_cheack():
     return jsonify({"status": "UP"})
 
 
-@app.route('/dm/robot/question/', methods=["GET", "POST"])
+@app.route('/v3/dm/robot/question/', methods=["GET", "POST"])
 def process_question():
     """
     Process question text from human being.
@@ -74,9 +74,15 @@ def process_question():
 
 
     """
-    params = json.loads(request.data)
+    params = {
+        "project": request.headers.get("product"),
+        "robot_id": request.headers.get("sn"),
+        "sid": request.headers.get("uniqueId"),
+        "question": json.loads(request.data)["question"]
+    }
     log.info("[REQUEST: {0}]".format(params))
-    domain_id = cms_gate.get_domain_by_name(params["project"])["data"]["id"]
+    domain_id = cms_gate.get_domain_by_name(
+        params["project"])["data"]["id"]
     robot = DMRobot.get_robot(params["robot_id"], domain_id,
                               params["project"])
     # sid = int(round(time.time() * 1000))
