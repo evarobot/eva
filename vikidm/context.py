@@ -40,9 +40,7 @@ class Slot(JSONEncoder):
         return self.value is not None
 
     def __str__(self):
-        key = self.key.encode('utf8') if self.key else self.key
-        value = self.value.encode('utf8') if self.value else self.value
-        return "Slot({0}={1})".format(key, value)
+        return "Slot({0}={1})".format(self.key, self.value)
 
     def __hash__(self):
         if hasattr(self, '_hash'):
@@ -60,8 +58,6 @@ class Slot(JSONEncoder):
         try:
             return self.__str__()
         except Exception as e:
-            import pdb
-            pdb.set_trace()
             raise e
 
 

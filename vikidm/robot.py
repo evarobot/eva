@@ -23,7 +23,7 @@ class DMRobot(object):
         self.domain_id = domain_id
         self.domain_name = domain_name
         self.robot_id = robot_id
-        self._dm = DialogEngine()
+        self._dm = DialogEngine.get_dm("0.1")
         self._dm.init_from_db(self.domain_id)
         log.info("CREATE ROBOT: [{0}] of domain [{1}]"
                  .format(robot_id, self.domain_name))
