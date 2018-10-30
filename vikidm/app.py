@@ -78,7 +78,8 @@ def process_question():
         "project": request.headers.get("product"),
         "robot_id": request.headers.get("sn"),
         "sid": request.headers.get("uniqueId"),
-        "question": json.loads(request.data)["question"]
+        "question": json.loads(request.data)["question"],
+        "conn_id": json.loads(request.data)["conn_id"]
     }
     log.info("[REQUEST: {0}]".format(params))
     domain_id = cms_gate.get_domain_by_name(
