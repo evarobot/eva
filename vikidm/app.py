@@ -79,14 +79,14 @@ def process_question():
         "robot_id": request.headers.get("sn"),
         "sid": request.headers.get("uniqueId"),
         "question": json.loads(request.data)["question"],
-        "conn_id": json.loads(request.data)["conn_id"]
     }
     log.info("[REQUEST: {0}]".format(params))
     domain_id = cms_gate.get_domain_by_name(
         params["project"])["data"]["id"]
     robot = DMRobot.get_robot(params["robot_id"], domain_id,
                               params["project"])
-    ret = robot.process_question(params['question'], params['sid'], params.get('conn_id'))
+    conn_id = json.loads(request.data).get("conn_id")
+    ret = robot.process_question(params['question'], params['sid'], conn_id=conn_id)
     return jsonify(ret)
 
 
