@@ -327,7 +327,6 @@ class DialogEngine(object):
         if old_focus_unit.parent and old_focus_unit.parent != new_focus_unit:
             # Topic switch.
             # previous focus and current focus not in the same hierarchy path.
-            pass
             log.debug("ROUND_RETURN BizUnit({0})".format(new_focus_unit.tag))
             new_focus_unit.restore_topic_and_focus()
         elif not new_focus_unit.is_root():
