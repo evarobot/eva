@@ -35,11 +35,7 @@ class DMRobot(object):
         question = question.strip(' \n')
         context = self.get_context()
         ret = nlu_gate.predict(self.domain_id, context, question)
-        intent = ret["intent"]
-        slots = [Slot("intent", ret["intent"])]
-        for slot_name, value_name in ret["slots"].items():
-            slots.append(Slot(slot_name, value_name))
-        return intent, ret["slots"], slots
+        return ret["intent"], ret["slots"], ret["related_slots"]
 
     def _get_context_slots(self, intent):
         """
@@ -74,7 +70,7 @@ class DMRobot(object):
 
         """
         # if rpc, pass robot id
-        intent, d_slots, slots = self._parse_question(question)
+        intent, d_slots, related_slots = self._parse_question(question)
         ret = {
             "code": 0,
             "sid": "",
@@ -98,7 +94,17 @@ class DMRobot(object):
             ret["response"]["tts"] = "很抱歉，这个问题我还不太懂。"
             return ret
 
+        slots = [Slot("intent", intent)]
+        for slot_name, value_name in d_slots.items():
+            slots.append(Slot(slot_name, value_name))
         ret = self._process_slots(slots, sid, intent)
+
+        d_slots = {}
+        for s_slot in related_slots:
+            slot = self._dm.context[s_slot]
+            if slot.value is not None:
+                d_slots[slot.key] = slot.value
+
         ret["nlu"] = {
             "intent": intent,
             "slots": d_slots
