@@ -282,17 +282,21 @@ class DMRobot(object):
                     }
                 }
             }
-            event = {
-                "intent": "casual_talk"
-            }
         else:
             ret = cms_gate.response_id_to_answer(self.domain_id,
                                                  dm_ret["response_id"])
             if ret["code"] != 0:
+                ret["event"] = {
+                    "intent": "",
+                    "slots": []
+                }
                 return ret
             event = {
                 "intent": ret["event"]
             }
+        event = {
+            "intent": "casual_talk"
+        }
         return {
             "code": 0,
             "sid": sid,
