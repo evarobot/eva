@@ -24,7 +24,7 @@ def test_init_biz_from_db():
     Test load json file;
     Test `Context` and `Stack` initialization.
     """
-    dm = DialogEngine()
+    dm = DialogEngine.get_dm("0.1")
     fpath = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
     mock_cms_gate([fpath])
     dm.init_from_db("mock_domain_id")

@@ -37,7 +37,7 @@ class TestMixAgency(object):
         fpath2 = os.path.join(data_path, 'biz_simulate_data/biz_mix_home.json')
         fpath4 = os.path.join(data_path, 'biz_simulate_data/biz_unit_test.json')
         fpath5 = os.path.join(data_path, 'biz_simulate_data/biz_01.json')
-        dm = DialogEngine()
+        dm = DialogEngine.get_dm("0.1")
         dm.debug_timeunit = 0.2
         mock_cms_gate([fpath1, fpath2, fpath4, fpath5])
         dm.init_from_db("mock_domain_id")

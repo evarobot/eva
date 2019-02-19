@@ -1,29 +1,27 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import copy
-import json
 import logging
 import pprint
 import time
 import os
 
 from vikicommon.timer import TimerReset
-from vikicommon.collections import OrderedSet
 from vikidm import errors
-from vikidm.util import PROJECT_DIR
+from vikidm.util import PROJECT_DIR, cms_gate
+from vikidm.stack import Stack
 from vikidm.context import Context
+from vikidm.topic import TopicController
 from vikidm.biztree import BizTree
+from vikidm.agenda import ExpectAgenda
 from vikidm.units import (
     Agent,
     BizUnit,
     TargetAgent,
     TargetAgency,
     ClusterAgency,
-    MixAgency,
     AbnormalHandler
 )
-from vikidm.util import cms_gate
-
 
 log = logging.getLogger(__name__)
 
@@ -45,173 +43,6 @@ class Session(object):
         return self._sid is not None and sid > self._sid
 
 
-class Stack(object):
-    """
-     模拟栈
-    """
-    def __init__(self):
-        self._items = []
-
-    @property
-    def items(self):
-        """ items in the stack
-
-        """
-        return self._items
-
-    def is_empty(self):
-        """ If there are items in the stack return True,
-        else return False
-
-        Returns
-        -------
-        Boolean.
-
-        """
-        return self._items == []
-
-    def push(self, item):
-        """ Push an item to stack.
-
-        """
-        self._items.append(item)
-
-    def pop(self):
-        """ Pop an item from stack and return it.
-
-        If none item exist, raise IndexError.
-
-        """
-        try:
-            return self._items.pop()
-        except IndexError:
-            log.error("root node always in stack")
-            raise IndexError
-
-    def top(self):
-        """ Return the top item of stack.
-
-        If none item exist, raise IndexError.
-
-        """
-        try:
-            return self._items[-1]
-        except IndexError:
-            log.error("root node always in stack")
-            raise IndexError
-
-    def __len__(self):
-        return len(self._items)
-
-    def __str__(self):
-        return "\n                ".join(
-            ["\n            Stack:"] + ["{0}({1})".format(c.tag, c.state)
-                                        for c in self._items])
-
-    def __repr__(self):
-        name = self.__class__.__name__
-        items = "\n".join([c.tag for c in self._items])
-        kwargs = [
-            "items=[\n{0}\n]".format(items)
-        ]
-        return "%s(%s)" % (name, ", ".join(kwargs))
-
-
-class ExpectAgenda(object):
-    """
-    Manage the visibility of bizunits and related intents and slots,
-    given specific stack state.
-
-    Attributes
-    ----------
-    visible_agents : OrderdSet, the visible agents, given specific context.
-    visible_slots : set, the visible slots, given specific context.
-    visible_intents : set, the visible intents, given specific context.
-
-    """
-    def __init__(self, stack):
-        self._visible_tree_agents = None
-        self._stack = stack
-        self.visible_slots = None
-        self.visible_slots = None
-        self.visible_agents = None
-
-    def compute_visible_units(self):
-        """
-
-        Calculate visible bizunits, intents, slots
-        """
-        # ordered by context priority
-        candicates = self._visible_agents_of_focus_hierachy()
-        if self._visible_tree_agents is None:
-            self._visible_tree_agents = self._visible_descendant_agents(
-                self._stack.items[0])
-        candicates.extend(self._visible_tree_agents)
-
-        self.visible_intents = set()
-        slots = []
-        for agent in candicates:
-            slots.extend(agent.target_slots)
-            slots.extend(agent.trigger_slots)
-            for slot in agent.trigger_slots:
-                if slot.key == "intent":
-                    self.visible_intents.add(slot.value)
-
-        #  TODO: valid_slots
-        self.visible_slots = set([c.key for c in slots])
-        self.visible_slots.remove("intent")
-        self.visible_agents = OrderedSet(candicates)
-
-    def _visible_agents_of_focus_hierachy(self):
-        """
-        Search bizunits up along the hierarchy path, and for each bizunit,
-        search it's descendant.
-
-        """
-        candicates = []
-        for unit in self._none_root_ancestors_of_focus_agent():
-            candicates.extend(self._visible_descendant_agents(unit))
-        return candicates
-
-    def show_visible_agents(self):
-        return [agent.tag for agent in self.visible_agents]
-
-    def _none_root_ancestors_of_focus_agent(self):
-        focus = self._stack.top()
-        unit = focus
-        while not unit.is_root():
-            yield unit
-            unit = unit.parent
-
-    def _visible_descendant_agents(self, bizunit):
-        agents = []
-
-        def visit_tree(unit):
-            if isinstance(unit, Agent):
-                agents.append(unit)
-            elif isinstance(unit, MixAgency):
-                for child in unit.children:
-                    # entrancable children of MixAgency node in the tree and
-                    # children of active MixAgency node.
-                    if child.entrance or unit in self._stack.items:
-                        visit_tree(child)
-            else:
-                for child in unit.children:
-                    visit_tree(child)
-        visit_tree(bizunit)
-        return agents
-
-    def __repr__(self):
-        str_slots = "\n                ".join(
-            ["\n            ValidSlots:"] + [
-                "{0}".format(c) for c in sorted(self.visible_slots)])
-
-        str_intents = "\n                ".join(
-            ["\n            ValidIntents:"] + [
-                "{0}".format(c) for c in sorted(self.visible_intents)])
-        return str_intents + str_slots
-
-
 class DialogEngine(object):
     """ Dialog Manager.
 
@@ -228,18 +59,21 @@ class DialogEngine(object):
     _timer : TimerRest, Calling handle function when timeout.
     _agenda : ExpectAgenda, Manage the visiblility of bizunit.
     _session : Session, Manage dialogue session.
+    _topic : TopicController, Manage Topic switch and select trigger agent.
     countdown_round : Countdown by none `TargetAgent` or `TargetAgency`
         dialog quantity.
     """
     SAFE_UPPER_LIMIT = 100
     MAX_CONTEXT_RESERVED_ROUND = 2
 
-    def __init__(self):
+    def __init__(self, topic_controller):
         self.context = Context()
         self.biz_tree = BizTree()
         self.stack = Stack()
         self._session = Session()
         self._agenda = ExpectAgenda(self.stack)
+        self._topic = topic_controller
+        self._topic.stack = self.stack
         self.countdown_round = 0
         self.countdown_unit = None
 
@@ -247,6 +81,24 @@ class DialogEngine(object):
         self._debug_timer_count = 0
         self.debug_loop = 0
         self.debug_timeunit = 1  # 为了测试的时候加速时间计数
+
+    @classmethod
+    def get_dm(self, version="0.1"):
+        """TODO: Docstring for get_dm.
+
+        Parameters
+        ----------
+        version : version of DialogEngine
+
+        Returns
+        -------
+        DialogEngine.
+
+        """
+        if version == "0.1":
+            topic = TopicController()
+            dm = DialogEngine(topic)
+            return dm
 
     @property
     def is_waiting(self):
@@ -306,7 +158,8 @@ class DialogEngine(object):
         focus_unit = self.stack.top()
         while focus_unit.transferable():
             if focus_unit.is_completed() or focus_unit.is_abnormal():
-                self._pop_focus_unit(focus_unit)
+                self._topic.pop_focus_unit(focus_unit)
+                log.debug("STATUS: \n{0}\n{1}".format(self.stack, self.context))
             else:
                 ret = focus_unit.execute()
             focus_unit = self.stack.top()
@@ -315,24 +168,6 @@ class DialogEngine(object):
                 #  TODO: recover from bug #
                 assert(False)
         return ret
-
-    def _pop_focus_unit(self, old_focus_unit):
-        self.stack.pop()
-        old_focus_unit.set_state(BizUnit.STATUS_TREEWAIT)
-        old_focus_unit.reset_slots()
-        log.debug("POP_STACK: {0}({1})".format(
-            old_focus_unit.__class__.__name__, old_focus_unit.tag))
-
-        new_focus_unit = self.stack.top()
-        if old_focus_unit.parent and old_focus_unit.parent != new_focus_unit:
-            # Topic switch.
-            # previous focus and current focus not in the same hierarchy path.
-            log.debug("ROUND_RETURN BizUnit({0})".format(new_focus_unit.tag))
-            new_focus_unit.restore_topic_and_focus()
-        elif not new_focus_unit.is_root():
-            # same hierarchy path.
-            new_focus_unit.restore_focus_after_child_done()
-        log.debug("STATUS: \n{0}\n{1}".format(self.stack, self.context))
 
     def process_slots(self, sid, slots):
         """ Process user inputs.
@@ -372,7 +207,12 @@ class DialogEngine(object):
         self._session.begin_session(sid)
         self._update_slots(slots)
         self._mark_completed_bizunits()
-        self._trigger_bizunit()
+        new_focus = self._topic.trigger_bizunit(self._agenda.visible_agents)
+        if new_focus is None:
+            log.debug("INVALID AGENTS")
+            log.debug(
+                "Valid Agents: {0}".format(self._agenda.show_visible_agents()))
+
         ret = self.execute_focus_agent()
         if not ret:
             self._session.end_session()
@@ -383,54 +223,6 @@ class DialogEngine(object):
         #  @OPTIMIZE return then compute visible units
         self._agenda.compute_visible_units()
         return ret
-
-    def _trigger_bizunit(self):
-        # 如果多个，都执行，就需要多个反馈，可能需要主动推送功能。
-        # 目前只支持返回一个。
-        for bizunit in self._agenda.visible_agents:
-            if not isinstance(bizunit, Agent):
-                continue
-            if not bizunit.satisfied():
-                continue
-            log.debug("Init Trigger: {0}".format(bizunit))
-            new_focus = bizunit.hierarchy_trigger()
-            # Remove units not in the hierarchy path,
-            # except 'casual_talk'
-            self._clear_focus_to_stack_top(new_focus)
-            self._clear_focus_to_root()
-            # 清理trigger到栈顶间的节点
-            log.debug("Triggered Stack:")
-            log.debug(self.stack)
-            break
-        else:
-            log.info("INVALID AGENTS")
-            log.info(
-                "Valid Agents: {0}".format(self._agenda.show_visible_agents()))
-
-    def _clear_focus_to_root(self):
-        if self.stack.top().tag != 'casual_talk':
-            focus = self.stack.pop()
-            for unit in reversed(self.stack.items[1:]):
-                to_pop_unit = self.stack.pop()
-                to_pop_unit.set_state(BizUnit.STATUS_TREEWAIT)
-                to_pop_unit.reset_slots()
-            self.stack.push(focus)
-
-    def _clear_focus_to_stack_top(self, focus):
-        """
-        Note: Won't reset concepts if ancestor node in the stack, but may clear
-        shared slots.
-        """
-        count = 0
-        for unit in reversed(self.stack.items):
-            if unit == focus:
-                break
-            count += 1
-        while count > 0:
-            to_pop_unit = self.stack.pop()
-            to_pop_unit.set_state(BizUnit.STATUS_TREEWAIT)
-            to_pop_unit.reset_slots()
-            count -= 1
 
     def _update_slots(self, slots):
         # OPTIMIZE:  `get_visible_units` control the range of activation,
@@ -573,6 +365,7 @@ class DialogEngine(object):
         return {
             "visible_slots": list(self._agenda.visible_slots),
             "visible_intents": list(self._agenda.visible_intents),
+            "intent": self.context["intent"].value,
             "agents": agents
         }
 
