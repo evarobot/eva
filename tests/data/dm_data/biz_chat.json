@@ -1,0 +1,16 @@
+{ 
+    "data":{
+        "tag": "casual_talk",
+        "entrance": false,
+        "response_id": "casual_talk",
+        "id": "casual_talk",
+        "trigger_slots": [
+            "intent=casual_talk"
+        ],
+        "target_slots": [],
+        "timeout": "5",
+        "type": "SIMPLE"
+    },
+    "children": []
+}
+

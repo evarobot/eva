@@ -1,0 +1,14 @@
+{ 
+    "data":{
+        "tag": "FAILED|name.query",
+        "entrance": false,
+        "event_id": "FAILED|name.query",
+        "id": "FAILED|name.query",
+        "trigger_slots": [
+            "state@axm=FAILED|name.query"
+        ],
+        "target_slots": [],
+        "timeout": "5"
+    },
+    "children": []
+}

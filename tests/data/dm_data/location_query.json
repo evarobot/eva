@@ -1,0 +1,47 @@
+{
+
+    "data": {
+        "id": "where.query",
+        "tag": "where.query",
+        "entrance": false,
+        "type": "TYPE_TARGET"
+    },
+    "children": [
+        {
+           "data":{
+                "id": "nike",
+                "tag": "nike",
+                "entrance": false,
+                "response_id": "nike",
+                "trigger_slots": [
+                    "intent=where.query",
+                    "location=nike"
+                ],
+                "target_slots": [
+                ],
+                "timeout": 5,
+                "type": "TYPE_TRIGGER_RESPONSE"
+            },
+            "children": []
+
+        },
+        {
+           "data":{
+                "tag": "zhou_hei_ya",
+                "entrance": false,
+                "id": "zhou_hei_ya",
+                "response_id": "zhou_hei_ya",
+                "trigger_slots": [
+                    "intent=where.query",
+                    "location=adidas"
+                ],
+                "target_slots": [
+                ],
+                "timeout": 5,
+                "type": "TYPE_TRIGGER_RESPONSE"
+            },
+            "children": []
+
+        }
+    ]
+}

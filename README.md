@@ -1,6 +1,5 @@
-# VikiDM
+# Eva
 ## 说明
-对话管理模块，包含上下文等信息，维护了语义系统的状态机。
 
 
 
@@ -109,3 +108,14 @@
       "message": "",    
     }
 ```
+
+### TODO
+dm测试需要几颗子树，
+dm.load_data 依赖 cms_gate.get_dm_biztree
+nlu 数据训练依赖get_tree_label_data   (见测试案例)
+两个合成才能合成训练数据。dm有IO就不用mock
+
+精确匹配的案例
+交互式聊天
+用精确匹配打通整个流程
+entity hook

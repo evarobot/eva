@@ -1,0 +1,1 @@
+ENTITY_HOOK_PREFIX = "@"

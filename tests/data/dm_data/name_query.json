@@ -1,0 +1,16 @@
+{ 
+    "data":{
+        "id": "name.query",
+        "tag": "name.query",
+        "entrance": false,
+        "response_id": "name.query",
+        "trigger_slots": [
+            "intent=name.query"
+        ],
+        "target_slots": [],
+        "timeout": "5",
+        "type": "TYPE_SIMPLE"
+    },
+    "children": []
+}
+
