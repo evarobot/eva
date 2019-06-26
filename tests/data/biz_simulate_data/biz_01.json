@@ -4,8 +4,6 @@
         "tag": "name.query",
         "entrance": false,
         "response_id": "name.query",
-        "subject": "主题",
-        "scope": "可见域",
         "trigger_slots": [
             "intent=name.query"
         ],

@@ -3,8 +3,8 @@
 
 import json
 import logging
-from vikidm.units.bizunit import BizUnit
-from vikidm.context import Slot
+from evadm.units.bizunit import BizUnit
+from evadm.context import Slot
 
 log = logging.getLogger(__name__)
 
@@ -32,8 +32,6 @@ class Agent(BizUnit):
     def __init__(self, dm, tag, data):
         try:
             filtered_data = {   # 用于tree.to_json(), 方便调试。
-                'subject': data['subject'],
-                'scope': data['scope'],
                 'timeout': float(data['timeout']),
                 'entrance': data['entrance'],
                 'response_id': data['response_id'],

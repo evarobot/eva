@@ -4,10 +4,10 @@ import logging
 import datetime
 import threading
 
-from vikidm.context import Slot
-from vikidm.dm import DialogEngine
-from vikidm.util import cms_gate, nlu_gate, data_gate
-from vikidm.chat import CasualTalk
+from evadm.context import Slot
+from evadm.dm import DialogEngine
+from evadm.util import cms_gate, nlu_gate, data_gate
+from evadm.chat import CasualTalk
 from vikicommon.util import time_now
 
 log = logging.getLogger(__name__)

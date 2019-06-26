@@ -7,14 +7,14 @@ import time
 import os
 
 from vikicommon.timer import TimerReset
-from vikidm import errors
-from vikidm.util import PROJECT_DIR, cms_gate
-from vikidm.stack import Stack
-from vikidm.context import Context
-from vikidm.topic import TopicController
-from vikidm.biztree import BizTree
-from vikidm.agenda import ExpectAgenda
-from vikidm.units import (
+from evadm import errors
+from evadm.util import PROJECT_DIR, cms_gate
+from evadm.stack import Stack
+from evadm.context import Context
+from evadm.topic import TopicController
+from evadm.biztree import BizTree
+from evadm.agenda import ExpectAgenda
+from evadm.units import (
     Agent,
     BizUnit,
     TargetAgent,
@@ -176,13 +176,15 @@ class DialogEngine(object):
         of DialogEngine.
 
         Parameters
-        ----------
-        sid : Dialog session. Every dialog contains a `process_slots` and
-             `process_confirm` calling pair. `sid` is used to pairing two call.
-        slots : [], `Slot` instance list.
+        ==========
+        sid : str
+            Dialog session. Every dialog contains a `process_slots` and
+            `process_confirm` calling pair. `sid` is used to pairing two call.
+        slots : []
+            `Slot` instance list.
 
         Returns
-        -------
+        =======
         {
             'response_id': "id of event"
                         // Used to extract answer from db or event notifying.

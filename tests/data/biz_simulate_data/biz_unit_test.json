@@ -13,8 +13,6 @@
                 "tag": "nike",
                 "entrance": false,
                 "response_id": "nike",
-                "subject": "",
-                "scope": "",
                 "trigger_slots": [
                     "intent=where.query",
                     "location=nike"
@@ -33,8 +31,6 @@
                 "entrance": false,
                 "id": "zhou_hei_ya",
                 "response_id": "zhou_hei_ya",
-                "subject": "",
-                "scope": "",
                 "trigger_slots": [
                     "intent=where.query",
                     "location=adidas"

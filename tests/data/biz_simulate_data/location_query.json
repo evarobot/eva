@@ -11,8 +11,6 @@
                 "tag": "nike",
                 "agency_entrance": true,
                 "event_id": "intent=where.query:location=耐克",
-                "subject": "",
-                "scope": "",
                 "trigger_concepts": [
                     "intent=where.query",
                     "location=nike"
@@ -29,8 +27,6 @@
                 "tag": "zhou_hei_ya",
                 "agency_entrance": true,
                 "event_id": "intent=where.query:location=周黑鸭",
-                "subject": "",
-                "scope": "",
                 "trigger_concepts": [
                     "intent=where.query",
                     "location=zhou_hei_ya"

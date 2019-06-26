@@ -5,8 +5,8 @@ import json
 import pprint
 import treelib
 
-from vikidm.units.agent import Agent
-from vikidm.units.agency import Agency
+from evadm.units.agent import Agent
+from evadm.units.agency import Agency
 log = logging.getLogger(__name__)
 
 

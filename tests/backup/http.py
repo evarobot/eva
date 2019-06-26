@@ -9,11 +9,11 @@ import logging
 from tornado.testing import AsyncHTTPTestCase
 
 from vikicommon.log import init_logger
-from vikidm.config import ConfigLog
+from evadm.config import ConfigLog
 init_logger(level=ConfigLog.log_level, path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
-from vikidm.controller import init_controllers
-from vikidm.libs.route import Route
+from evadm.controller import init_controllers
+from evadm.libs.route import Route
 from vikicommon.util import uniout
 
 init_controllers()

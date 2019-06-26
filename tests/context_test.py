@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import copy
-from vikidm.context import Slot
-from vikidm.context import Context
+from evadm.context import Slot
+from evadm.context import Context
 
 
 class TestContext(object):

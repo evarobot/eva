@@ -4,8 +4,6 @@
         "response_id": "mix_travel",
         "tag": "Mix(Mix(weather.query))",
         "entrance": false,
-        "subject": "",
-        "scope": "",
         "type": "TYPE_MIX"
     },
     "children": [{
@@ -14,8 +12,6 @@
             "response_id": "travel.service",
             "tag": "travel.service",
             "entrance": true,
-            "subject": "",
-            "scope": "",
             "trigger_slots": [
                 "intent=travel.service"
             ],
@@ -31,8 +27,6 @@
             "response_id": "travel_consume.query",
             "tag": "travel_consume.query",
             "entrance": false,
-            "subject": "",
-            "scope": "",
             "trigger_slots": [
                 "intent=consume.query"
             ],
@@ -48,8 +42,6 @@
             "response_id": "travel_left.query",
             "tag": "travel_left.query",
             "entrance": false,
-            "subject": "",
-            "scope": "",
             "trigger_slots": [
                 "intent=left.query"
             ],
@@ -67,8 +59,6 @@
             "response_id": "mix_weather",
             "tag": "Mix(weather.query)",
             "entrance": true,
-            "subject": "",
-            "scope": "",
             "type": "TYPE_MIX"
         },
         "children": [{
@@ -77,8 +67,6 @@
                 "response_id": "weather.query",
                 "tag": "weather.query",
                 "entrance": true,
-                "subject": "",
-                "scope": "",
                 "type": "TYPE_TARGET"
             },
             "children": [{
@@ -87,8 +75,6 @@
                     "tag": "default@weather.query",
                     "entrance": false,
                     "response_id": "default@weather.query",
-                    "subject": "",
-                    "scope": "",
                     "trigger_slots": [
                         "intent=weather.query"
                     ],
@@ -108,8 +94,6 @@
                     "tag": "city",
                     "entrance": false,
                     "response_id": "city",
-                    "subject": "",
-                    "scope": "",
                     "trigger_slots": [
                         "intent=weather.query"
                     ],
@@ -128,8 +112,6 @@
                     "tag": "date",
                     "entrance": false,
                     "response_id": "date",
-                    "subject": "",
-                    "scope": "",
                     "trigger_slots": [
                         "intent=weather.query"
                     ],
@@ -148,8 +130,6 @@
                     "tag": "result",
                     "entrance": false,
                     "response_id": "result",
-                    "subject": "",
-                    "scope": "",
                     "trigger_slots": [
                         "intent=weather.query",
                         "date=@date",
@@ -168,8 +148,6 @@
                 "id": "spots.query",
                 "tag": "spots.query",
                 "type": "TYPE_TARGET",
-                "subject": "",
-                "scope": "",
                 "entrance": false
             },
             "children": [{
@@ -178,8 +156,6 @@
                     "response_id": "all_city",
                     "tag": "all_city",
                     "entrance": true,
-                    "subject": "",
-                    "scope": "",
                     "trigger_slots": [
                         "intent=spots.query",
                         "city=@city"

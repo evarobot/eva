@@ -2,7 +2,7 @@
 # encoding: utf-8
 import time
 
-from vikidm.context import Slot
+from evadm.context import Slot
 from .prepare import construct_dm, round_out_simulate
 
 

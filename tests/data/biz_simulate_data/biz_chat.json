@@ -4,8 +4,6 @@
         "entrance": false,
         "response_id": "casual_talk",
         "id": "casual_talk",
-        "subject": "主题",
-        "scope": "可见域",
         "trigger_slots": [
             "intent=casual_talk"
         ],

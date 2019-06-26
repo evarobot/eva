@@ -13,8 +13,6 @@
                 "entrance": false,
                 "id": "intent=where.query:location=耐克",
                 "event_id": "intent=where.query:location=耐克",
-                "subject": "",
-                "scope": "",
                 "trigger_slots": [
                     "intent=where.query",
                     "location=nike"
@@ -33,8 +31,6 @@
                 "entrance": false,
                 "event_id": "intent=where.query:location=海底捞",
                 "id": "intent=where.query:location=海底捞",
-                "subject": "",
-                "scope": "",
                 "trigger_slots": [
                     "intent=where.query",
                     "location=海底捞"

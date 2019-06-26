@@ -4,11 +4,11 @@ import logging
 import json
 import mock
 import os
-from vikidm.util import PROJECT_DIR, cms_gate
+from evadm.util import PROJECT_DIR, cms_gate
 from vikicommon.log import init_logger
-from vikidm.config import ConfigLog, Config
-from vikidm.dm import DialogEngine
-from vikidm.context import Slot
+from evadm.config import ConfigLog, Config
+from evadm.dm import DialogEngine
+from evadm.context import Slot
 
 
 init_logger(level="DEBUG", path=ConfigLog.log_path)

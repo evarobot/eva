@@ -13,8 +13,6 @@
 				"tag": "default@weather.query",
 				"entrance": false,
 				"response_id": "default@weather.query",
-				"subject": "",
-				"scope": "",
 				"trigger_slots": [
 					"intent=weather.query"
 				],
@@ -34,8 +32,6 @@
 				"tag": "city",
 				"entrance": false,
 				"response_id": "city",
-				"subject": "",
-				"scope": "",
 				"trigger_slots": [
 					"intent=weather.query"
 				],
@@ -54,8 +50,6 @@
 				"tag": "date",
 				"entrance": false,
 				"response_id": "date",
-				"subject": "",
-				"scope": "",
 				"trigger_slots": [
 					"intent=weather.query"
 				],
@@ -74,8 +68,6 @@
 				"tag": "result",
 				"entrance": false,
 				"response_id": "result",
-				"subject": "",
-				"scope": "",
 				"trigger_slots": [
 					"intent=weather.query",
 					"date=@date",
@@ -95,8 +87,6 @@
 				"tag": "city_priority",
 				"entrance": false,
 				"response_id": "city_priority",
-				"subject": "",
-				"scope": "",
 				"trigger_slots": [
 					"intent=weather.query",
 					"date=@date",
@@ -116,8 +106,6 @@
 				"tag": "optional_none",
 				"entrance": false,
 				"response_id": "optional_none",
-				"subject": "",
-				"scope": "",
 				"trigger_slots": [
 					"intent=weather.query",
 					"date=@date",
@@ -137,8 +125,6 @@
 				"tag": "addtional_slot",
 				"entrance": false,
 				"response_id": "addtional_slot",
-				"subject": "",
-				"scope": "",
 				"trigger_slots": [
 					"intent=weather.query",
 					"date=@data",

@@ -8,8 +8,8 @@ from flask import request
 
 from vikicommon.log import init_logger
 from vikicommon.gate import cms_gate
-from vikidm.config import ConfigLog, Config
-from vikidm.robot import DMRobot
+from evadm.config import ConfigLog, Config
+from evadm.robot import DMRobot
 
 
 app = Flask(__name__)
