@@ -4,11 +4,11 @@ import logging
 import datetime
 import threading
 
-from evadm.context import Slot
-from evadm.dm import DialogEngine
-from evadm.util import cms_gate, nlu_gate, data_gate
-from evadm.chat import CasualTalk
-from vikicommon.util import time_now
+from eva.dm.context import Slot
+from eva.dm.dm import DialogEngine
+from eva.dm.util import cms_gate, nlu_gate, data_gate
+from eva.dm.chat import CasualTalk
+from evashare.util import time_now
 
 log = logging.getLogger(__name__)
 

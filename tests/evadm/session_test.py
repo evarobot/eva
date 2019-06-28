@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import time
-from evadm.context import Slot
+from eva.dm import Slot
 from .prepare import construct_dm, round_out_simulate
 
 

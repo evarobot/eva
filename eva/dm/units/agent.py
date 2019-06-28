@@ -3,8 +3,8 @@
 
 import json
 import logging
-from evadm.units.bizunit import BizUnit
-from evadm.context import Slot
+from eva.dm.units.bizunit import BizUnit
+from eva.dm.context import Slot
 
 log = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
-from vikicommon.collections import OrderedSet
-from evadm.units import (
+from evashare.collections import OrderedSet
+from eva.dm.units import (
     Agent,
     MixAgency
 )

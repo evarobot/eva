@@ -6,15 +6,12 @@ import json
 import logging
 import pprint
 import requests
-import mock
 
-from vikicommon.timer import TimerThread
-from vikicommon.log import init_logger
+from evashare.timer import TimerThread
+from evashare.log import init_logger
 
-from evadm.util import PROJECT_DIR, cms_rpc
-from evadm.dm import DialogEngine
-from evadm.context import Concept
-from evadm.config import ConfigLog
+from eva.dm.util import PROJECT_DIR
+from eva.dm import ConfigLog
 
 data_path = os.path.join(PROJECT_DIR, "tests", "data")
 

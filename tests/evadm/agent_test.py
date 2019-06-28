@@ -3,9 +3,9 @@
 import os
 import time
 
-from evadm.dm import DialogEngine, Stack
-from evadm.context import Slot
-from evadm.biztree import Agent
+from eva.dm.dm import DialogEngine, Stack
+from eva.dm import Slot
+from eva.dm import Agent
 from .prepare import data_path, mock_cms_gate, construct_dm
 
 

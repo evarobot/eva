@@ -38,8 +38,8 @@ class _ConfigLog(object):
     _log_level = 'DEBUG'
     log_to_file = True
     log_to_console = True
-    # log_path = '/Users/bitmain/logs/VikiDM/'
-    log_path = '/var/log/evadm/'
+    # log_path = '/Users/bitmain/logs/EvaDLG/'
+    log_path = '/var/log/dm/'
 
     @property
     def log_level(self):

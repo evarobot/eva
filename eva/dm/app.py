@@ -6,10 +6,10 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 
-from vikicommon.log import init_logger
-from vikicommon.gate import cms_gate
-from evadm.config import ConfigLog, Config
-from evadm.robot import DMRobot
+from evashare.log import init_logger
+from evashare.gate import cms_gate
+from eva.dm.config import ConfigLog, Config
+from eva.dm.robot import DMRobot
 
 
 app = Flask(__name__)
