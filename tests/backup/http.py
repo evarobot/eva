@@ -9,11 +9,11 @@ import logging
 from tornado.testing import AsyncHTTPTestCase
 
 from evashare.log import init_logger
-from eva.dm import ConfigLog
+from evadm import ConfigLog
 init_logger(level=ConfigLog.log_level, path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
-from eva.dm import init_controllers
-from eva.dm import Route
+from evadm import init_controllers
+from evadm import Route
 from evashare.util import uniout
 
 init_controllers()
@@ -36,7 +36,7 @@ class TestDM(AsyncHTTPTestCase):
             'question': u'有什么旅游服务'
         }
 
-        res = self.fetch("/v2/dm/question/",
+        res = self.fetch("/v2/evadm/question/",
                          body=json.dumps(params),
                          method="POST")
         if not str(res.code).startswith("20"):
@@ -57,7 +57,7 @@ class TestDM(AsyncHTTPTestCase):
                 'code': 0
             }
         }
-        res = self.fetch("/v2/dm/confirm/",
+        res = self.fetch("/v2/evadm/confirm/",
                          body=json.dumps(params),
                          method="POST")
         if not str(res.code).startswith("20"):

@@ -4,10 +4,10 @@ import logging
 import datetime
 import threading
 
-from eva.dm.context import Slot
-from eva.dm.dm import DialogEngine
-from eva.dm.util import cms_gate, nlu_gate, data_gate
-from eva.dm.chat import CasualTalk
+from evadm.context import Slot
+from evadm.dm import DialogEngine
+from evadm.util import cms_gate, nlu_gate, data_gate
+from evadm.chat import CasualTalk
 from evashare.util import time_now
 
 log = logging.getLogger(__name__)
@@ -135,7 +135,7 @@ class DMRobot(object):
         ----------
         sid : str, session id.
         question : str, question text from human being.
-        answer ：str, answer by dm, tuling, or human agent
+        answer ：str, answer by evadm, tuling, or human agent
         question_datetime: str, question time by client
         intent: str, intent
         answer_timeout: bool, set True if manual talk time out

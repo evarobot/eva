@@ -10,8 +10,8 @@ import requests
 from evashare.timer import TimerThread
 from evashare.log import init_logger
 
-from eva.dm.util import PROJECT_DIR
-from eva.dm import ConfigLog
+from evadm.util import PROJECT_DIR
+from evadm import ConfigLog
 
 data_path = os.path.join(PROJECT_DIR, "tests", "data")
 

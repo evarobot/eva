@@ -87,7 +87,7 @@ class NLURobot(object):
         dict.
 
         """
-        # call rpc with dm_robot_id or call with dm robot directly
+        # call rpc with dm_robot_id or call with evadm robot directly
         log.info("----------------%s------------------" % question)
         if context["intent"] is not None:
             intent = context["intent"]

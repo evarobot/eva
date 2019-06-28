@@ -9,14 +9,14 @@ from collections import namedtuple
 import os
 
 from evashare.log import init_logger
-from eva.evanlu import IntentQuestion
-from eva.evanlu import remove_stopwords
-from eva.evanlu.config import ConfigMongo, ConfigLog
-from eva.evanlu import Sensitive
-from eva.evanlu.slot import SlotRecognizer
-from eva.evanlu import NLURobot
-from eva.evanlu.util import cms_gate, PROJECT_DIR
-from eva.evanlu import clear_intent_question
+from evanlu import IntentQuestion
+from evanlu import remove_stopwords
+from evanlu.config import ConfigMongo, ConfigLog
+from evanlu import Sensitive
+from evanlu.slot import SlotRecognizer
+from evanlu import NLURobot
+from evanlu.util import cms_gate, PROJECT_DIR
+from evanlu import clear_intent_question
 
 LabelData = namedtuple("LabelData", "label, question, treenode")
 init_logger(level="DEBUG", path=ConfigLog.log_path)

@@ -8,8 +8,8 @@ from flask import request
 
 from evashare.log import init_logger
 from evashare.gate import cms_gate
-from eva.dm.config import ConfigLog, Config
-from eva.dm.robot import DMRobot
+from evadm.config import ConfigLog, Config
+from evadm.robot import DMRobot
 
 
 app = Flask(__name__)
@@ -24,12 +24,12 @@ def health_cheack():
     return jsonify({"status": "UP"})
 
 
-@app.route('/v3/dm/robot/question/', methods=["GET", "POST"])
+@app.route('/v3/evadm/robot/question/', methods=["GET", "POST"])
 def process_question():
     """
     Process question text from human being.
 
-    URL: /dm/robot/question/
+    URL: /evadm/robot/question/
 
     Parameters
     ----------
@@ -90,11 +90,11 @@ def process_question():
     return jsonify(ret)
 
 
-@app.route('/dm/robot/confirm/', methods=["GET", "POST"])
+@app.route('/evadm/robot/confirm/', methods=["GET", "POST"])
 def process_confirm():
     """
 
-    URL: /dm/robot/confirm/
+    URL: /evadm/robot/confirm/
 
     Parameters
     ----------
@@ -130,7 +130,7 @@ def process_confirm():
     return jsonify(ret)
 
 
-@app.route('/dm/robot/reset/', methods=["GET", "POST"])
+@app.route('/evadm/robot/reset/', methods=["GET", "POST"])
 def reset():
     params = json.loads(request.data)
     log.info("[REQUEST: {0}]".format(params))

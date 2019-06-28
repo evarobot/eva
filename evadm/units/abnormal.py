@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from eva.dm.units.bizunit import BizUnit
-from eva.dm.units.agent import Agent
+from evadm.units.bizunit import BizUnit
+from evadm.units.agent import Agent
 import logging
 log = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class AbnormalHandler(BizUnit):
 
     def restore_focus_after_child_done(self):
         """
-        see :meth:`~dm.units.agency.Agency.restore_focus_after_child_done`
+        see :meth:`~evadm.units.agency.Agency.restore_focus_after_child_done`
         """
         if not self.is_root() and self.state != BizUnit.STATUS_ABNORMAL:
             self.set_state(BizUnit.STATUS_TRIGGERED)

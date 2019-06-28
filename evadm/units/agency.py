@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
-from eva.dm.units.bizunit import BizUnit
-from eva.dm.units.agent import TargetAgent, TriggerAgent
-from eva.dm.context import Slot
+from evadm.units.bizunit import BizUnit
+from evadm.units.agent import TargetAgent, TriggerAgent
+from evadm.context import Slot
 import logging
 log = logging.getLogger(__name__)
 
@@ -163,7 +163,7 @@ class TargetAgency(Agency):
 
     def restore_focus_after_child_done(self):
         """
-        see :meth:`~dm.units.agency.Agency.restore_focus_after_child_done`
+        see :meth:`~evadm.units.agency.Agency.restore_focus_after_child_done`
         """
         if self.state == BizUnit.STATUS_ABNORMAL:
             return
@@ -175,7 +175,7 @@ class TargetAgency(Agency):
         self.active_child = None
 
     def restore_topic_and_focus(self):
-        """ see :meth:`~dm.units.bizunit.BizUnit.restore_topic_and_focus`
+        """ see :meth:`~evadm.units.bizunit.BizUnit.restore_topic_and_focus`
 
         """
         assert(self.state in [BizUnit.STATUS_WAIT_TARGET,
@@ -283,7 +283,7 @@ class MixAgency(Agency):
 
     def restore_focus_after_child_done(self):
         """
-        see :meth:`~dm.units.agency.Agency.restore_focus_after_child_done`
+        see :meth:`~evadm.units.agency.Agency.restore_focus_after_child_done`
         """
         if self.state == BizUnit.STATUS_ABNORMAL:
             return
@@ -291,7 +291,7 @@ class MixAgency(Agency):
         self._execute_condition.add(BizUnit.STATUS_DELAY_EXIST)
 
     def restore_topic_and_focus(self):
-        """ see :meth:`~dm.units.bizunit.BizUnit.restore_topic_and_focus`
+        """ see :meth:`~evadm.units.bizunit.BizUnit.restore_topic_and_focus`
 
         """
         assert(self.state == BizUnit.STATUS_DELAY_EXIST)

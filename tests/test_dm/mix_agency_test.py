@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import os
-from eva.dm import Slot
-from eva.dm.dm import DialogEngine
+from evadm.context import Slot
+from evadm.dm import DialogEngine
 from .prepare import data_path, mock_cms_gate, round_out_simulate
 
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import copy
-from eva.dm import Slot
-from eva.dm import Context
+from evadm.context import Slot
+from evadm.context import Context
 
 
 class TestContext(object):

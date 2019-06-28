@@ -5,8 +5,8 @@ import json
 import pprint
 import treelib
 
-from eva.dm.units.agent import Agent
-from eva.dm.units.agency import Agency
+from evadm.units.agent import Agent
+from evadm.units.agency import Agency
 log = logging.getLogger(__name__)
 
 

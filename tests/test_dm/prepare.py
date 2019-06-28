@@ -4,11 +4,11 @@ import logging
 import json
 import mock
 import os
-from eva.dm.util import PROJECT_DIR, cms_gate
+from evadm.util import PROJECT_DIR, cms_gate
 from evashare.log import init_logger
-from eva.dm import ConfigLog, Config
-from eva.dm.dm import DialogEngine
-from eva.dm import Slot
+from evadm.config import ConfigLog, Config
+from evadm.dm import DialogEngine
+from evadm.context import Slot
 
 
 init_logger(level="DEBUG", path=ConfigLog.log_path)

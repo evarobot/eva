@@ -39,7 +39,7 @@ class _ConfigLog(object):
     log_to_file = True
     log_to_console = True
     # log_path = '/Users/bitmain/logs/EvaDLG/'
-    log_path = '/var/log/dm/'
+    log_path = '/var/log/evadm/'
 
     @property
     def log_level(self):
