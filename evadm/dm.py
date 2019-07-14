@@ -361,6 +361,7 @@ class DialogEngine(object):
     def get_visible_units(self):
         """ Return visible units at the moment. """
         # self._agenda.compute_visible_units()
+        # visible agents ordered by priority.
         agents = []
         for agent in self._agenda.visible_agents:
             parent = agent.parent
@@ -371,8 +372,8 @@ class DialogEngine(object):
             agents.append((agent.tag, agent.intent, identifier))
 
         return {
-            "visible_slots": list(self._agenda.visible_slots),
-            "visible_intents": list(self._agenda.visible_intents),
+            # "visible_slots": list(self._agenda.visible_slots),
+            # "visible_intents": list(self._agenda.visible_intents),
             "intent": self.context["intent"].value,
             "agents": agents
         }

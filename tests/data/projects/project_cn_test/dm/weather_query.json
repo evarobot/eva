@@ -1,0 +1,143 @@
+{
+
+	"data": {
+		"id": "weather.query",
+		"response_id": "weather.query",
+		"tag": "weather.query",
+		"entrance": false,
+		"type": "TYPE_TARGET"
+	},
+	"children": [{
+			"data": {
+				"id": "default@weather.query",
+				"tag": "default@weather.query",
+				"entrance": false,
+				"response_id": "default@weather.query",
+				"trigger_slots": [
+					"intent=weather.query"
+				],
+				"target_slots": [
+                    "city",
+                    "date"
+				],
+				"timeout": 5,
+				"type": "TYPE_TARGET_RESPONSE"
+			},
+			"children": []
+
+		},
+		{
+			"data": {
+				"id": "city",
+				"tag": "city",
+				"entrance": false,
+				"response_id": "city",
+				"trigger_slots": [
+					"intent=weather.query"
+				],
+				"target_slots": [
+					"city"
+				],
+				"timeout": 5,
+				"type": "TYPE_TARGET_RESPONSE"
+			},
+			"children": []
+
+		},
+		{
+			"data": {
+				"id": "date",
+				"tag": "date",
+				"entrance": false,
+				"response_id": "date",
+				"trigger_slots": [
+					"intent=weather.query"
+				],
+				"target_slots": [
+					"date"
+				],
+				"timeout": 5,
+				"type": "TYPE_TARGET_RESPONSE"
+			},
+			"children": []
+
+		},
+		{
+			"data": {
+				"id": "result",
+				"tag": "result",
+				"entrance": false,
+				"response_id": "result",
+				"trigger_slots": [
+					"intent=weather.query",
+					"date=@sys.date",
+					"city=@sys.city",
+                    "meteorology=meteorology"
+				],
+				"target_slots": [],
+                "optional_slots": ["meteorology"],
+				"timeout": 5,
+				"type": "TYPE_TRIGGER_RESPONSE"
+			},
+			"children": []
+        },
+		{
+			"data": {
+				"id": "city_priority",
+				"tag": "city_priority",
+				"entrance": false,
+				"response_id": "city_priority",
+				"trigger_slots": [
+					"intent=weather.query",
+					"date=@sys.date",
+					"city=Beijing",
+                    "meteorology=meteorology"
+				],
+				"target_slots": [],
+                "optional_slots": ["meteorology"],
+				"timeout": 5,
+				"type": "TYPE_TRIGGER_RESPONSE"
+			},
+			"children": []
+        },
+		{
+			"data": {
+				"id": "optional_none",
+				"tag": "optional_none",
+				"entrance": false,
+				"response_id": "optional_none",
+				"trigger_slots": [
+					"intent=weather.query",
+					"date=@sys.date",
+					"city=Beijing",
+                    "meteorology=None"
+				],
+				"target_slots": [],
+                "optional_slots": ["meteorology"],
+				"timeout": 5,
+				"type": "TYPE_TRIGGER_RESPONSE"
+			},
+			"children": []
+        },
+		{
+			"data": {
+				"id": "addtional_slot",
+				"tag": "addtional_slot",
+				"entrance": false,
+				"response_id": "addtional_slot",
+				"trigger_slots": [
+					"intent=weather.query",
+					"date=@sys.date",
+					"city=@sys.city",
+                    "meteorology=meteorology",
+                    "country=@country"
+				],
+				"target_slots": [],
+                "optional_slots": ["meteorology"],
+				"timeout": 5,
+				"type": "TYPE_TRIGGER_RESPONSE"
+			},
+			"children": []
+        }
+	]
+}

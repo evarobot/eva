@@ -3,7 +3,6 @@
 import logging
 import jieba
 
-from evanlu.constant import ENTITY_HOOK_PREFIX
 from evanlu.classifier import (
     QuestionSearch,
     FuzzyClassifier,
@@ -44,8 +43,6 @@ class IntentRecognizer(object):
         value_words = []
         entities = self._io.get_entities_with_value()
         for name, values in entities.items():
-            if name.startswith(ENTITY_HOOK_PREFIX):
-                continue
             for words in values.values():
                 value_words += words
         value_words = set(value_words)
@@ -82,6 +79,7 @@ class IntentRecognizer(object):
 
         """
         self._strict_classifier.train(label_data)
+        return {}
         biz_statics = self._biz_classifier.train(label_data)
         biz_chat_statics = self._biz_chat_classifier.train(label_data)
         label_question = {}

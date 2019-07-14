@@ -24,20 +24,10 @@ class DMRobot(object):
         self.domain_id = domain_id
         self.domain_name = domain_name
         self.robot_id = robot_id
-        self._io = DMIO(domain_id)
-        self._dm = DialogEngine.get_dm(self._io, "0.1")
+        self._dm = DialogEngine.get_dm(DMIO(domain_id), "0.1")
         self._dm.load_data()
         log.info("CREATE ROBOT: [{0}] of domain [{1}]"
                  .format(robot_id, self.domain_name))
-
-    def _parse_question(self, question):
-        """
-        Convert question to intent, slots, slots with NLU.
-        """
-        question = question.strip(' \n')
-        context = self.get_context()
-        ret = nlu_gate.predict(self.domain_id, context, question)
-        return ret["intent"], ret["slots"], ret["related_slots"]
 
     def _get_context_slots(self, intent):
         """
@@ -71,8 +61,17 @@ class DMRobot(object):
         dict.
 
         """
+        def parse_question(question):
+            """
+            Convert question to intent, slots, slots with NLU.
+            """
+            question = question.strip(' \n')
+            context = self.get_context()
+            ret = nlu_gate.predict(self.domain_id, context, question)
+            return ret["intent"], ret["slots"], ret["related_slots"]
+
         # if rpc, pass robot id
-        intent, d_slots, related_slots = self._parse_question(question)
+        intent, d_slots, related_slots = parse_question(question)
         ret = {
             "code": 0,
             "sid": "",

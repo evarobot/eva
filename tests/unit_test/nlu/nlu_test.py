@@ -2,9 +2,9 @@
 # encoding: utf-8
 
 import logging
-from collections import namedtuple
 import os
 
+from collections import namedtuple
 from evashare.log import init_logger
 from evashare.util import same_dict
 from evanlu.io import NLUFileIO, FileSearchIO
@@ -19,6 +19,9 @@ init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
 
+LabeledData = namedtuple("LabeledData", "label question node_id")
+
+
 def _create_mock_context(mock_label_data):
     mock_context = {}
     context_list = set([(intent, intent, treenode_id) for intent, question, treenode_id in mock_label_data])
@@ -29,7 +32,9 @@ def _create_mock_context(mock_label_data):
 TEST_PROJECT = "project_cn_test"
 file_io = NLUFileIO(TEST_PROJECT)
 file_io._project_path = os.path.join(
-    PROJECT_DIR, "data", "projects", TEST_PROJECT)
+    PROJECT_DIR, "tests", "data", "projects", TEST_PROJECT)
+file_io._sys_path = os.path.join(
+    PROJECT_DIR, "tests", "data", "projects", "sys")
 
 
 def test_file_io():
@@ -40,12 +45,42 @@ def test_file_io():
     assert(set(not_nonsense_words) == set(["你好", "晚安"]))
 
     entities = file_io.get_entities_with_value()
-    target = {'city': {'北京': ['帝都', '北京'], '上海': ['魔都', '上海']}}
+    target = {
+        'city': {
+            '北京': ['帝都', '北京'],
+            '上海': ['魔都', '上海']
+        },
+        '@sys.city': {
+            '北京': ['帝都', '北京'],
+            '上海': ['魔都', '上海'],
+            '深圳': ['鹏城', '深圳']
+        },
+        'meteorology': {
+            '晴': ['晴'],
+            '雨': ['雨']
+        }
+    }
     assert same_dict(target, entities)
 
+
 def test_file_search_io():
-    return
+    labeled_data = [
+        LabeledData("weather.query", "帮我看看去北京的航班有哪些", "node1"),
+        LabeledData("weather.query", "帮我看看去北京的航班有哪些", "node2"),
+        LabeledData("name.query", "你叫什么名字", "node3"),
+        LabeledData("name.query", "你叫什么名字", "node4")
+    ]
     search_io = FileSearchIO(TEST_PROJECT)
+    search_io.save(labeled_data)
+    assert search_io._caches == {}
+    l_intent_node = search_io.search("你叫什么名字")
+    assert l_intent_node == [
+        ('name.query', 'node3'),
+        ('name.query', 'node4'),
+    ]
+    assert search_io._caches != {}
+    l_intent_node = search_io.search("什么名字")
+    assert l_intent_node == []
 
 
 def test_sensitive():
@@ -70,13 +105,38 @@ def test_entity_recognizer():
     assert(result == target)
     result = recognizer.recognize("深圳在哪里", ["city"])
     assert(result == {})
+    result = recognizer.recognize("深圳会下雨吗", ["city", "meteorology"])
+    assert(same_dict(result, {
+        "meteorology": "雨"
+    }))
+    result = recognizer.recognize("深圳会下雨吗", ["@sys.city", "meteorology"])
+    assert(same_dict(result, {
+        "meteorology": "雨",
+        "@sys.city": "深圳"
+    }))
 
 
 def test_intent_recoginizer():
     recognizer = IntentRecognizer.get_intent_recognizer(file_io)
     words = recognizer.add_custom_words_to_jieba()
-    target = {'魔都', '帝都', '北京', '上海'}
+    target = {'魔都', '帝都', '北京', '上海', '晴', '雨', '深圳', '鹏城'}
     assert(words == target)
+    labeled_data = [
+        LabeledData("weather.query", "帮我看看去北京的航班有哪些", "node1"),
+        LabeledData("weather.query", "帮我看看去北京的航班有哪些", "node2"),
+        LabeledData("name.query1", "你叫什么名字", "node3"),
+        LabeledData("name.query2", "你叫什么名字", "node4")
+    ]
+    context = [
+        ("name.query2", "name.query2", "node4"),
+        ("name.query1", "name.query1", "node3")
+    ]
+    recognizer.train(labeled_data)
+    l_label_data = recognizer.strict_classify(context, "你叫什么名字")
+    # TODO NLURobot.intent_classify 移动到Intent中，把Context参数细化成必须的的字段。
+    import pdb
+    pdb.set_trace()
+
 
 
 class aTestClassifier(object):

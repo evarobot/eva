@@ -10,7 +10,6 @@ from evanlu.config import ConfigData
 from evanlu.util import PROJECT_DIR
 from evanlu.io import SearchIO
 from evanlp.classifier.question_classifier import QuestionClassfier
-#from evanlu.model import IntentQuestion, IntentTreeNode
 
 log = logging.getLogger(__name__)
 
@@ -20,8 +19,10 @@ LabelData = namedtuple('LabelData', 'label, question, treenode')
 
 def remove_stopwords(question):
     words = []
+    import pdb
+    pdb.set_trace()
     for w in question:
-        if w not in evanlp.get_stopwords():
+        if w not in evanlp.util.get_stopwords():
             words.append(w)
     return ''.join(words)
 
