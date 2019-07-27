@@ -1,16 +1,20 @@
 [
-  {
-    "name": "airline.query",
-    "slots":  [
-      {"from_city":  "city"},
-      {"to_city":  "city"}
-    ]
-  },
-  {
-    "name": "weather.query",
-    "slots":  [
-      {"city":  "city"},
-      {"date":  "@sys.date"}
-    ]
-  }
+	{
+		"name": "airline.query",
+		"slots": {
+			"from_city": "city",
+			"to_city": "city"
+		},
+		"optional_slots": {}
+	},
+	{
+		"name": "weather.query",
+		"slots": {
+			"city": "city",
+			"date": "@sys.date"
+		},
+		"optional_slots": {
+			"meteorology": "meteorology"
+		}
+	}
 ]

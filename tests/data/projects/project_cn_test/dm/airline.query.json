@@ -1,0 +1,85 @@
+{
+
+  "data": {
+    "id": "airline.query",
+    "response_id": "airline.query",
+    "tag": "airline.query",
+    "entrance": false,
+    "type": "TYPE_TARGET"
+  },
+  "children": [{
+    "data": {
+      "id": "default@airline.query",
+      "tag": "default@airline.query",
+      "entrance": false,
+      "response_id": "default@airline.query",
+      "trigger_slots": [
+        "intent=airline.query"
+      ],
+      "target_slots": [
+        "from_city",
+        "to_city"
+      ],
+      "timeout": 5,
+      "type": "TYPE_TARGET_RESPONSE"
+    },
+    "children": []
+
+  },
+    {
+      "data": {
+        "id": "from_city",
+        "tag": "from_city",
+        "entrance": false,
+        "response_id": "from_city",
+        "trigger_slots": [
+          "intent=airline.query"
+        ],
+        "target_slots": [
+          "from_city"
+        ],
+        "timeout": 5,
+        "type": "TYPE_TARGET_RESPONSE"
+      },
+      "children": []
+
+    },
+    {
+      "data": {
+        "id": "to_city",
+        "tag": "to_city",
+        "entrance": false,
+        "response_id": "to_city",
+        "trigger_slots": [
+          "intent=airline.query"
+        ],
+        "target_slots": [
+          "to_city"
+        ],
+        "timeout": 5,
+        "type": "TYPE_TARGET_RESPONSE"
+      },
+      "children": []
+
+    },
+    {
+      "data": {
+        "id": "result",
+        "tag": "result",
+        "entrance": false,
+        "response_id": "result",
+        "trigger_slots": [
+          "intent=airline.query",
+          "from_city=city",
+          "to_city=city",
+          "meteorology=@meteorology"
+        ],
+        "target_slots": [],
+        "optional_slots": ["meteorology"],
+        "timeout": 5,
+        "type": "TYPE_TRIGGER_RESPONSE"
+      },
+      "children": []
+    }
+  ]
+}

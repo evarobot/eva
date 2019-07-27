@@ -1,11 +1,8 @@
-#!/usr/bin/env python
-# encoding: utf-8
 import logging
 from evanlu.intent import IntentRecognizer
 from evanlu.filter import NonSenseFilter, SensitiveFilter
 from evanlu.entity import EntityRecognizer
-from evanlu.io import IO
-
+from evanlu.io import IO, NLUFileIO
 
 log = logging.getLogger(__name__)
 
@@ -13,8 +10,14 @@ log = logging.getLogger(__name__)
 class NLURobot(object):
     robots = {}
 
-    """"""
-    def __init__(self, io):
+    """
+    
+    Attributes
+    ----------
+    _io : NLUFileIO
+    
+    """
+    def __init__(self, io: NLUFileIO):
         self.domain_id = io.domain_id
         log.info("CREATE NLU ROBOT: {0}".format(io.domain_id))
         self._nonsense = None
@@ -22,7 +25,11 @@ class NLURobot(object):
         self._entity = None
         self._intent = None
         self._filtered_intents = ["casual_talk", "sensitive", "nonsense"]
-        self._entities_by_intent = dict(zip(self._filtered_intents, [] * 3))
+        self._entities_by_intent = {
+            "casual_talk": [],
+            "sensitive": [],
+            "nonsense": [],
+        }
         self._io = io
 
     def init(self):
@@ -42,10 +49,12 @@ class NLURobot(object):
         cls.robots[domain_id] = robot
         return robot
 
-    def reset_robot(self):
-        robot = NLURobot(self.domain_id)
+    @classmethod
+    def reset_robot(cls, domain_id):
+        robot = NLURobot(IO(domain_id))
         robot.init()
-        self.robots[self.domain_id] = robot
+        cls.robots[domain_id] = robot
+        return robot
 
     def train(self):
         """ Fetch labeld data of project from database,
@@ -68,12 +77,12 @@ class NLURobot(object):
 
         }
         """
-        label_data = io.get_tree_label_data(self.domain_id)
+        label_data = self._io.get_label_data()
         if not label_data:
             return {
                 "intents": []
             }
-        ret = self._intent.train(self.domain_id, label_data)
+        ret = self._intent.train(label_data)
         return ret
 
     def predict(self, context, question):
@@ -114,7 +123,7 @@ class NLURobot(object):
         intent, confidence, node_id = self._intent_classify(context, question)
         d_entities = {}
         if intent and intent not in self._filtered_intents:
-            ret = io.get_intent_entities_without_value(
+            ret = self._io.get_intent_entities_without_value(
                 self.domain_id, intent)
             if ret['code'] != 0:
                 log.error("调用失败！")
@@ -147,8 +156,8 @@ class NLURobot(object):
             log.info("NONSENSE QUESTION")
             return "nonsense", 1.0, None
 
-        intent, confidence, node_id = self._intent.fuzzy_classify(
-            context, question)
-        log.info("FUZZY CLASSIFY to {0} confidence {1}".format(
-            intent, confidence))
-        return intent, confidence, node_id
+        # intent, confidence, node_id = self._intent.fuzzy_classify(
+        #     context, question)
+        # log.info("FUZZY CLASSIFY to {0} confidence {1}".format(
+        #     intent, confidence))
+        # return intent, confidence, node_id

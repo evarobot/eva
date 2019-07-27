@@ -3,11 +3,11 @@
 import logging
 import os
 import pandas
-import evanlp
 
 from collections import namedtuple
 from evanlu.config import ConfigData
 from evanlu.util import PROJECT_DIR
+from evanlp.util import get_stopwords
 from evanlu.io import SearchIO
 from evanlp.classifier.question_classifier import QuestionClassfier
 
@@ -19,10 +19,8 @@ LabelData = namedtuple('LabelData', 'label, question, treenode')
 
 def remove_stopwords(question):
     words = []
-    import pdb
-    pdb.set_trace()
     for w in question:
-        if w not in evanlp.util.get_stopwords():
+        if w not in get_stopwords():
             words.append(w)
     return ''.join(words)
 
@@ -57,7 +55,7 @@ class QuestionSearch(object):
 
         Parameters
         ----------
-        label_data : [(label, question, treenode)]
+        label_data : [(label, question)]
             labled question
         """
         self._io.save(label_data)

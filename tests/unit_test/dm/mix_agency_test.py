@@ -4,7 +4,7 @@ import os
 from evadm.context import Slot
 from evadm.dm import DialogEngine
 from evadm.util import PROJECT_DIR
-from evadm.testing import data_path, round_out_simulate
+from evadm.testing import round_out_simulate
 from evadm.io import DMFileIO
 
 
@@ -36,8 +36,8 @@ class TestMixAgency(object):
 
     def _construct_dm(self):
         file_io = DMFileIO("mock_project")
-        file_io._data_path = os.path.join(
-            PROJECT_DIR, "tests", "data", "dm_data")
+        file_io._project_path = os.path.join(
+            PROJECT_DIR, "tests", "data", "projects", "project_dm_test")
         dm = DialogEngine.get_dm(file_io, "0.1")
         dm.load_data(["name_query", "location_query", "biz_mix_home", "biz_mix_travel"])
         dm.debug_timeunit = 0.2

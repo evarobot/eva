@@ -11,7 +11,8 @@ class EntityRecognizer(object):
 
     Attributes
     ----------
-    _entities : dict, Slots and related value, like:
+    _entities : dict,
+        Slots and related value, like:
             {
                 "entity_name1": {
                     "value_name1": ["word1", "word2", ..],
@@ -25,13 +26,27 @@ class EntityRecognizer(object):
                     "value_name2": ["word1", "word2", ..]
                 }
             }
+    _detector_funcs : dict,
+        dict of entity detect function.
     """
     def __init__(self, io):
         self._entities = {}
+        self._detector_funcs = {}
         self._io = io
 
     def init_entities(self):
-        self._entities = self._io.get_entities_with_value()
+        def detect(text):
+            return []
+        result = self._io.get_entities_with_value()
+        self._entities = result["entities"]
+        name_space = {}
+        for name, script in result["scripts"].items():
+            code = compile(script, name, "exec")
+            exec(code, name_space)
+            func = name_space.get("detect", None)
+            if name in self._detector_funcs:
+                log.warning("重复的脚本名 :{0}".format(name))
+            self._detector_funcs[name] = func
 
     @staticmethod
     def get_entity_recognizer(io):
@@ -40,7 +55,7 @@ class EntityRecognizer(object):
         return entity
 
     def recognize(self, question, entity_names):
-        """
+        """ TODO 槽和视图的区分
 
         Parameters
         ----------
@@ -54,9 +69,16 @@ class EntityRecognizer(object):
         """
         entities = {}
         for entity_name in entity_names:
-            values = self._entities[entity_name]
-            for value_name, value_pattern in values.items():
-                ret = KeyWordEntity.recognize(question, value_pattern)
-                if ret:
-                    entities[entity_name] = value_name
+            if entity_name in self._entities:
+                values = self._entities[entity_name]
+                for value_name, value_pattern in values.items():
+                    ret = KeyWordEntity.recognize(question, value_pattern)
+                    if ret:
+                        entities[entity_name] = value_name
+            else:
+                detect_func = self._detector_funcs[entity_name]
+                value = detect_func(question)[0]
+                if value:
+                    entities[entity_name] = value
+
         return entities

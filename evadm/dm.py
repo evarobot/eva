@@ -51,15 +51,23 @@ class DialogEngine(object):
 
     Attributes
     ----------
-    SAFE_UPPER_LIMIT : 100, the maximum execution loop between two request,
-                       used to recover from endless loop if there is a bug.
-    MAX_CONTEXT_RESERVED_ROUND : The maximum rounds that context will reserved.
-    context : Context, maintaining the slot status of device.
-    stack : Stack, maintaining the active interaction history.
-    _timer : TimerRest, Calling handle function when timeout.
-    _agenda : ExpectAgenda, Manage the visiblility of bizunit.
-    _session : Session, Manage dialogue session.
-    _topic : TopicController, Manage Topic switch and select trigger agent.
+    SAFE_UPPER_LIMIT : 100
+        the maximum execution loop between two request,
+        used to recover from endless loop if there is a bug.
+    MAX_CONTEXT_RESERVED_ROUND : int
+        The maximum rounds that context will reserved.
+    context : Context
+        maintaining the slot status of device.
+    stack : Stack
+        maintaining the active interaction history.
+    _timer : TimerRest
+        Calling handle function when timeout.
+    _agenda : ExpectAgenda
+        Manage the visiblility of bizunit.
+    _session : Session
+        Manage dialogue session.
+    _topic : TopicController
+        Manage Topic switch and select trigger agent.
     countdown_round : Countdown by none `TargetAgent` or `TargetAgency`
         dialog quantity.
     """
@@ -372,7 +380,7 @@ class DialogEngine(object):
             agents.append((agent.tag, agent.intent, identifier))
 
         return {
-            # "visible_slots": list(self._agenda.visible_slots),
+            "visible_slots": list(self._agenda.visible_slots),
             # "visible_intents": list(self._agenda.visible_intents),
             "intent": self.context["intent"].value,
             "agents": agents

@@ -1,21 +1,19 @@
-[
-  {
-    "name": "airline.query",
-    "slots":  [
-      {"from_city": "city"},
-      {"to_city": "city"},
-    ],
-    "optional_slots":  [
-    ]
-  },
-  {
-    "name": "weather.query",
-    "slots":  [
-      {"city": "@sys.city"},
-      {"date": "@sys.date"}
-    ],
-    "optional_slots":  [
-      { "meteorology": "meteorology" }
-    ]
-  }
+[{
+		"name": "airline.query",
+		"slots": {
+			"from_city": "city",
+			"to_city": "city"
+		},
+		"optional_slots": {}
+	},
+	{
+		"name": "weather.query",
+		"slots": {
+			"city": "@sys.city",
+			"date": "@sys.date"
+		},
+		"optional_slots": {
+			"meteorology": "meteorology"
+		}
+	}
 ]

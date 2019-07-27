@@ -41,7 +41,7 @@ class IntentRecognizer(object):
     def add_custom_words_to_jieba(self):
         """ add custom words to jieba"""
         value_words = []
-        entities = self._io.get_entities_with_value()
+        entities = self._io.get_entities_with_value()["entities"]
         for name, values in entities.items():
             for words in values.values():
                 value_words += words
@@ -128,7 +128,7 @@ class IntentRecognizer(object):
         """
         objects, confidence = self._strict_classifier.predict(question)
         if objects:
-            log.info("STRICTLY CLASSIFY to [{0}]".format(objects[0].label))
+            log.info("STRICTLY CLASSIFY to [{0}]".format(objects[0][0]))
         intent, node_id = self._get_valid_intent(context, objects)
         return intent, confidence, node_id
 
@@ -153,19 +153,17 @@ class IntentRecognizer(object):
         label, node_id = self._get_valid_intent(context, objects)
         return(label, confidence, node_id)
 
-    def _get_valid_intent(self, context, candicates):
+    def _get_valid_intent(self, context, intents):
         """
-        Filter candicate agents by context, ending with one label.
+        Filter intents agents by context, ending with one label.
         """
-        if not candicates:
+        if not intents:
             return None, None
-        if len(candicates) > 1:
-            for unit in context["agents"]:
-                for candicate in candicates:
-                    tag, intent, id_ = tuple(unit)
-                    if candicate.treenode == id_:
-                        return candicate.label, id_
-            log.info("NO VISIBLE AGENTS SATISFIED!")
-        elif len(candicates) == 1:
-            return candicates[0].label, None
+        for unit in context:
+            for intent in intents:
+                # TODO remove useless tag filed
+                tag, intent_, node_id_ = tuple(unit)
+                if intent == intent_:
+                    return intent, node_id_
+        log.info("NO VISIBLE AGENTS SATISFIED!")
         return None, None

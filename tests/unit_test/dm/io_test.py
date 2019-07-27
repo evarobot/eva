@@ -1,3 +1,6 @@
+import os
+from evadm.io import DMFileIO
+from evadm.util import PROJECT_DIR
 from evadm.testing import file_io
 from evashare.util import same_dict
 
@@ -16,4 +19,11 @@ def test_dm_file_io():
         }
     }
     assert same_dict(tree, target, "children")
+
+
+def test_get_tree_label_data():
+    file_io = DMFileIO("project_cn_test")
+    file_io._project_path = os.path.join(
+        PROJECT_DIR, "tests", "data", "projects", "project_cn_test")
+    rst = file_io.get_tree_label_data()
 

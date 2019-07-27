@@ -6,13 +6,12 @@ from evadm.dm import DialogEngine
 from evadm.context import Slot
 
 
-TEST_PROJECT = "project_cn_test"
+TEST_PROJECT = "project_dm_test"
 file_io = DMFileIO(TEST_PROJECT)
-file_io._data_path = os.path.join(
-    PROJECT_DIR, "tests", "data", "dm_data")
+file_io._project_path = os.path.join(
+    PROJECT_DIR, "tests", "data", "projects", TEST_PROJECT)
 
 
-data_path = os.path.join(PROJECT_DIR, "tests", "data")
 Config.input_timeout = 5.0
 INPUT_TIMEOUT = Config.input_timeout + 1.0
 
@@ -32,8 +31,8 @@ def construct_dm():
         └── zhou_hei_ya
     '''
     file_io = DMFileIO("mock_project")
-    file_io._data_path = os.path.join(
-        PROJECT_DIR, "tests", "data", "dm_data")
+    file_io._project_path = os.path.join(
+        PROJECT_DIR, "tests", "data", "projects", TEST_PROJECT)
     dm = DialogEngine.get_dm(file_io, "0.1")
     dm.load_data(["name_query", "location_query", "weather_query"])
     dm.debug_timeunit = 0.2
