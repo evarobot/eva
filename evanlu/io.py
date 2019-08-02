@@ -160,6 +160,22 @@ class NLUFileIO(object):
                             label_question.append(LabeledData(label, question))
         return label_question
 
+    def get_intent_entities(self):
+        """
+
+        Returns
+        -------
+        intent_entities : dict
+            entities related to intent
+        """
+        file_path = os.path.join(self._project_path, "intent", "intent.json")
+        with open(file_path, "r") as file:
+            intents = json.loads(file.read())
+        rst = {}
+        for intent in intents:
+            rst[intent["name"]] = list(set(intent["slots"].values()))
+        return rst
+
 
 class FileSearchIO(object):
     """"""

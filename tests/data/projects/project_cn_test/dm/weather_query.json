@@ -64,7 +64,7 @@
 		},
 		{
 			"data": {
-				"id": "result",
+				"id": "weather.query_result",
 				"tag": "result",
 				"entrance": false,
 				"response_id": "result",

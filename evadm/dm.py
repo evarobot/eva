@@ -208,6 +208,8 @@ class DialogEngine(object):
         }
 
         """
+        import pdb
+        pdb.set_trace()
         self.debug_loop = 0
         log.info("-------- {0} ----- {1} -------------------".format(
             sid, slots))
@@ -383,7 +385,7 @@ class DialogEngine(object):
             "visible_slots": list(self._agenda.visible_slots),
             # "visible_intents": list(self._agenda.visible_intents),
             "intent": self.context["intent"].value,
-            "agents": agents
+            "agents": agents  # sorted by priority
         }
 
     def reset_countdown_round(self):

@@ -4,6 +4,8 @@
 import logging
 import os
 
+from evadm import util
+util.PROJECT_DIR = os.path.join(util.PROJECT_DIR, "tests")
 from evashare.util import same_dict
 from evanlu.config import ConfigLog
 from evanlu.entity import EntityRecognizer
@@ -14,16 +16,13 @@ from evashare.log import init_logger
 from evanlu.util import PROJECT_DIR
 from evanlu.testing import LabeledData
 
+
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
 
 TEST_PROJECT = "project_cn_test"
 file_io = NLUFileIO(TEST_PROJECT)
-file_io._project_path = os.path.join(
-    PROJECT_DIR, "tests", "data", "projects", TEST_PROJECT)
-file_io._sys_path = os.path.join(
-    PROJECT_DIR, "tests", "data", "projects", "sys")
 
 
 def test_sensitive():

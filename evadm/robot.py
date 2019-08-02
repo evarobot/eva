@@ -1,17 +1,32 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import logging
-import datetime
-import threading
 
 from evadm.context import Slot
 from evadm.dm import DialogEngine
-from evadm.util import cms_gate, nlu_gate, data_gate
-from evadm.chat import CasualTalk
-from evashare.util import time_now
+from evadm.util import cms_gate, nlu_gate
 from evadm.io import DMIO
+from evanlu.robot import NLURobot
 
 log = logging.getLogger(__name__)
+
+
+class EvaRobot(object):
+    def __init__(self, robot_id, domain_id, domain_name):
+        self._dm_robot = DMRobot.get_robot(robot_id, domain_id, domain_name)
+        self._nlu_robot = NLURobot.get_robot(domain_id)
+
+    def process_question(self, question):
+        question = question.strip(' \n')
+        context = self._dm_robot.get_context()
+        ret = self._nlu_robot.predict(context, question)
+        ret = self._dm_robot.process_request(ret["intent"],
+                                             ret["entities"],
+                                             ret["target_entities"],
+                                             0)
+
+    def train(self):
+        self._nlu_robot.train()
 
 
 class DMRobot(object):
@@ -23,11 +38,12 @@ class DMRobot(object):
     def __init__(self, robot_id, domain_id, domain_name):
         self.domain_id = domain_id
         self.domain_name = domain_name
-        self.robot_id = robot_id
         self._dm = DialogEngine.get_dm(DMIO(domain_id), "0.1")
-        self._dm.load_data()
         log.info("CREATE ROBOT: [{0}] of domain [{1}]"
                  .format(robot_id, self.domain_name))
+
+    def load_data(self):
+        self._dm.load_data()
 
     def _get_context_slots(self, intent):
         """
@@ -44,34 +60,18 @@ class DMRobot(object):
                     slots[slot_name] = value
         return slots
 
-    def process_question(self, question, sid, conn_id=None):
+    def process_request(self, intent, d_slots, related_slots, sid):
         """ Process question from device.
 
         It will parse question to (`Intent`, Slots, Slots) with NLU and
         query database or call thirdparty service.
 
-        Parameters
-        ----------
-        question : str, question text from human being.
-        sid : str, session id.
-        conn_id: str, websocket id
 
         Returns
         -------
         dict.
 
         """
-        def parse_question(question):
-            """
-            Convert question to intent, slots, slots with NLU.
-            """
-            question = question.strip(' \n')
-            context = self.get_context()
-            ret = nlu_gate.predict(self.domain_id, context, question)
-            return ret["intent"], ret["slots"], ret["related_slots"]
-
-        # if rpc, pass robot id
-        intent, d_slots, related_slots = parse_question(question)
         ret = {
             "code": 0,
             "sid": "",
@@ -94,7 +94,6 @@ class DMRobot(object):
         if intent == "sensitive":
             ret["response"]["tts"] = "很抱歉，这个问题我还不太懂。"
             return ret
-
         slots = [Slot("intent", intent)]
         for slot_name, value_name in d_slots.items():
             slots.append(Slot(slot_name, value_name))
@@ -112,197 +111,19 @@ class DMRobot(object):
         }
         ret["event"]["slots"] = d_slots
         if intent == "casual_talk":
-            if self._is_manual_online():
-                log.info('manual is online, send question to human agent')
-                # 转人工，同时返回转人工标志
-                ret["event"]["intent"] = "manual_talk"
-                self.manual_talk(self.domain_id, self.robot_id, sid,
-                                 question, ret, conn_id)
-            else:
-                tuling_answer = CasualTalk.get_tuling_answer(question)
-                ret["response"]["tts"] = tuling_answer
-                self.save_session(sid, question, tuling_answer, time_now(),
-                                  intent)
-        else:
-            answer = ret["response"]["tts"]
-            self.save_session(sid, question, answer, time_now(), intent)
+            pass
         return ret
-
-    def save_session(self, sid, question, answer, question_datetime, intent,
-                     answer_timeout=False):
-        """ Every session needs to to be saved.
-
-        Parameters
-        ----------
-        sid : str, session id.
-        question : str, question text from human being.
-        answer ：str, answer by evadm, tuling, or human agent
-        question_datetime: str, question time by client
-        intent: str, intent
-        answer_timeout: bool, set True if manual talk time out
-
-        Returns
-        -------
-        bool.
-        to tell if save success
-        """
-        params = {
-            "domain_id": str(self.domain_id),
-            "question": question,
-            "answer": answer,
-            "answerer": 'default_user',
-            "question_datetime": question_datetime,
-            "answer_datetime": time_now(),
-            "machine_intent": intent,
-            "robot_id": self.robot_id,
-            "sid": str(sid),
-            "answer_timeout": answer_timeout
-        }
-        return data_gate.save_session(**params)
-
-    def _is_manual_online(self):
-        """ Check to see if the manual is online
-        Returns
-        -------
-        bool.
-        """
-        return cms_gate.check_human_agent_status('default_user')
-
-    def response_check(self, sid):
-        """ Check to see if the question has been answered
-        Parameters
-        ----------
-        sid : str, session id.
-
-        Returns
-        -------
-        bool.
-        """
-        return data_gate.is_session_complete(sid)
-
-    def delay_task(self, session_info):
-        """ Check to see if the question has been answered,
-            if not , send tuling answer
-        Parameters
-        ----------
-        sid : str, session id.
-
-        Returns
-        -------
-        bool.
-        """
-        ret = session_info['ret']
-        sid = ret['sid']
-        intend = ret["event"]["intent"]
-        latest_session = session_info['list'][-1]
-        question = latest_session['question']
-        question_datetime = latest_session['question_datetime']
-        if not self.response_check(sid):
-            tuling_answer = CasualTalk.get_tuling_answer(question)
-            ret["response"]["tts"] = tuling_answer
-            # 回答推送至客户，执行推送动作后就记录对话信息
-            cms_gate.response_to_client(ret)
-            # 写入对话日志
-            self.save_session(sid, question, tuling_answer, question_datetime,
-                              intend, True)
-        else:
-            log.info('session {} has been answered'.format(sid))
-
-    def session_info(self, domain_id, robot_id, sid, question, ret):
-        """ 拼接对话信息，获取当天最新十条对话信息，再加上最新的问题，同时加上前端所需信息
-        Parameters
-        ----------
-        domain_id : str, domain_id.
-        robot_id : str, robot_id.
-        sid : str, session id.
-        question : str, question text from human being.
-        ret: dict, _process_slots return value
-
-        Returns
-        -------
-        dict.
-        """
-        session_history = data_gate.session_history(domain_id, robot_id)
-        today_session_log = session_history
-        new_session = {
-            "answer": "",
-            "answer_datetime": "",
-            "question": question,
-            "question_datetime": time_now(),
-            "robot_id": robot_id,
-            "sid": sid,
-        }
-        today_session_log.append(new_session)
-        exp_timestamp = int((datetime.datetime.now() + datetime.timedelta(
-            seconds=10)).timestamp() * 1000)
-        r = {
-            'domain_id': domain_id,
-            'robot_id': robot_id,
-            "sid": sid,
-            'exp_timestamp': exp_timestamp,
-            'ret': ret,
-            'list': today_session_log
-        }
-        return r
-
-    def manual_talk(self, domain_id, robot_id, sid, question, ret, conn_id):
-        """ 对话转人工, 传递问题至 cms 人工坐席, 同时启用延时任务
-        Parameters
-        ----------
-        domain_id : str, domain_id.
-        robot_id : str, robot_id.
-        sid : str, session id.
-        question : str, question text from human being.
-        ret: dict, _process_slots return value.
-        conn_id: str, websocket id
-
-        Returns
-        -------
-        dict.
-        """
-        ret['conn_id'] = conn_id
-        session_info = self.session_info(domain_id, robot_id, sid, question,
-                                         ret)
-        # send_message
-        cms_gate.send_manual_question(session_info)
-        # set delay task to ensure question to be answered
-        timethread = threading.Timer(10, self.delay_task, [session_info])
-        timethread.start()
-        return session_info
 
     def _process_slots(self, slots, sid, intent=None):
         dm_ret = self._dm.process_slots(sid, slots)
+        response_id = dm_ret["response_id"]
         if not dm_ret:
             intent = 'casual_talk'
-        if intent == 'casual_talk':
-            ret = {
-                "response": {
-                    "tts": "图灵闲聊",
-                    "web": {
-                        "text": ""
-                    }
-                }
-            }
-        else:
-            ret = cms_gate.response_id_to_answer(self.domain_id,
-                                                 dm_ret["response_id"])
-            if ret["code"] != 0:
-                ret["event"] = {
-                    "intent": "",
-                    "slots": []
-                }
-                return ret
-            event = {
-                "intent": ret["event"]
-            }
-        event = {
-            "intent": "casual_talk"
-        }
+            response_id = 'casual_talk'
         return {
-            "code": 0,
+            "intent": intent,
             "sid": sid,
-            "response": ret["response"],
-            "event": event,
+            "response_id": response_id,
             "nlu": {
                 "ask": dm_ret.get('target', ""),
             }
@@ -427,6 +248,7 @@ class DMRobot(object):
         if robot:
             return robot
         robot = DMRobot(robotid, domain_id, domain_name)
+        robot.load_data()
         DMRobot.robots_pool[robotid] = robot
         return robot
 
@@ -441,7 +263,6 @@ class DMRobot(object):
 
         """
         robot = DMRobot(robotid, domain_id, domain_name)
+        robot.load_data()
         DMRobot.robots_pool[robotid] = robot
-        return {
-            "code": 0
-        }
+        return robot

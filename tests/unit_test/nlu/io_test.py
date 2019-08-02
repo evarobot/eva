@@ -54,14 +54,20 @@ def test_file_io():
     }
 
     rst = file_io.get_label_data()
-    target = set(
+    target = {
         LabeledData("weather.query", "帮我查一下北京今天的天气"),
         LabeledData("weather.query", "深圳明天会下雨吗"),
         LabeledData("weather.query", "今天什么天气"),
         LabeledData("airline.query", "帮我查一下从北京到上海的航班"),
         LabeledData("airline.query", "帮我看看去北京的航班有哪些")
-    )
+    }
     assert set(rst) == target
+
+    rst = file_io.get_intent_entities()
+    assert same_dict(rst, {
+        'airline.query': ['city'],
+        'weather.query': ['@sys.city', '@sys.date'],
+    })
 
 
 def test_file_search_io():

@@ -119,25 +119,23 @@ class NLURobot(object):
                     "related_entities": entities,
                     "node_id": None
                 }
+        priority = context["agents"]
         # detect intent and entities
-        intent, confidence, node_id = self._intent_classify(context, question)
+        s_intent, confidence, node_id = self._intent_classify(priority,
+                                                              question)
         d_entities = {}
-        if intent and intent not in self._filtered_intents:
-            ret = self._io.get_intent_entities_without_value(
-                self.domain_id, intent)
-            if ret['code'] != 0:
-                log.error("调用失败！")
-                return {}
-            else:
-                d_entities = self._entity.recognize(question, ret["entities"])
+        intent2entities = self._io.get_intent_entities()
+        if s_intent and s_intent not in self._filtered_intents:
+            d_entities = self._entity.recognize(question,
+                                                intent2entities[s_intent])
             log.debug("ENTITIES DETECT to {0}".format(d_entities))
 
         return {
             "question": question,
-            "intent": "casual_talk" if intent is None else intent,
+            "intent": "casual_talk" if s_intent is None else s_intent,
             "confidence": confidence,
             "entities": d_entities,
-            "target_entities": self._entities_by_intent[intent],
+            "target_entities": self._entities_by_intent[s_intent],
             "node_id": node_id
         }
 
@@ -152,6 +150,8 @@ class NLURobot(object):
         if intent:
             return intent, confidence, node_id
 
+        import pdb
+        pdb.set_trace()
         if self._nonsense.detect(question):
             log.info("NONSENSE QUESTION")
             return "nonsense", 1.0, None
