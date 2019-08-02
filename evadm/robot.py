@@ -24,6 +24,8 @@ class EvaRobot(object):
                                              ret["entities"],
                                              ret["target_entities"],
                                              0)
+        self._dm_robot.process_confirm(ret["sid"], {"code": 0})
+        return ret
 
     def train(self):
         self._nlu_robot.train()
@@ -109,9 +111,6 @@ class DMRobot(object):
             "intent": intent,
             "slots": d_slots
         }
-        ret["event"]["slots"] = d_slots
-        if intent == "casual_talk":
-            pass
         return ret
 
     def _process_slots(self, slots, sid, intent=None):

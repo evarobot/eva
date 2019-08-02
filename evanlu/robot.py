@@ -123,19 +123,26 @@ class NLURobot(object):
         # detect intent and entities
         s_intent, confidence, node_id = self._intent_classify(priority,
                                                               question)
-        d_entities = {}
-        intent2entities = self._io.get_intent_entities()
+        slot_values = {}
+        target_slots = None
+        intent2entities = self._io.get_all_intent_entities()
         if s_intent and s_intent not in self._filtered_intents:
+            slots = intent2entities[s_intent]["slots"]
+            target_slots = list(slots.keys())
             d_entities = self._entity.recognize(question,
-                                                intent2entities[s_intent])
+                                                set(slots.values()))
             log.debug("ENTITIES DETECT to {0}".format(d_entities))
+            # @BUG from_city to_city
+            slots = {v: k for k, v in slots.items()}
+            for entity, value in d_entities.items():
+                slot_values[slots[entity]] = value
 
         return {
             "question": question,
             "intent": "casual_talk" if s_intent is None else s_intent,
             "confidence": confidence,
-            "entities": d_entities,
-            "target_entities": self._entities_by_intent[s_intent],
+            "entities": slot_values,
+            "target_entities": target_slots,
             "node_id": node_id
         }
 

@@ -63,11 +63,24 @@ def test_file_io():
     }
     assert set(rst) == target
 
-    rst = file_io.get_intent_entities()
-    assert same_dict(rst, {
-        'airline.query': ['city'],
-        'weather.query': ['@sys.city', '@sys.date'],
-    })
+    rst = file_io.get_all_intent_entities()
+
+    target = {
+        'airline.query': {
+            'slots': {
+                'from_city': 'city',
+                'to_city': 'city'
+            }
+        },
+        'weather.query': {
+            'slots': {
+                'city': '@sys.city',
+                'date': '@sys.date',
+                'meteorology': 'meteorology'
+            }
+        }
+    }
+    assert same_dict(rst, target)
 
 
 def test_file_search_io():

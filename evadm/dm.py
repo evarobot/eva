@@ -34,7 +34,7 @@ class Session(object):
         self._sid = sid
 
     def valid_session(self, sid):
-        return self._sid and sid >= self._sid
+        return self._sid is not None and sid >= self._sid
 
     def end_session(self):
         self._sid = None
@@ -208,8 +208,6 @@ class DialogEngine(object):
         }
 
         """
-        import pdb
-        pdb.set_trace()
         self.debug_loop = 0
         log.info("-------- {0} ----- {1} -------------------".format(
             sid, slots))

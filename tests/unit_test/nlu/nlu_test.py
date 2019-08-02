@@ -4,7 +4,7 @@
 import logging
 import os
 
-from evadm import util
+from evanlu import util
 util.PROJECT_DIR = os.path.join(util.PROJECT_DIR, "tests")
 from evashare.util import same_dict
 from evanlu.config import ConfigLog

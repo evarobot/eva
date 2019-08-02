@@ -33,15 +33,17 @@ def test_eva_robot():
     robot = EvaRobot(TEST_PROJECT, TEST_PROJECT, TEST_PROJECT)
     robot.train()
     rst = robot.process_question("帮我查一下北京今天的天气")
+    # todo query answer json in evarobot
     target = {
-        'question': '帮我查一下北京今天的天气',
         'intent': 'weather.query',
-        'confidence': 1,
-        'entities': {
-            '@sys.date': '今天',
-            '@sys.city': '北京'
-        },
-        'target_entities': ['meteorology', '@sys.date', '@sys.city'],
-        'node_id': 'node4'
+         'nlu': {
+            'intent': 'weather.query',
+             'slots': {
+                 'city': '北京',
+                 'date': '今天'
+             }
+         },
+         'response_id': 'result',
+         'sid': 0
     }
     assert same_dict(rst, target)
