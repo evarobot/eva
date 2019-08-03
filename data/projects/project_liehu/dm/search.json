@@ -1,0 +1,82 @@
+{
+	"data": {
+		"id": "search",
+		"response_id": "search",
+		"tag": "search",
+		"entrance": true,
+		"type": "TYPE_TARGET"
+	},
+	"children": [{
+			"data": {
+				"id": "search_none",
+				"tag": "search_none",
+				"entrance": false,
+				"response_id": "search_none",
+				"trigger_slots": [
+					"intent=search"
+				],
+				"target_slots": [
+					"country",
+					"info_type"
+				],
+				"timeout": 5,
+				"type": "TYPE_TARGET_RESPONSE"
+			},
+			"children": []
+
+		},
+		{
+			"data": {
+				"id": "search_country",
+				"tag": "search_country",
+				"entrance": false,
+				"response_id": "search_country",
+				"trigger_slots": [
+					"intent=search"
+				],
+				"target_slots": [
+					"country"
+				],
+				"timeout": 5,
+				"type": "TYPE_TARGET_RESPONSE"
+			},
+			"children": []
+
+		},
+		{
+			"data": {
+				"id": "search_info_type",
+				"tag": "search_info_type",
+				"entrance": false,
+				"response_id": "search_info_type",
+				"trigger_slots": [
+					"intent=search"
+				],
+				"target_slots": [
+					"info_type"
+				],
+				"timeout": 5,
+				"type": "TYPE_TARGET_RESPONSE"
+			},
+			"children": []
+
+		},
+		{
+			"data": {
+				"id": "search_result",
+				"tag": "search_result",
+				"entrance": true,
+				"response_id": "search_result",
+				"trigger_slots": [
+					"intent=search",
+					"country=country",
+					"info_type=info_type"
+				],
+				"target_slots": [],
+				"timeout": 5,
+				"type": "TYPE_TRIGGER_RESPONSE"
+			},
+			"children": []
+		}
+	]
+}

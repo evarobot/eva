@@ -128,7 +128,17 @@ class IntentRecognizer(object):
         """
         objects, confidence = self._strict_classifier.predict(question)
         if objects:
-            log.info("STRICTLY CLASSIFY to [{0}]".format(objects[0][0]))
+            log.info("STRICTLY CLASSIFY to [{0}]".format(objects[0]))
+        intent, node_id = self._get_valid_intent(context, objects)
+        return intent, confidence, node_id
+
+    def rule_classify(self, context, question):
+        confidence = 1
+        objects = []
+        if "查" in question:
+            objects = ["search"]
+        if objects:
+            log.info("STRICTLY CLASSIFY to [{0}]".format(objects[0]))
         intent, node_id = self._get_valid_intent(context, objects)
         return intent, confidence, node_id
 

@@ -41,11 +41,10 @@ def test_robot():
         'intent': 'weather.query',
         'confidence': 1,
         'entities': {
-             '@sys.date': '今天',
-             '@sys.city': '北京'
+             'date': '今天',
+             'city': '北京'
         },
-         'target_entities': ['meteorology', '@sys.date', '@sys.city'],
+         'target_entities': ['meteorology', 'date', 'city'],
          'node_id': 'node4'
     }
     assert same_dict(rst, target)
-

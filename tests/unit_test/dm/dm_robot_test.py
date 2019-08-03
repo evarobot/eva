@@ -2,13 +2,10 @@ import logging
 import os
 
 from evashare.log import init_logger
-from evashare.util import same_dict
 from evadm import util as dm_util
-from evanlu import util as nlu_util
 dm_util.PROJECT_DIR = os.path.join(dm_util.PROJECT_DIR, "tests")
-nlu_util.PROJECT_DIR = os.path.join(nlu_util.PROJECT_DIR, "tests")
 
-from evadm.robot import DMRobot, EvaRobot
+from evadm.robot import DMRobot
 from evadm.config import ConfigLog
 
 init_logger(level="DEBUG", path=ConfigLog.log_path)
@@ -28,22 +25,3 @@ def test_robot():
     robot0 = DMRobot.get_robot(TEST_PROJECT, TEST_PROJECT, TEST_PROJECT)
     assert id(robot0) == id(robot)
 
-
-def test_eva_robot():
-    robot = EvaRobot(TEST_PROJECT, TEST_PROJECT, TEST_PROJECT)
-    robot.train()
-    rst = robot.process_question("帮我查一下北京今天的天气")
-    # todo query answer json in evarobot
-    target = {
-        'intent': 'weather.query',
-         'nlu': {
-            'intent': 'weather.query',
-             'slots': {
-                 'city': '北京',
-                 'date': '今天'
-             }
-         },
-         'response_id': 'result',
-         'sid': 0
-    }
-    assert same_dict(rst, target)

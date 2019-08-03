@@ -4,7 +4,6 @@ import logging
 
 from evadm.context import Slot
 from evadm.dm import DialogEngine
-from evadm.util import cms_gate, nlu_gate
 from evadm.io import DMIO
 from evanlu.robot import NLURobot
 
@@ -46,21 +45,6 @@ class DMRobot(object):
 
     def load_data(self):
         self._dm.load_data()
-
-    def _get_context_slots(self, intent):
-        """
-        Return slots correspond to all dirty slots in Context.
-        """
-        slots = {}
-        ret2 = cms_gate.get_intent_entities_without_value(self.domain_id, intent)
-        if ret2['code'] != 0:
-            log.error("调用错误")
-        else:
-            for slot_name in ret2['slots']:
-                value = self._dm.context[slot_name].value
-                if value:
-                    slots[slot_name] = value
-        return slots
 
     def process_request(self, intent, d_slots, related_slots, sid):
         """ Process question from device.

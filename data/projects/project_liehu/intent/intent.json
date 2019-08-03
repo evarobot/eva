@@ -1,0 +1,10 @@
+[
+	{
+		"name": "search",
+		"slots": {
+			"country": "country",
+			"info_type": "info_type"
+		},
+		"optional_slots": {}
+	}
+]

@@ -157,11 +157,16 @@ class NLURobot(object):
         if intent:
             return intent, confidence, node_id
 
-        import pdb
-        pdb.set_trace()
+        intent, confidence, node_id = self._intent.rule_classify(
+            context, question)
+        if intent:
+            return intent, confidence, node_id
+
         if self._nonsense.detect(question):
             log.info("NONSENSE QUESTION")
             return "nonsense", 1.0, None
+
+        return "casual_talk", 1.0, None
 
         # intent, confidence, node_id = self._intent.fuzzy_classify(
         #     context, question)
