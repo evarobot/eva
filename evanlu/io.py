@@ -61,6 +61,7 @@ class NLUFileIO(object):
             data = file.read()
             l_intents = json.loads(data)
         rst = {}
+
         for d_intent in l_intents:
             slots = d_intent["slots"]
             slots.update(d_intent["optional_slots"])

@@ -2,4 +2,4 @@ treelib
 requests
 flask
 pandas
-
+jieba

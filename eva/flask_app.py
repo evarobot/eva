@@ -23,14 +23,25 @@ def predict():
                          data["project"],
                          data["project"])
         rst = robot.process_question(data["question"])
-        target = {
-            'code': 0,
-            'result': {
-                'event_id': rst["intent"],
-                'arguments': rst['entities'],
-                'sid': 0
+        if rst["intent"] == "service":
+            target = {
+                'code': 0,
+                'result': {
+                    'event_id': rst["intent"],
+                    'arguments': rst['entities'],
+                    'speak':  "您好，有什么我可以帮你的？",
+                    'sid': 0,
+                }
             }
-        }
+        else:
+            target = {
+                'code': 0,
+                'result': {
+                    'event_id': rst["intent"],
+                    'arguments': rst['entities'],
+                    'sid': 0
+                }
+            }
     except:
         return jsonify({"code": -1})
     return jsonify(target)

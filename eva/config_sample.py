@@ -33,7 +33,7 @@ class _ConfigApp:
 
 class _ConfigLog(object):
     _log_level = 'DEBUG'
-    _log_path = '/Users/wdj/logs/Eva'
+    _log_path = '/var/logs/Eva'
 
     @property
     def log_level(self):
@@ -47,8 +47,8 @@ class _ConfigLog(object):
 
 
 class _ConfigData(object):
-    _cache_data_path = "/Users/wdj/data/Eva/caches"
-    _model_data_path = "/Users/wdj/data/Eva/models"
+    _cache_data_path = "/var/data/Eva/caches"
+    _model_data_path = "/var/data/Eva/models"
     _data_server_host = "127.0.0.1"
     _data_server_port = 8887
 

@@ -9,6 +9,9 @@ from eva.config import ConfigLog
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
+#dm_host = "http://47.112.122.242"
+#dm_port = 10007
+
 dm_host = "http://127.0.0.1"
 dm_port = 9999
 
@@ -97,6 +100,34 @@ class TestDM(object):
             }
         }
         assert same_dict(data, target)
+        log.info(data)
+
+    def test_service(self):
+        params = {
+            'question': "帮我一个忙",
+            'robot_id': '1234',
+            'project': 'project_liehu'
+        }
+        url = '{0}:{1}/nlu/predict/'.format(dm_host, dm_port)
+        headers = {
+            'content-type': 'application/json',
+        }
+        v = json.dumps(params).encode('utf8')
+        log.info(url)
+        ret = requests.post(url, data=v,
+                            headers=headers, timeout=5)
+        assert(ret.status_code == 200)
+        data = json.loads(ret.text)
+        target = {
+            'code': 0,
+            'result': {
+                'event_id': 'service',
+                'sid': 0,
+                'arguments': {},
+                'speak':  "您好，有什么我可以帮你的？"
+            }
+        }
+        #assert same_dict(data, target)
         log.info(data)
 
 

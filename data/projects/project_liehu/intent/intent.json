@@ -6,5 +6,10 @@
 			"info_type": "info_type"
 		},
 		"optional_slots": {}
-	}
+	},
+    {
+        "name": "service",
+        "slots": { },
+        "optional_slots": {}
+    }
 ]

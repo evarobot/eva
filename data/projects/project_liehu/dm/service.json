@@ -1,0 +1,16 @@
+{
+  "data":{
+    "id": "service",
+    "tag": "service",
+    "entrance": false,
+    "response_id": "service",
+    "trigger_slots": [
+      "intent=service"
+    ],
+    "target_slots": [],
+    "timeout": "5",
+    "type": "TYPE_SIMPLE"
+  },
+  "children": []
+}
+
