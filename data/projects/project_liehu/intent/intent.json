@@ -3,7 +3,23 @@
 		"name": "search",
 		"slots": {
 			"country": "country",
-			"info_type": "info_type"
+			"category": "category"
+		},
+		"optional_slots": {}
+	},
+	{
+		"name": "correlation_analysis",
+		"slots": {
+			"target1": "indicator1",
+			"target2": "indicator2",
+			"datetime": "@sys.date"
+		},
+		"optional_slots": {}
+	},
+	{
+		"name": "search_event",
+		"slots": {
+			"event_country": "event_country"
 		},
 		"optional_slots": {}
 	},

@@ -1,0 +1,44 @@
+{
+  "data": {
+    "id": "search_event_intent",
+    "response_id": "search_event_intent",
+    "tag": "search_event",
+    "entrance": true,
+    "type": "TYPE_TARGET"
+  },
+  "children": [{
+      "data": {
+        "id": "search_event_country",
+        "tag": "search_event_country",
+        "entrance": false,
+        "response_id": "search_event_country",
+        "trigger_slots": [
+          "intent=search_event"
+        ],
+        "target_slots": [
+          "country"
+        ],
+        "timeout": 5,
+        "type": "TYPE_TARGET_RESPONSE"
+      },
+      "children": []
+
+    },
+    {
+      "data": {
+        "id": "search_event",
+        "tag": "search_event",
+        "entrance": true,
+        "response_id": "search_event",
+        "trigger_slots": [
+          "intent=search_event",
+          "event_country=@event_country"
+        ],
+        "target_slots": [],
+        "timeout": 5,
+        "type": "TYPE_TRIGGER_RESPONSE"
+      },
+      "children": []
+    }
+  ]
+}

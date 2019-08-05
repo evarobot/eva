@@ -18,32 +18,24 @@ log = logging.getLogger(__name__)
 @app.route("/nlu/predict/", methods=["GET", "POST"])
 def predict():
     data = json.loads(request.data)
-    try:
-        robot = EvaRobot(data["robot_id"],
-                         data["project"],
-                         data["project"])
-        rst = robot.process_question(data["question"])
-        if rst["intent"] == "service":
-            target = {
-                'code': 0,
-                'result': {
-                    'event_id': rst["intent"],
-                    'arguments': rst['entities'],
-                    'speak':  "您好，有什么我可以帮你的？",
-                    'sid': 0,
-                }
-            }
-        else:
-            target = {
-                'code': 0,
-                'result': {
-                    'event_id': rst["intent"],
-                    'arguments': rst['entities'],
-                    'sid': 0
-                }
-            }
-    except:
-        return jsonify({"code": -1})
+    robot = EvaRobot(data["robot_id"],
+                     data["project"],
+                     data["project"])
+    rst = robot.process_question(data["question"])
+    # hack code
+    if rst["response_id"] == "search_event":
+        rst["nlu"]["slots"]["country"] = rst["nlu"]["slots"]["event_country"]
+        del rst["nlu"]["slots"]["event_country"]
+    target = {
+        'code': 0,
+        'result': {
+            'event_id': rst["response_id"],
+            'arguments': rst['nlu']["slots"],
+            'sid': 0
+        }
+    }
+    if rst["response_id"] == "service":
+        target["result"]["speak"] = "您好，有什么我可以帮你的？"
     return jsonify(target)
 
 

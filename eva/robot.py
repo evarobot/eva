@@ -11,11 +11,11 @@ class EvaRobot(object):
         question = question.strip(' \n')
         context = self._dm_robot.get_context()
         ret = self._nlu_robot.predict(context, question)
-        # ret = self._dm_robot.process_request(ret["intent"],
-        #                                      ret["entities"],
-        #                                      ret["target_entities"],
-        #                                      0)
-        # self._dm_robot.process_confirm(ret["sid"], {"code": 0})
+        ret = self._dm_robot.process_request(ret["intent"],
+                                             ret["entities"],
+                                             ret["target_entities"],
+                                             0)
+        self._dm_robot.process_confirm(ret["sid"], {"code": 0})
         return ret
 
     def train(self):

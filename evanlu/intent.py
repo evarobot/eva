@@ -137,10 +137,8 @@ class IntentRecognizer(object):
     def rule_classify(self, context, question):
         confidence = 1
         objects = []
-        if "查" in question:
-            objects = ["search"]
         if objects:
-            log.info("STRICTLY CLASSIFY to [{0}]".format(objects[0]))
+            log.info("RULE CLASSIFY to [{0}]".format(objects[0]))
         intent, node_id = self._get_valid_intent(context, objects)
         return intent, confidence, node_id
 

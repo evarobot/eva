@@ -1,0 +1,102 @@
+{
+  "data": {
+    "id": "correlation_intent",
+    "response_id": "correlation_intent",
+    "tag": "correlation_intent",
+    "entrance": true,
+    "type": "TYPE_TARGET"
+  },
+  "children": [{
+    "data": {
+      "id": "correlation_none",
+      "tag": "correlation_none",
+      "entrance": false,
+      "response_id": "correlation_none",
+      "trigger_slots": [
+        "intent=correlation_analysis"
+      ],
+      "target_slots": [
+        "target1",
+        "target2",
+        "datetime"
+      ],
+      "timeout": 5,
+      "type": "TYPE_TARGET_RESPONSE"
+    },
+    "children": []
+
+  },
+    {
+      "data": {
+        "id": "correlation_country",
+        "tag": "correlation_country",
+        "entrance": false,
+        "response_id": "correlation_country",
+        "trigger_slots": [
+          "intent=correlation_analysis"
+        ],
+        "target_slots": [
+          "target1"
+        ],
+        "timeout": 5,
+        "type": "TYPE_TARGET_RESPONSE"
+      },
+      "children": []
+
+    },
+    {
+      "data": {
+        "id": "correlation_category",
+        "tag": "correlation_category",
+        "entrance": false,
+        "response_id": "correlation_category",
+        "trigger_slots": [
+          "intent=correlation_analysis"
+        ],
+        "target_slots": [
+          "target2"
+        ],
+        "timeout": 5,
+        "type": "TYPE_TARGET_RESPONSE"
+      },
+      "children": []
+
+    },
+    {
+      "data": {
+        "id": "correlation_analysis_without_time",
+        "tag": "correlation_analysis_without_time",
+        "entrance": false,
+        "response_id": "correlation_analysis_without_time",
+        "trigger_slots": [
+          "intent=correlation_analysis"
+        ],
+        "target_slots": [
+          "datetime"
+        ],
+        "timeout": 5,
+        "type": "TYPE_TARGET_RESPONSE"
+      },
+      "children": []
+
+    },
+    {
+      "data": {
+        "id": "correlation_analysis",
+        "tag": "correlation_analysis",
+        "entrance": true,
+        "response_id": "correlation_analysis",
+        "trigger_slots": [
+          "intent=correlation_analysis",
+          "target1=@indicator1",
+          "target2=@indicator2",
+          "datetime=@sys.date"
+        ],
+        "target_slots": [],
+        "timeout": 5,
+        "type": "TYPE_TRIGGER_RESPONSE"
+      },
+      "children": []
+    }
+  ]
+}

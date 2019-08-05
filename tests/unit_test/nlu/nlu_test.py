@@ -13,7 +13,6 @@ from evanlu.filter import SensitiveFilter, NonSenseFilter
 from evanlu.intent import IntentRecognizer
 from evanlu.io import NLUFileIO
 from evashare.log import init_logger
-from evanlu.util import PROJECT_DIR
 from evanlu.testing import LabeledData
 
 
@@ -45,6 +44,8 @@ def test_entity_recognizer():
     assert(result == target)
     result = recognizer.recognize("帝都在哪里", ["city"])
     assert(result == target)
+    result = recognizer.recognize("福州在哪里", ["city"])
+    assert(result == {'city': '福州'})
     result = recognizer.recognize("深圳在哪里", ["city"])
     assert(result == {})
     result = recognizer.recognize("深圳会下雨吗", ["city", "meteorology"])
@@ -65,7 +66,7 @@ def test_entity_recognizer():
 def test_intent_recognizer():
     recognizer = IntentRecognizer.get_intent_recognizer(file_io)
     words = recognizer.add_custom_words_to_jieba()
-    target = {'魔都', '帝都', '北京', '上海', '晴', '雨', '深圳', '鹏城'}
+    target = {'魔都', '帝都', '北京', '上海', '晴', '雨', '深圳', '鹏城', '福州'}
     assert(words == target)
     labeled_data = [
         LabeledData("weather.query", "帮我看看去北京的航班有哪些"),

@@ -229,6 +229,7 @@ class TargetAgency(Agency):
                 for slot in unit.trigger_slots:
                     if slot.key != "intent":
                         if slot.optional:
+                            # @ means any valid value
                             if slot.value[0] != '@':
                                 num_match += 1
                             elif self._dm.context.dirty(slot.key):
@@ -247,11 +248,9 @@ class TargetAgency(Agency):
             priority_units = list(filter(
                 lambda x: x[1] == max_match, priority_units))
             priority_units.sort(key=lambda x: x[2])
-            #if self._dm._session._sid == "sid00xx":
-                #temp = [(unit[0].tag, unit[1], unit[2]) for unit in priority_units]
-                #print temp
-                #import pdb
-                #pdb.set_trace()
+            # if self._dm._session._sid == "sid00xx":
+            #     temp = [(unit[0].tag, unit[1], unit[2]) for unit in priority_units]
+            #     print temp
             return priority_units[0][0]
 
         triggered_children = []

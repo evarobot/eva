@@ -103,36 +103,41 @@ class NLURobot(object):
         log.info("----------------%s------------------" % question)
 
         # when context given, detect entities
+        slot_values = {}
+        intent2entities = self._io.get_all_intent_entities()
         if context["intent"] is not None:
             intent = context["intent"]
+            slots = intent2entities[intent]["slots"]
             if intent in self._filtered_intents:
                 entities = []
             else:
-                entities = self._entities_by_intent[intent]
+                entities = self._entities_by_intent[intent]["slots"].values()
+            target_slots = self._entities_by_intent[intent]["slots"].keys()
             d_entities = self._entity.recognize(question, entities)
-            if d_entities:
+            slots = {v: k for k, v in slots.items()}
+            for entity, value in d_entities.items():
+                slot_values[slots[entity]] = value
+            if slot_values:
                 return {
                     "question": question,
                     "intent": intent,
                     "confidence": 1.0,
-                    "entities": d_entities,
-                    "related_entities": entities,
+                    "entities": slot_values,
+                    "target_entities": target_slots,
                     "node_id": None
                 }
         priority = context["agents"]
         # detect intent and entities
         s_intent, confidence, node_id = self._intent_classify(priority,
                                                               question)
-        slot_values = {}
-        target_slots = None
-        intent2entities = self._io.get_all_intent_entities()
+        target_slots = []
         if s_intent and s_intent not in self._filtered_intents:
             slots = intent2entities[s_intent]["slots"]
             target_slots = list(slots.keys())
+            assert len(set(slots.values())) == len(slots.values())
             d_entities = self._entity.recognize(question,
-                                                set(slots.values()))
+                                                slots.values())
             log.debug("ENTITIES DETECT to {0}".format(d_entities))
-            # @BUG from_city to_city
             slots = {v: k for k, v in slots.items()}
             for entity, value in d_entities.items():
                 slot_values[slots[entity]] = value

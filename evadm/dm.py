@@ -188,7 +188,7 @@ class DialogEngine(object):
 
         Dialogue text or events will be coverted to `Slot` list, as input
         of DialogEngine.
-
+17
         Parameters
         ==========
         sid : str

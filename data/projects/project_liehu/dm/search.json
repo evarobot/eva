@@ -1,8 +1,8 @@
 {
 	"data": {
-		"id": "search",
-		"response_id": "search",
-		"tag": "search",
+		"id": "search_intent",
+		"response_id": "search_intent",
+		"tag": "search_intent",
 		"entrance": true,
 		"type": "TYPE_TARGET"
 	},
@@ -17,7 +17,7 @@
 				],
 				"target_slots": [
 					"country",
-					"info_type"
+					"category"
 				],
 				"timeout": 5,
 				"type": "TYPE_TARGET_RESPONSE"
@@ -45,15 +45,15 @@
 		},
 		{
 			"data": {
-				"id": "search_info_type",
-				"tag": "search_info_type",
+				"id": "search_category",
+				"tag": "search_category",
 				"entrance": false,
-				"response_id": "search_info_type",
+				"response_id": "search_category",
 				"trigger_slots": [
 					"intent=search"
 				],
 				"target_slots": [
-					"info_type"
+					"category"
 				],
 				"timeout": 5,
 				"type": "TYPE_TARGET_RESPONSE"
@@ -63,14 +63,14 @@
 		},
 		{
 			"data": {
-				"id": "search_result",
-				"tag": "search_result",
+				"id": "search",
+				"tag": "search",
 				"entrance": true,
-				"response_id": "search_result",
+				"response_id": "search",
 				"trigger_slots": [
 					"intent=search",
-					"country=country",
-					"info_type=info_type"
+					"country=@country",
+					"category=@category"
 				],
 				"target_slots": [],
 				"timeout": 5,

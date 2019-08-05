@@ -156,7 +156,7 @@ class NLUFileIO(object):
         for path, dirs, files in os.walk(dir_path):
             for file_name in files:
                 if file_name.endswith("txt"):
-                    label = file_name.rstrip(".txt")
+                    label = os.path.splitext(file_name)[0]
                     file_path = os.path.join(path, file_name)
                     with open(file_path, "r") as file:
                         for line in file.readlines():
@@ -193,10 +193,12 @@ class FileSearchIO(object):
             return data
         with open(self._model_path, "r") as f:
             for line in f.readlines():
-                label, question = line.rstrip("\n").split(self.SEP)
-                same_question_data = self._caches.setdefault(question, [])
+                label, train_question = line.rstrip("\n").split(self.SEP)
+                same_question_data = self._caches.setdefault(
+                    train_question, [])
                 same_question_data.append(label)
-        return self._caches[question]
+        rst = self._caches.get(question, [])
+        return rst
 
 
 IO = NLUFileIO

@@ -55,7 +55,7 @@ class EntityRecognizer(object):
         return entity
 
     def recognize(self, question, entity_names):
-        """ TODO 槽和视图的区分
+        """
 
         Parameters
         ----------
@@ -77,8 +77,8 @@ class EntityRecognizer(object):
                         entities[entity_name] = value_name
             else:
                 detect_func = self._detector_funcs[entity_name]
-                value = detect_func(question)[0]
-                if value:
+                value = detect_func(question)
+                if value is not None:
                     entities[entity_name] = value
 
         return entities
