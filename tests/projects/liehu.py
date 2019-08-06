@@ -37,7 +37,8 @@ def test_eva_robot():
     from pprint import pprint
     pprint(rst)
 
-    rst = robot.process_question("帮我分析一下美元和黄金的相关性")
+    rst = robot.process_question("分析一下美元和黄金的相关性")
     pprint(rst)
     rst = robot.process_question("2003年")
+    rst = robot.process_question("二零零三年")
     pprint(rst)

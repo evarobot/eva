@@ -2,6 +2,7 @@
 # encoding: utf-8
 import logging
 import jieba
+from evanlp.ner import KeyWordEntity
 
 from evanlu.classifier import (
     QuestionSearch,
@@ -137,6 +138,15 @@ class IntentRecognizer(object):
     def rule_classify(self, context, question):
         confidence = 1
         objects = []
+        intents = {
+            "search": ["利率", "失业率"],
+            "search_event": ["伊朗"],
+            "correlation_analysis": ["相关", "影响"]
+        }
+        for label, keywords in intents.items():
+            result = KeyWordEntity.recognize(question, keywords)
+            if len(result) > 0:
+                objects = [label]
         if objects:
             log.info("RULE CLASSIFY to [{0}]".format(objects[0]))
         intent, node_id = self._get_valid_intent(context, objects)

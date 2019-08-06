@@ -1,4 +1,9 @@
+from evanlp.ner import KeyWordEntity
+
+
 def detect(text: str):
-    if "2003年" in text:
-        return "2003"
-    return None
+    result = KeyWordEntity.recognize(text, ["2003", "二零零三"])
+    if result:
+        return result[0]
+    else:
+        return None
