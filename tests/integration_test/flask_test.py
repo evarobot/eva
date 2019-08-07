@@ -9,11 +9,11 @@ from eva.config import ConfigLog
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
-#dm_host = "http://47.112.122.242"
-#dm_port = 10007
+dm_host = "http://47.112.122.242"
+dm_port = 10007
 
-dm_host = "http://127.0.0.1"
-dm_port = 9999
+#dm_host = "http://127.0.0.1"
+#dm_port = 9999
 
 
 class TestDM(object):
