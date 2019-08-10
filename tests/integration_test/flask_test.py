@@ -9,11 +9,11 @@ from eva.config import ConfigLog
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
-dm_host = "http://47.112.122.242"
-dm_port = 10007
+#dm_host = "http://47.112.122.242"
+#dm_port = 10007
 
-#dm_host = "http://127.0.0.1"
-#dm_port = 9999
+dm_host = "http://127.0.0.1"
+dm_port = 9999
 
 
 class TestDM(object):
@@ -68,8 +68,8 @@ class TestDM(object):
                 'event_id': 'search',
                 'sid': 0,
                 'arguments': {
-                    'country': '美国',
-                    'category': '利率'
+                    'country': 'United States',
+                    'category': 'Interest Rate'
                 }
             }
         }
@@ -153,7 +153,7 @@ class TestDM(object):
                 'event_id': 'search_event',
                 'sid': 0,
                 'arguments': {
-                    'country': '伊朗',
+                    'country': 'Iran',
                 }
             }
         }
@@ -182,8 +182,8 @@ class TestDM(object):
                 'event_id': 'correlation_analysis_without_time',
                 'sid': 0,
                 'arguments': {
-                    'target1': '美元',
-                    'target2': '黄金'
+                    'target1': 'dollar',
+                    'target2': 'gold'
                 },
                 'speak':  "您好，请问您想分析的是哪个时间段？"
             }
@@ -211,8 +211,8 @@ class TestDM(object):
                 'event_id': 'correlation_analysis',
                 'sid': 0,
                 'arguments': {
-                    'target1': '美元',
-                    'target2': '黄金',
+                    'target1': 'dollar',
+                    'target2': 'gold',
                     'datetime': '2003'
                 }
             }

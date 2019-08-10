@@ -136,12 +136,13 @@ class IntentRecognizer(object):
         return intent, confidence, node_id
 
     def rule_classify(self, context, question):
+        question = question.lower()
         confidence = 1
         objects = []
         intents = {
-            "search": ["利率", "失业率"],
-            "search_event": ["伊朗"],
-            "correlation_analysis": ["相关", "影响"]
+            "search": ["利率", "失业率", "interest rate", "unemployment"],
+            "search_event": ["伊朗", "iran"],
+            "correlation_analysis": ["相关", "影响", "correlation", "impact", "effect"]
         }
         for label, keywords in intents.items():
             result = KeyWordEntity.recognize(question, keywords)

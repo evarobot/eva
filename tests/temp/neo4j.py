@@ -52,10 +52,10 @@ for element in elements[1:]:
     sub_graph = sub_graph | element
 
 
-# g.delete_all()
-# tx = g.begin()
-# tx.create(sub_graph)
-# tx.commit()
+g.delete_all()
+tx = g.begin()
+tx.create(sub_graph)
+tx.commit()
 
 
 

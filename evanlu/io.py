@@ -107,7 +107,7 @@ class NLUFileIO(object):
                     lines = [line.rstrip('\n') for line in open(file_path)]
                     values = {}
                     for line in lines:
-                        words = line.split(' ')
+                        words = line.split(',')
                         values[words[0]] = list(set(words))
                     entities[name] = values
                 if file_name.endswith("py"):
@@ -126,7 +126,7 @@ class NLUFileIO(object):
                     lines = [line.rstrip('\n') for line in open(file_path)]
                     values = {}
                     for line in lines:
-                        words = line.split(' ')
+                        words = line.split(',')
                         values[words[0]] = list(set(words))
                     entities[name] = values
                 if file_name.endswith("py"):

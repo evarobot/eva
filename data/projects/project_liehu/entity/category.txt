@@ -1,2 +1,2 @@
-利率 利率
-失业率 失业率
+Interest Rate,利率,interest rate
+Unemployment Rate,失业率,unemployment rate

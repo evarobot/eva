@@ -27,8 +27,8 @@ def test_eva_robot():
         'nlu': {
             'intent': 'search',
             'slots': {
-                'country': '美国',
-                'category': '利率'
+                'country': 'United States',
+                'category': 'Interest Rate'
             }
         }
     }
@@ -42,3 +42,24 @@ def test_eva_robot():
     rst = robot.process_question("2003年")
     rst = robot.process_question("二零零三年")
     pprint(rst)
+
+
+def test_en_robot():
+    robot = EvaRobot(TEST_PROJECT, TEST_PROJECT, TEST_PROJECT)
+    robot.train()
+
+    rst = robot.process_question("show me American Interest rate")
+    # todo query answer json in evarobot
+    target = {
+        'intent': 'search',
+        'sid': 0,
+        'response_id': 'search',
+        'nlu': {
+            'intent': 'search',
+            'slots': {
+                'country': 'United States',
+                'category': 'Interest Rate'
+            }
+        }
+    }
+    assert same_dict(rst, target)

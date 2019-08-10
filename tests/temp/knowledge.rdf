@@ -31,7 +31,7 @@ OPEC:Organization,members,Venezuela:Country
 Iran:Country,president,Hassan Rouhani:Person
 Second Iraq War:War,property,2003-03-20:Date
 Second Iraq War:War,reason,Weapons of Mass Destruction:Weapon
-Second Iraq War:War,reason,oil_production:Property
+Second Iraq War:War,reason,oil:Property
 Second Iraq War:War,belligerent state,America:Country
 Second Iraq War:War,belligerent state,Iraq:Country
 Second Iraq War:War,result to,oil price rise:Finance
@@ -46,7 +46,6 @@ chemical weapons:Weapon,is,Weapons of Mass Destruction:Weapon
 Nuclear Weapon:Weapon,is,Weapons of Mass Destruction:Weapon
 F16:Weapon,is,aircrafts:Weapon
 RQ-4A:Weapon,is,aircrafts:Weapon
-Iran:Country,Attack,RQ-4A:Weapon
 F16:Weapon,produced by,America:Country
 RQ-4A:Weapon,produced by,America:Country
 Tomahawk Cruise Missile:Weapon,produced by,America:Country

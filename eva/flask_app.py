@@ -56,7 +56,7 @@ def show_graph():
         d_node2 = dict(dict(record)['n2'])
         if d_node1["name"] not in node_set:
             name = d_node1["name"]
-            color = "blue"
+            color = "#CCFFFF"
             size = 40
             if name == "Second Iraq War":
                 size = 60

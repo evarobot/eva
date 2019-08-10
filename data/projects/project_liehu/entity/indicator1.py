@@ -1,8 +1,8 @@
 from evanlp.ner import KeyWordEntity
 
 indicators = {
-    "美元": ["美元", "黄金"],
-    "黄金": ["黄金", "元宝"]
+    "dollar": ["美元", "美金", "dollar"],
+    "gold": ["黄金", "元宝", "gold"]
 }
 
 
