@@ -50,16 +50,28 @@ def show_graph():
     results = g.run("MATCH (n1)-[r]->(n2) RETURN r, n1, n2")
     const_links = []
     const_nodes = []
+    node_set = set()
     for record in results:
         d_node1 = dict(dict(record)['n1'])
         d_node2 = dict(dict(record)['n2'])
-        const_nodes.append({
-            'name': d_node1["name"],
-            'symbolSize': 30,
-            'itemStyle': {
-                "color": "red"
-            }
-        })
+        if d_node1["name"] not in node_set:
+            const_nodes.append({
+                'name': d_node1["name"],
+                'symbolSize': 30,
+                'itemStyle': {
+                    "color": "red"
+                }
+            })
+            node_set.add(d_node1["name"])
+        if d_node2["name"] not in node_set:
+            const_nodes.append({
+                'name': d_node2["name"],
+                'symbolSize': 30,
+                'itemStyle': {
+                    "color": "red"
+                }
+            })
+            node_set.add(d_node2["name"])
         const_links.append({
             "source": d_node1["name"],
             "target": d_node2["name"],
@@ -68,8 +80,8 @@ def show_graph():
     return jsonify({
         "code": 0,
         "data": {
-            "const_nodes": const_nodes,
-            "const_links": const_links
+            "nodes": const_nodes,
+            "links": const_links
         }
     })
 
