@@ -46,5 +46,6 @@ def export_news():
 
 if __name__ == '__main__':
     #test_export_mongo_collection()
-    export_news()
+    export_bbc_cnn()
+    #export_news()
 

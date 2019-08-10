@@ -55,20 +55,32 @@ def show_graph():
         d_node1 = dict(dict(record)['n1'])
         d_node2 = dict(dict(record)['n2'])
         if d_node1["name"] not in node_set:
+            name = d_node1["name"]
+            color = "blue"
+            size = 40
+            if name == "Second Iraq War":
+                size = 60
+                color = "red"
             const_nodes.append({
                 'name': d_node1["name"],
-                'symbolSize': 30,
+                'symbolSize': size,
                 'itemStyle': {
-                    "color": "red"
+                    "color": color
                 }
             })
             node_set.add(d_node1["name"])
         if d_node2["name"] not in node_set:
+            name = d_node2["name"]
+            color = "blue"
+            size = 40
+            if name == "Second Iraq War":
+                size = 60
+                color = "red"
             const_nodes.append({
                 'name': d_node2["name"],
-                'symbolSize': 30,
+                'symbolSize': size,
                 'itemStyle': {
-                    "color": "red"
+                    "color": color
                 }
             })
             node_set.add(d_node2["name"])
