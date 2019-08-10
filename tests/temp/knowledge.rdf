@@ -1,0 +1,57 @@
+OPEC:Organization,property,1960:founded
+Algeria:Country,property,1348361:oil_production
+Angola:Country,property,1769615:oil_production
+Ecuador:Country,property,548421:oil_production
+Equatorial Guinea:Country,property,227000:oil_production
+Gabon:Country,property,210820:oil_production
+Iran:Country,property,3990956:oil_production
+Iraq:Country,property,4451516:oil_production
+Kuwait:Country,property,2923825:oil_production
+Libya:Country,property,384686:oil_production
+Nigeria:Country,property,1999885:oil_production
+Republic of the Congo:Country,property,260000:oil_production
+Saudi Arabia:Country,property,10460710:oil_production
+United Arab Emirates:Country,property,3106077:oil_production
+Venezuela:Country,property,2276967:oil_production
+OPEC:Organization,oil_production,326400000:Number
+OPEC:Organization,members,Algeria:Country
+OPEC:Organization,members,Angola:Country
+OPEC:Organization,members,Ecuador:Country
+OPEC:Organization,members,Equatorial Guinea:Country
+OPEC:Organization,members,Gabon:Country
+OPEC:Organization,members,Iran:Country
+OPEC:Organization,members,Iraq:Country
+OPEC:Organization,members,Kuwait:Country
+OPEC:Organization,members,Libya:Country
+OPEC:Organization,members,Nigeria:Country
+OPEC:Organization,members,the Republic of the Congo:Country
+OPEC:Organization,members,Saudi Arabia:Country
+OPEC:Organization,members,United Arab Emirates:Country
+OPEC:Organization,members,Venezuela:Country
+Iran:Country,president,Hassan Rouhani:Person
+Second Iraq War:War,property,2003-03-20:Date
+Second Iraq War:War,reason,Weapons of Mass Destruction:Weapon
+Second Iraq War:War,reason,oil_production:Property
+Second Iraq War:War,belligerent state,America:Country
+Second Iraq War:War,belligerent state,Iraq:Country
+Second Iraq War:War,result to,oil price rise:Finance
+Second Iraq War:War,result to,gold price rise:Finance
+Second Iraq War:War,result to,dollar index decline:Finance
+Second Iraq War:War,used weapon,F16:Weapon
+Second Iraq War:War,used weapon,Tomahawk Cruise Missile:Weapon
+Second Iraq War:War,used weapon,Kitty Hawk:Weapon
+Second Iraq War:War,used weapon,Apache Helicopter:Weapon
+Weapons of Mass Destruction:Weapon,is,Weapon:Weapon
+chemical weapons:Weapon,is,Weapons of Mass Destruction:Weapon
+Nuclear Weapon:Weapon,is,Weapons of Mass Destruction:Weapon
+F16:Weapon,is,aircrafts:Weapon
+RQ-4A:Weapon,is,aircrafts:Weapon
+Iran:Country,Attack,RQ-4A:Weapon
+F16:Weapon,produced by,America:Country
+RQ-4A:Weapon,produced by,America:Country
+Tomahawk Cruise Missile:Weapon,produced by,America:Country
+Kitty Hawk:Weapon,produced by,America:Country
+Apache Helicopter:Weapon,produced by,America:Country
+Iran:Country,produce,enriched uranium:Material
+Nuclear Weapon:Weapon,material,enriched uranium:Material
+America:Country,president,Donald John Trump:Person

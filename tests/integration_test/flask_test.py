@@ -184,7 +184,8 @@ class TestDM(object):
                 'arguments': {
                     'target1': '美元',
                     'target2': '黄金'
-                }
+                },
+                'speak':  "您好，请问您想分析的是哪个时间段？"
             }
         }
         assert same_dict(data, target)
