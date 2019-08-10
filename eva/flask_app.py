@@ -38,7 +38,7 @@ def predict():
     if rst["response_id"] == "service":
         target["result"]["speak"] = "您好，有什么我可以帮你的？"
     if rst["response_id"] == "correlation_analysis_without_time":
-        target["result"]["speak"] = "您好，请问您想分析的是哪段时间？"
+        target["result"]["speak"] = "您好，请问您想分析的是哪个时间段？"
     return jsonify(target)
 
 
