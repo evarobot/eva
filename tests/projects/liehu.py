@@ -48,7 +48,7 @@ def test_en_robot():
     robot = EvaRobot(TEST_PROJECT, TEST_PROJECT, TEST_PROJECT)
     robot.train()
 
-    rst = robot.process_question("show me American Interest rate")
+    rst = robot.process_question("show me American interest rate")
     # todo query answer json in evarobot
     target = {
         'intent': 'search',

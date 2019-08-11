@@ -28,24 +28,18 @@ def export_mongo_collection(conn, db_name, collection_name, condition={}):
     file.write(']')
 
 
-def test_export_mongo_collection():
+def atest_export_mongo_collection():
     export_mongo_collection(conn, "scrapy_data", "bbc")
     with open("bbc.json", "r") as file:
         json_data = file.read()
         d_data = json.loads(json_data)
 
 
-def export_bbc_cnn():
+def test_export_bbc_cnn():
     export_mongo_collection(conn, "scrapy_data", "bbc")
     export_mongo_collection(conn, "scrapy_data", "cnn")
 
-def export_news():
+
+def atest_export_news():
     export_mongo_collection(conn, "yuqingdb", "news")
-
-
-
-if __name__ == '__main__':
-    #test_export_mongo_collection()
-    #export_bbc_cnn()
-    export_news()
 

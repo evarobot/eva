@@ -9,17 +9,17 @@ from eva.config import ConfigLog
 init_logger(level="DEBUG", path=ConfigLog.log_path)
 log = logging.getLogger(__name__)
 
-#dm_host = "http://47.112.122.242"
-#dm_port = 10007
+dm_host = "http://47.112.122.242"
+dm_port = 10007
 
-dm_host = "http://127.0.0.1"
-dm_port = 9999
+#dm_host = "http://127.0.0.1"
+#dm_port = 9999
 
 
 class TestDM(object):
     count = 0
 
-    def test_question(self):
+    def atest_question(self):
         # url = '{0}:{1}/nlu/hello'.format(dm_host, dm_port)
         # log.info(url)
         # ret = requests.get(url)
@@ -27,6 +27,23 @@ class TestDM(object):
         #     log.info(json.loads(ret.text))
         # assert(ret.status_code == 200)
         return
+
+    def test_input(self):
+        params = {
+            'type': 'news',
+            'news': {"expiration": "2018-11-22T23:59:00", "description": "The seasonally adjusted unemployment rate in Iceland increased to 3.1 percent in October of 2018 from an upwardly revised 1.8 percent in September. It was the highest jobless rate since July, as the number of unemployed went up by 2,800 to 6,400 and employment decreased by 1,000 to 200,400. The number of people in the labour force rose by 1,800 to 206,800 and the activity rate went up to 81.9 percent from 81.6 percent in the previous month. Meantime, the employment rate fell to 79.4 percent from 80.2 percent. A year ago, the unemployment rate was higher at 3.7 percent. ", "author": "Agna Gabriel", "ID": 67254, "importance": 1, "category": "Unemployment Rate", "title": "Iceland Jobless Rate Rises to 3.1% in October", "url": "/iceland/unemployment-rate", "country": "Iceland", "image": None, "date": "2018-11-22T09:09:00", "html": None}
+        }
+        url = '{0}:{1}/api/spiderinput'.format(dm_host, 80)
+        headers = {
+            'content-type': 'application/json',
+        }
+        v = json.dumps(params).encode('utf8')
+        log.info(url)
+        ret = requests.post(url, data=v,
+                            headers=headers, timeout=5)
+        if ret.status_code == 200:
+            log.info(json.loads(ret.text))
+        assert(ret.status_code == 200)
 
     def test_train(self):
         params = {

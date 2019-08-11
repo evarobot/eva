@@ -59,31 +59,3 @@ tx.commit()
 
 
 
-def get_graph():
-    g = Graph("bolt://47.112.122.242:7687",
-              user="neo4j",
-              password="Password01")
-    #print(g.run("MATCH (n1)-[r]->(n2) RETURN r, n1, n2").data())
-    results = g.run("MATCH (n1)-[r]->(n2) RETURN r, n1, n2")
-    d_relations = []
-    const_nodes = []
-    for record in results:
-        node = {
-            "n1": dict(dict(record)['n1']),
-            "n2": dict(dict(record)['n2']),
-            "r": type(dict(record)['r']).__name__
-        }
-        d_relations.append(node)
-    return d_relations
-
-
-def get_keywords():
-    keywords = set()
-    elements = get_graph()
-    for el in elements:
-        keywords.add(el["n1"]["name"])
-        keywords.add(el["n2"]["name"])
-        #keywords.add(el["r"])
-    return list(keywords)
-
-print(get_keywords())
