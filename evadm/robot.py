@@ -51,7 +51,8 @@ class DMRobot(object):
             "nlu": {
                 "intent": intent,
                 "slots": {}
-            }
+            },
+            "response_id": "nonsense"
         }
         if intent in [None, "nonsense"]:
             # When intent is invalid in current context, NLU return None.
